@@ -2,9 +2,9 @@
 # Computer Graphics 203.3710
 ## Students Team data
 
-Name: 
+Name: Daniel Brahano
 
-Student Number: 
+Student Number: 205465107
 
 
 Name: 
