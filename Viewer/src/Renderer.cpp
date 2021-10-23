@@ -280,8 +280,8 @@ void Renderer::Render(const Scene& scene)
 		glm::vec2 point{ 320 + half_width + radius * sin(2 * PI * i / a),half_height + radius * cos(2 * PI * i / a) };
 		DrawLine(center, point, black);
 	}
-	/**********************************************************************************************************************************/
-	// I am going to draw the logo of our Uiniversity
+	/************I am going to draw the logo of our Uiniversity*****************************/
+	 
 
 	// we can tell which loop is on the screen according to the color we send to Drawline
 	for (int i = 0; i < 80; i++) {
