@@ -1,4 +1,4 @@
-#define _USE_MATH_DEFINES
+#define PI 3.14159265359
 #include <cmath>
 #include <algorithm>
 
@@ -47,14 +47,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 	float a = (float)dy / dx;//cast the result to float
 	int c = p1.y - a * p1.x;
 
-	//if (a < 0) // check if need to mirror
-	//{
-	//	a = a * (-1);
-	//	dy = dy * (-1);
-	//	mirrorFlag = true;
-	//	//a<1? dy = dy * (-1): dx = dx * (-1);
-	//}
-
+	// if a<0 then treat it as positive and raise the flag
 	if (a < 0) {
 		mirrorFlag = true;
 		a = a * (-1);
@@ -279,7 +272,7 @@ void Renderer::Render(const Scene& scene)
 
 	int a = 100;
 	float radius = 200; // choosing radius and constant
-	float PI = 3.14159265359; // pi value
+	
 
 	//in a loop drwing the line given the formula 
 	for (int i = 0; i < a; i++)
@@ -287,7 +280,7 @@ void Renderer::Render(const Scene& scene)
 		glm::vec2 point{ 320 + half_width + radius * sin(2 * PI * i / a),half_height + radius * cos(2 * PI * i / a) };
 		DrawLine(center, point, black);
 	}
-
+	/**********************************************************************************************************************************/
 	// I am going to draw the logo of our Uiniversity
 
 	// we can tell which loop is on the screen according to the color we send to Drawline
