@@ -103,8 +103,10 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 	}
 }
 ```
-* **Render function**
+* **Render function:**
 
+I implemented both the lines and drawing of my choice together,
+i chose to draw the logo of our university
 ```
 void Renderer::Render(const Scene& scene)
 {
@@ -186,7 +188,8 @@ void Renderer::Render(const Scene& scene)
 
 
 
-Screen shot of the sanity check and drawing of my choice:
+* **Screen shot of the sanity check and drawing of my choice:**
+
 i chose to draw the logo of our University
 
 <a href="https://ibb.co/8XgDksT"><img src="https://i.ibb.co/LvdzKRb/image.png" alt="image" border="0"></a><br /><a target='_blank' href='https://imgbb.com/'></a><br />.
