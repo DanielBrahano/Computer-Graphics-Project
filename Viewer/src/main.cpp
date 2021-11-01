@@ -12,6 +12,9 @@
 #include "Renderer.h"
 #include "Scene.h"
 #include "Utils.h"
+/*-------my implementation-------*/
+#include <iostream>
+/*--------my implementation------*/
 
 /**
  * Fields
@@ -53,7 +56,63 @@ int main(int argc, char **argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
+	/*------------------MY IMPLEMENTATION------------------*/
+	//shared_ptr<MeshModel> model = Utils::LoadMeshModel("C:/Compute-Graphics/Data/banana.obj");
+	scene.AddModel(Utils::LoadMeshModel("C:/Compute-Graphics/Data/banana.obj"));
+	scene.GetModel(0).print();
+	//int faceCounts = model->GetFacesCount();
+	//int maxVertex = 0, maxNormal = 0;
+	//for (int i = 0; i < faceCounts; i++)
+	//{
+	//	//find the number of vertices in the model
+	//	if (scene.GetModel(0).GetFace(i).GetVertexIndex(0) > maxVertex)
+	//		maxVertex=scene.GetModel(0).GetFace(i).GetVertexIndex(0);
+	//	if (scene.GetModel(0).GetFace(i).GetVertexIndex(1) > maxVertex)
+	//		maxVertex=scene.GetModel(0).GetFace(i).GetVertexIndex(1);
+	//	if (scene.GetModel(0).GetFace(i).GetVertexIndex(2) > maxVertex)
+	//		maxVertex=scene.GetModel(0).GetFace(i).GetVertexIndex(2);
+
+	//	//find the number of normals in the model
+	//	if (scene.GetModel(0).GetFace(i).GetNormalIndex(0) > maxNormal)
+	//		maxNormal = scene.GetModel(0).GetFace(i).GetNormalIndex(0);
+	//	if (scene.GetModel(0).GetFace(i).GetNormalIndex(1) > maxNormal)
+	//		maxNormal = scene.GetModel(0).GetFace(i).GetNormalIndex(1);
+	//	if (scene.GetModel(0).GetFace(i).GetNormalIndex(2) > maxNormal)
+	//		maxNormal = scene.GetModel(0).GetFace(i).GetNormalIndex(2);
+
+
+
+	//}
+	////loop to print all the vertices 
+	//for (int i = 0; i < maxVertex; i++) {
+	//	std::cout << "v ";
+	//	std::cout << scene.GetModel(0).GetVertex(i, 0) << " ";
+	//	std::cout << scene.GetModel(0).GetVertex(i, 1) << " ";
+	//	std::cout << scene.GetModel(0).GetVertex(i, 2) << std::endl;
+	//}
+	//std::cout << "# verticies "<<maxVertex << std::endl;
+
+	////loop to print all the normals 
+	//for (int i = 0; i < maxNormal; i++) {
+	//	std::cout << "vn ";				 
+	//	std::cout << scene.GetModel(0).GetNormal(i, 0) << " ";
+	//	std::cout << scene.GetModel(0).GetNormal(i, 1) << " ";
+	//	std::cout << scene.GetModel(0).GetNormal(i, 2) << std::endl;
+	//}
+	//std::cout << "# normals " << maxNormal << std::endl;
+
+	//for (int i = 0; i < faceCounts; i++)
+	//{
+	//	std::cout << "f ";
+	//	for (int j = 0; j < 3; j++) {
+	//		std::cout << scene.GetModel(0).GetFace(i).GetVertexIndex( j) << "//" << scene.GetModel(0).GetFace(i).GetNormalIndex(j) << " ";
+	//	}
+	//	std::cout<<endl;
+	//}
 	
+
+
+	/*------------------MY IMPLEMENTATION------------------*/
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
     while (!glfwWindowShouldClose(window))
