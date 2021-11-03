@@ -100,8 +100,8 @@ void MeshModel::ScaleTranslateBunny()
 
 
 	WorldTranslateModel(600, 400, 300);
-	WorldScaleModel(250, 250,250 );
-	ObjectRotateModelZ(9, glm::vec3(1.0f, 1.0f, 1.0f));
+	WorldScaleModel(400, 400,400 );
+	//ObjectRotateModelZ(9, glm::vec3(1.0f, 1.0f, 1.0f));
 
 
 }

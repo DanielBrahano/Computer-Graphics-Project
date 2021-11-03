@@ -220,8 +220,24 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
 		static float f = 0.0f;
-		static int counter = 0;
+		/*------MY ADDITION------*/
+		static float X = 0.0f;// variable that will hold sliders
+		static float Y = 0.0f;
+		static float Z = 0;
+		//variables for drop down manu
+		static int selectTransformation = 0;
+		static int selectWhichOne = 0; // object or world?
+		
+		//array of transformation options
+		static const char* transformation[]{ "Scale","Translate","Rotate" };
 
+		//array of world/object to perform transformation
+		static const char* WhichOne[]{ "World","Object" };
+		//before we open the imgui window, let's resize it
+		ImGui::SetNextWindowSize(ImVec2(400, 300));
+		/*------MY ADDITION------*/
+
+		static int counter = 0;
 		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
 		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
@@ -229,6 +245,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Checkbox("Another Window", &show_another_window);
 
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+		/*------MY ADDITION------*/
+		ImGui::Combo("Transformation", &selectTransformation, transformation, IM_ARRAYSIZE(transformation));
+		ImGui::Combo("World/Object", &selectWhichOne, WhichOne, IM_ARRAYSIZE(WhichOne));
+		ImGui::SliderFloat("X", &X, 0.0f, 800.0f);      //sliders to be able to change X,Y,Z transformations   
+		ImGui::SliderFloat("Y", &Y, 0.0f, 600.0f);           
+		ImGui::SliderFloat("Z", &Z, 0, 360);
+
+		/*------MY ADDITION------*/
 		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
