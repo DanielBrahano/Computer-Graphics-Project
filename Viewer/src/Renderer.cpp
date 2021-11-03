@@ -4,6 +4,9 @@
 
 #include "Renderer.h"
 #include "InitShader.h"
+#include "Scene.h"
+#include "Utils.h"
+#include <iostream>
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
@@ -25,7 +28,7 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color)
 {
 	if (i < 0) return; if (i >= viewport_width) return;
 	if (j < 0) return; if (j >= viewport_height) return;
-	
+
 	color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
 	color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
 	color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
@@ -163,7 +166,7 @@ void Renderer::InitOpenglRendering()
 	//	     | \ | <--- The exture is drawn over two triangles that stretch over the screen.
 	//	     |__\|
 	// (-1,-1)    (1,-1)
-	const GLfloat vtc[]={
+	const GLfloat vtc[] = {
 		-1, -1,
 		 1, -1,
 		-1,  1,
@@ -172,19 +175,19 @@ void Renderer::InitOpenglRendering()
 		 1,  1
 	};
 
-	const GLfloat tex[]={
+	const GLfloat tex[] = {
 		0,0,
 		1,0,
 		0,1,
 		0,1,
 		1,0,
-		1,1};
+		1,1 };
 
 	// Makes this buffer the current one.
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
 	// This is the opengl way for doing malloc on the gpu. 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vtc)+sizeof(tex), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vtc) + sizeof(tex), NULL, GL_STATIC_DRAW);
 
 	// memcopy vtc to buffer[0,sizeof(vtc)-1]
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vtc), vtc);
@@ -193,25 +196,25 @@ void Renderer::InitOpenglRendering()
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(vtc), sizeof(tex), tex);
 
 	// Loads and compiles a sheder.
-	GLuint program = InitShader( "vshader.glsl", "fshader.glsl" );
+	GLuint program = InitShader("vshader.glsl", "fshader.glsl");
 
 	// Make this program the current one.
 	glUseProgram(program);
 
 	// Tells the shader where to look for the vertex position data, and the data dimensions.
-	GLint  vPosition = glGetAttribLocation( program, "vPosition" );
-	glEnableVertexAttribArray( vPosition );
-	glVertexAttribPointer( vPosition,2,GL_FLOAT,GL_FALSE,0,0 );
+	GLint  vPosition = glGetAttribLocation(program, "vPosition");
+	glEnableVertexAttribArray(vPosition);
+	glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	// Same for texture coordinates data.
-	GLint  vTexCoord = glGetAttribLocation( program, "vTexCoord" );
-	glEnableVertexAttribArray( vTexCoord );
-	glVertexAttribPointer( vTexCoord,2,GL_FLOAT,GL_FALSE,0,(GLvoid *)sizeof(vtc) );
+	GLint  vTexCoord = glGetAttribLocation(program, "vTexCoord");
+	glEnableVertexAttribArray(vTexCoord);
+	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vtc));
 
 	//glProgramUniform1i( program, glGetUniformLocation(program, "texture"), 0 );
 
 	// Tells the shader to use GL_TEXTURE0 as the texture id.
-	glUniform1i(glGetUniformLocation(program, "texture"),0);
+	glUniform1i(glGetUniformLocation(program, "texture"), 0);
 }
 
 void Renderer::CreateOpenglBuffer()
@@ -259,79 +262,45 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 	}
 }
 
-void Renderer::Render(const Scene& scene)
+void Renderer::Render(Scene& scene)
 {
 	// TODO: Replace this code with real scene rendering code
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 	// draw circle
 
-
-	glm::vec3 black{ 0,0,0 };
-	glm::vec2 center{ 320 + half_width,half_height }; // this point is going to be the center of the drawing
-
-	int a = 100;
-	float radius = 200; // choosing radius and constant
-	
-
-	//in a loop drwing the line given the formula 
-	for (int i = 0; i < a; i++)
+	scene.AddModel(Utils::LoadMeshModel("C:/Compute-Graphics/Data/bunny.obj"));
+	scene.GetModel(0).printObj();
+	int faceCounts = scene.GetModel(0).GetFacesCount();
+	int maxVertex = 0, maxNormal = 0;
+	scene.GetModel(0).ScaleTranslateBunny();
+	for (int i = 0; i < faceCounts; i++)
 	{
-		glm::vec2 point{ 320 + half_width + radius * sin(2 * PI * i / a),half_height + radius * cos(2 * PI * i / a) };
-		DrawLine(center, point, black);
-	}
-	/************I am going to draw the logo of our Uiniversity*****************************/
-	 
+	
+		glm::vec3 black{ 0,0,0 };
 
-	// we can tell which loop is on the screen according to the color we send to Drawline
-	for (int i = 0; i < 80; i++) {
-		glm::vec2 start{ 100 ,100 + i };
-		glm::vec2 finish{ 300 ,200 + i };
-		glm::vec3 light_blue{ 0,1,1 };
-		if (i % 2 == 0)
-			DrawLine(start, finish, light_blue);
-	}
+		//find indexes of each face
+		int index1 = scene.GetModel(0).GetFace(i).GetVertexIndex(0)-1;
+		int index2 = scene.GetModel(0).GetFace(i).GetVertexIndex(1)-1;
+		int index3 = scene.GetModel(0).GetFace(i).GetVertexIndex(2)-1;
 
-	for (int i = 0; i < 80; i++) {
-		glm::vec2 start{ 300 ,200 + i };
-		glm::vec2 finish{ 500 ,100 + i };
-		glm::vec3 green{ 0,1,0 };
-		if (i % 2 == 0)
+		//find actual vertices
+		glm::vec4 p1{scene.GetModel(0).GetVertex(index1,0),scene.GetModel(0).GetVertex(index1,1),scene.GetModel(0).GetVertex(index1,1), 1.0f };
+		glm::vec4 p2{scene.GetModel(0).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(0).GetVertex(index1,1), 1.0f };
+		glm::vec4 p3{scene.GetModel(0).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(0).GetVertex(index1,1), 1.0f };
 
-			DrawLine(start, finish, green);
-	}
+		//2 dim for drawing triangles
+		glm::vec2 q1 = scene.GetModel(0).worldTransform* p1;
+		glm::vec2 q2 = scene.GetModel(0).worldTransform* p2;
+		glm::vec2 q3 = scene.GetModel(0).worldTransform* p3;
 
-	for (int i = 0; i < 80; i++) {
-		glm::vec2 start{ 300 ,100 + i };
-		glm::vec2 finish{ 500 ,200 + i };
-		glm::vec3 red{ 1,0,0 };
-		if (i % 2 == 1)
-			DrawLine(start, finish, red);
+		//draw triangles
+		DrawLine(q1, q2, black);
+		DrawLine(q1, q3, black);
+		DrawLine(q2, q3, black);
+		
 	}
 
-	for (int i = 0; i < 80; i++) {
-		glm::vec2 start{ 500 ,200 + i };
-		glm::vec2 finish{ 700 ,100 + i };
-		glm::vec3 red{ 1,0,0 };
-		if (i % 2 == 1)
-			DrawLine(start, finish, red);
-	}
-
-	for (int i = 0; i < 80; i++) {
-		glm::vec2 start{ 600 ,150 + i };
-		glm::vec2 finish{ 700 ,200 + i };
-		glm::vec3 yellow{ 1,1,0 };
-		if (i % 2 == 0)
-			DrawLine(start, finish, yellow);
-	}
-
-	for (int i = 0; i < 40; i++) {
-		glm::vec2 start{ 600 - 2 * i ,150 + i };
-		glm::vec2 finish{ 680 - 2 * i ,190 + i };
-		glm::vec3 yellow{ 1,1,0 };
-		//	if (i % 2 == 0)
-		DrawLine(start, finish, yellow);
-	}
 }
 
 int Renderer::GetViewportWidth() const

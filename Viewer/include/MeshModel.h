@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include "Face.h"
+#include <glm/gtc/matrix_transform.hpp>//include for mat operations
 
 class MeshModel
 {
@@ -16,9 +17,17 @@ public:
 	float GetVertex(int index, int coordinate);
 	//get the value of #normal
 	float GetNormal(int index, int coordinate);
+	void printObj();
 	//print for sanity check
-	void print();
+	void ScaleTranslateBunny();
+	//functions so translate, scale androtate
+	void MeshModel::TranslateModel(float x, float y, float z);
+	void MeshModel::ScaleModel(float x, float y, float z);
+	void MeshModel::RotateModel(float x, float y, float z);
 
+	//each model contains its own transformations
+	glm::mat4 objectTransform;
+	glm::mat4 worldTransform;
 
 
 private:
@@ -26,4 +35,6 @@ private:
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 	std::string model_name;
+
+
 };
