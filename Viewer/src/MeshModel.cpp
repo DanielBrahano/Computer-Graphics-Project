@@ -96,22 +96,43 @@ void MeshModel::printObj()
 void MeshModel::ScaleTranslateBunny()
 {
 	worldTransform = glm::mat4(1.0f);
-	//worldTransform = glm::translate(worldTransform, { 500.0f,500.0f,500.0f });
-	//worldTransform = glm::scale(worldTransform, {250.0f,250.0f,250.0f});
+	//objectTransform = glm::mat4(1.0f);
 
-	TranslateModel(600, 400, 300);
-	ScaleModel(250, 250,250 );
+
+	WorldTranslateModel(600, 400, 300);
+	WorldScaleModel(250, 250,250 );
+	ObjectRotateModelZ(9, glm::vec3(1.0f, 1.0f, 1.0f));
 
 
 }
-void MeshModel::TranslateModel(float x, float y, float z)
+void MeshModel::WorldTranslateModel(float x, float y, float z)
 {
 	worldTransform = glm::translate(worldTransform, { x,y,z });
 }
-void MeshModel::ScaleModel(float x, float y, float z)
+void MeshModel::WorldScaleModel(float x, float y, float z)
 {
 	worldTransform = glm::scale(worldTransform, { x,y,z });
 	
+}
+
+void MeshModel::WorldRotateModelZ(float angle,  glm::vec3 axis)
+{
+	worldTransform = glm::rotate(worldTransform, glm::radians(angle), axis);
+}
+
+void MeshModel::ObjectTranslateModel(float x, float y, float z)
+{
+	objectTransform = glm::translate(objectTransform, { x,y,z });
+}
+void MeshModel::ObjectScaleModel(float x, float y, float z)
+{
+	objectTransform = glm::scale(objectTransform, { x,y,z });
+
+}
+
+void MeshModel::ObjectRotateModelZ(float angle, glm::vec3 axis)
+{
+	objectTransform = glm::rotate(objectTransform, glm::radians(angle), axis);
 }
 
 

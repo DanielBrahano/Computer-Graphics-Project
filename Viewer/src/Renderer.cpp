@@ -270,7 +270,7 @@ void Renderer::Render(Scene& scene)
 	// draw circle
 
 	scene.AddModel(Utils::LoadMeshModel("C:/Compute-Graphics/Data/bunny.obj"));
-	scene.GetModel(0).printObj();
+	//scene.GetModel(0).printObj();
 	int faceCounts = scene.GetModel(0).GetFacesCount();
 	int maxVertex = 0, maxNormal = 0;
 	scene.GetModel(0).ScaleTranslateBunny();
@@ -279,26 +279,23 @@ void Renderer::Render(Scene& scene)
 	
 		glm::vec3 black{ 0,0,0 };
 
-		//find indexes of each face
+		//find index of each face
 		int index1 = scene.GetModel(0).GetFace(i).GetVertexIndex(0)-1;
 		int index2 = scene.GetModel(0).GetFace(i).GetVertexIndex(1)-1;
 		int index3 = scene.GetModel(0).GetFace(i).GetVertexIndex(2)-1;
 
 		//find actual vertices
-		glm::vec4 p1{scene.GetModel(0).GetVertex(index1,0),scene.GetModel(0).GetVertex(index1,1),scene.GetModel(0).GetVertex(index1,1), 1.0f };
-		glm::vec4 p2{scene.GetModel(0).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(0).GetVertex(index1,1), 1.0f };
-		glm::vec4 p3{scene.GetModel(0).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(0).GetVertex(index1,1), 1.0f };
+		glm::vec4 p1{scene.GetModel(0).GetVertex(index1,0),scene.GetModel(0).GetVertex(index1,1),scene.GetModel(0).GetVertex(index1,2), 1.0f };
+		glm::vec4 p2{scene.GetModel(0).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(0).GetVertex(index2,2), 1.0f };
+		glm::vec4 p3{scene.GetModel(0).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(0).GetVertex(index3,2), 1.0f };
 
-		//2 dim for drawing triangles
-		glm::vec2 q1 = scene.GetModel(0).worldTransform* p1;
-		glm::vec2 q2 = scene.GetModel(0).worldTransform* p2;
-		glm::vec2 q3 = scene.GetModel(0).worldTransform* p3;
+		//perform transformation on vertices
+		 p1 = scene.GetModel(0).GetTransform()* p1;
+		 p2 = scene.GetModel(0).GetTransform()* p2;
+		 p3 = scene.GetModel(0).GetTransform()* p3;
 
-		//draw triangles
-		DrawLine(q1, q2, black);
-		DrawLine(q1, q3, black);
-		DrawLine(q2, q3, black);
-		
+		//draw triangle
+		DrawTriangle(p1, p2, p3, black);
 	}
 
 }
@@ -311,4 +308,17 @@ int Renderer::GetViewportWidth() const
 int Renderer::GetViewportHeight() const
 {
 	return viewport_height;
+}
+
+void Renderer::DrawTriangle(glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, glm::vec3 color)
+{
+	//2 dim for drawing triangles
+	glm::vec2 q1 = p1;
+	glm::vec2 q2 = p2;
+	glm::vec2 q3 = p3;
+
+	//draw triangles
+	DrawLine(q1, q2, color);
+	DrawLine(q1, q3, color);
+	DrawLine(q2, q3, color);
 }

@@ -27,4 +27,7 @@ private:
 	int viewport_height;
 	GLuint gl_screen_tex;
 	GLuint gl_screen_vtc;
+
+	//drawing triangles
+	void Renderer::DrawTriangle(glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, glm::vec3 color);
 };

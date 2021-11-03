@@ -20,10 +20,17 @@ public:
 	void printObj();
 	//print for sanity check
 	void ScaleTranslateBunny();
-	//functions so translate, scale androtate
-	void MeshModel::TranslateModel(float x, float y, float z);
-	void MeshModel::ScaleModel(float x, float y, float z);
-	void MeshModel::RotateModel(float x, float y, float z);
+	//functions to translate, scale and rotate world
+	void MeshModel::WorldTranslateModel(float x, float y, float z);
+	void MeshModel::WorldScaleModel(float x, float y, float z);
+	void MeshModel::WorldRotateModelZ(float angle, glm::vec3 axis);
+	//functions to translate, scale and rotate model
+	void MeshModel::ObjectTranslateModel(float x, float y, float z);
+	void MeshModel::ObjectScaleModel(float x, float y, float z);
+	void MeshModel::ObjectRotateModelZ(float angle, glm::vec3 axis);
+	glm::mat4x4 GetTransform() {
+		return worldTransform * objectTransform;
+	}
 
 	//each model contains its own transformations
 	glm::mat4 objectTransform;
