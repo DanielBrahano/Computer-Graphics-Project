@@ -267,13 +267,11 @@ void Renderer::Render(Scene& scene)
 	// TODO: Replace this code with real scene rendering code
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
-	// draw circle
 
-	scene.AddModel(Utils::LoadMeshModel("C:/Compute-Graphics/Data/bunny.obj"));
-	//scene.GetModel(0).printObj();
+	//get the number of faces in model
 	int faceCounts = scene.GetModel(0).GetFacesCount();
-	int maxVertex = 0, maxNormal = 0;
-	scene.GetModel(0).ScaleTranslateBunny();
+
+	//run on all faces and print triangles
 	for (int i = 0; i < faceCounts; i++)
 	{
 	
@@ -284,7 +282,7 @@ void Renderer::Render(Scene& scene)
 		int index2 = scene.GetModel(0).GetFace(i).GetVertexIndex(1)-1;
 		int index3 = scene.GetModel(0).GetFace(i).GetVertexIndex(2)-1;
 
-		//find actual vertices
+		//find actual vertices in homogeneous
 		glm::vec4 p1{scene.GetModel(0).GetVertex(index1,0),scene.GetModel(0).GetVertex(index1,1),scene.GetModel(0).GetVertex(index1,2), 1.0f };
 		glm::vec4 p2{scene.GetModel(0).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(0).GetVertex(index2,2), 1.0f };
 		glm::vec4 p3{scene.GetModel(0).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(0).GetVertex(index3,2), 1.0f };

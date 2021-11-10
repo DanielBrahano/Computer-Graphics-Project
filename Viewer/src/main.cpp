@@ -12,9 +12,7 @@
 #include "Renderer.h"
 #include "Scene.h"
 #include "Utils.h"
-/*-------my implementation-------*/
 #include <iostream>
-/*--------my implementation------*/
 
 /**
  * Fields
@@ -56,6 +54,10 @@ int main(int argc, char **argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
+	//loading bunny
+	scene.AddModel(Utils::LoadMeshModel("C:/Compute-Graphics/Data/bunny.obj"));
+	//position it in the middle of the screen
+	scene.GetModel(0).ScaleTranslateBunny();
 
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
@@ -132,11 +134,51 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	if (!io.WantCaptureKeyboard)
 	{
 		// TODO: Handle keyboard events here
-		if (io.KeysDown[65])
+		if (io.KeysDown['A']) //A key is down - move right
 		{
-			// A key is down
-			// Use the ASCII table for more key codes (https://www.asciitable.com/)
+			scene.GetModel(0).ObjectTranslateModel(-0.05, 0, 0);
 		}
+		else if (io.KeysDown['D'])// D key is down - move left
+		{
+			scene.GetModel(0).ObjectTranslateModel(0.05, 0, 0);
+		}
+		else if (io.KeysDown['W'])// W key is down - move up
+		{
+			scene.GetModel(0).ObjectTranslateModel(0, 0.05, 0);
+		}
+		else if (io.KeysDown['S'])// s key is down - move down
+		{
+			scene.GetModel(0).ObjectTranslateModel(0, -0.05, 0);
+		}
+
+		//rotation transforamtion
+		else if (io.KeysDown['J']) //J key is down - rotate around X 
+		{
+			scene.GetModel(0).ObjectRotateModel(5, glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (io.KeysDown['L']) //L key is down - rotate around X 
+		{
+			scene.GetModel(0).ObjectRotateModel(-5, glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (io.KeysDown['I']) //I key is down - rotate around Y 
+		{
+			scene.GetModel(0).ObjectRotateModel(5, glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+		else if (io.KeysDown['K']) //K key is down - rotate around Y 
+		{
+			scene.GetModel(0).ObjectRotateModel(-5, glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+
+		//scale transformation
+		else if (io.KeysDown['T']) //T key is down - make it bigger
+		{
+			scene.GetModel(0).ObjectScaleModel(1.1,1.1,1.1);
+		}
+		else if (io.KeysDown['Y']) //Y key is down - make it smaller 
+		{
+			scene.GetModel(0).ObjectScaleModel(0.9, 0.9, 0.9);
+		}
+
 	}
 
 	if (!io.WantCaptureMouse)
@@ -219,40 +261,110 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
-		static float f = 0.0f;
-		/*------MY ADDITION------*/
-		static float X = 0.0f;// variable that will hold sliders
-		static float Y = 0.0f;
-		static float Z = 0;
-		//variables for drop down manu
-		static int selectTransformation = 0;
-		static int selectWhichOne = 0; // object or world?
-		
-		//array of transformation options
-		static const char* transformation[]{ "Scale","Translate","Rotate" };
+		//static float f = 0.0f;
 
-		//array of world/object to perform transformation
-		static const char* WhichOne[]{ "World","Object" };
 		//before we open the imgui window, let's resize it
-		ImGui::SetNextWindowSize(ImVec2(400, 300));
-		/*------MY ADDITION------*/
+		ImGui::SetNextWindowSize(ImVec2(390, 280));
+	
 
 		static int counter = 0;
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+		ImGui::Begin("Hello, Assignment1b!");                          // Create a window called "Hello, world!" and append into it.
 
 		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 		ImGui::Checkbox("Another Window", &show_another_window);
 
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		/*------MY ADDITION------*/
-		ImGui::Combo("Transformation", &selectTransformation, transformation, IM_ARRAYSIZE(transformation));
-		ImGui::Combo("World/Object", &selectWhichOne, WhichOne, IM_ARRAYSIZE(WhichOne));
-		ImGui::SliderFloat("X", &X, 0.0f, 800.0f);      //sliders to be able to change X,Y,Z transformations   
-		ImGui::SliderFloat("Y", &Y, 0.0f, 600.0f);           
-		ImGui::SliderFloat("Z", &Z, 0, 360);
+		//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+		/*---------------------------------------------MY ADDITION---=======================================---*/
+		/*---------------------------------------------MY ADDITION---=======================================---*/
 
-		/*------MY ADDITION------*/
+		//vectors and varibale for transformations we start with 0
+		glm::vec3 translation(0.0f, 0.0f, 0.0f);
+		glm::vec3 rotation(0.0f, 0.0f, 0.0f);
+		float scale = 1.0f;
+
+		//(object) vectors and variables to calculate delta (difference in transformations)
+		glm::vec3 object_previous_translation(0.0f, 0.0f, 0.0f);
+		glm::vec3 object_previous_rotation(0.0f, 0.0f, 0.0f);
+		float object_previous_scale = 1.0f;
+		//(world) vectors and variables to calculate delta (difference in transformations)
+		glm::vec3 world_previous_translation(0.0f, 0.0f, 0.0f);
+		glm::vec3 world_previous_rotation(0.0f, 0.0f, 0.0f);
+		float world_previous_scale = 1.0f;
+
+		//variable for drop down manu
+		static int selectWhichOne = 0; // object or world?
+
+		//array of world/object to perform transformation
+		static const char* WhichOne[]{ "World","Object" };
+
+		//choose which transformations we are going to do
+		ImGui::Combo("World/Object", &selectWhichOne, WhichOne, IM_ARRAYSIZE(WhichOne));
+
+		
+		ImGui::Text("      X           Y           Z  ");
+
+		//make sliders for the transformations
+		ImGui::SliderFloat3("translation", &translation.x, -0.5f, 0.5f);
+		ImGui::SliderFloat3("rotation", &rotation.x, -10.0f, 10.0f);
+		ImGui::SliderFloat("scale", &scale,0.5f, 1.5f);
+
+		/*I am handling transformations by saving each in a vector and comparing to the last on and apply transformation only if something has changed*/
+	
+		//switch on which transformations we are about to do. 1 for OBJECT 0 for WORLD
+		switch (selectWhichOne) {
+		case 1:
+			//handle translation and scale
+			if ((object_previous_scale != scale) || (object_previous_translation != translation) || (object_previous_rotation != rotation)) {
+				scene.GetModel(0).ObjectTranslateModel(translation.x - object_previous_translation.x, translation.y - object_previous_translation.y, translation.z - object_previous_translation.z);
+				scene.GetModel(0).ObjectScaleModel(scale * object_previous_scale, scale * object_previous_scale, scale * object_previous_scale );
+			}
+
+			//handle rotations in all directions
+			if (rotation.x != object_previous_rotation.x) {
+				scene.GetModel(0).ObjectRotateModel(rotation.x - object_previous_rotation.x, { 1.0f,0.0f,0.0f });
+			}
+			if (rotation.y != object_previous_rotation.y) {
+				scene.GetModel(0).ObjectRotateModel(rotation.y - object_previous_rotation.y, { 0.0f,1.0f,0.0f });
+			}
+			if (rotation.z != object_previous_rotation.z) {
+				scene.GetModel(0).ObjectRotateModel(rotation.z - object_previous_rotation.z, { 0.0f,0.0f,1.0f });
+			}
+
+			//save the last changes
+			object_previous_scale = scale;
+			object_previous_translation = translation;
+			object_previous_rotation = rotation;
+			break;
+
+		case 0:
+			//handle translation and scale
+			if ((world_previous_scale != scale) || (world_previous_translation != translation) || (world_previous_rotation != rotation)) {
+				scene.GetModel(0).WorldTranslateModel(5*translation.x - 5*world_previous_translation.x, 5*translation.y - 5*world_previous_translation.y, 5*translation.z -5* world_previous_translation.z);
+				scene.GetModel(0).WorldScaleModel(scale * world_previous_scale, scale * world_previous_scale, scale * world_previous_scale );
+			}
+
+			//handle rotations in all directions
+			if (rotation.x != world_previous_rotation.x) {
+				scene.GetModel(0).WorldRotateModel(rotation.x - world_previous_rotation.x, { 1.0f,0.0f,0.0f });
+			}
+			if (rotation.y != world_previous_rotation.y) {
+				scene.GetModel(0).WorldRotateModel(rotation.y - world_previous_rotation.y, { 0.0f,1.0f,0.0f });
+			}
+			if (rotation.z != world_previous_rotation.z) {
+				scene.GetModel(0).WorldRotateModel(rotation.z - world_previous_rotation.z, { 0.0f,0.0f,1.0f });
+			}
+
+			//save the last changes
+			world_previous_scale = scale;
+			world_previous_translation = translation;
+			world_previous_rotation = rotation;
+
+			break;
+	
+		}
+		/*---------------------------------------------MY ADDITION---=======================================---*/
+		/*---------------------------------------------MY ADDITION---=======================================---*/
 		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)

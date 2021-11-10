@@ -6,8 +6,15 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	vertices(vertices),
 	normals(normals)
 {
+	//initialize all matrices to identity
  objectTransform = glm::mat4(1.0f);
  worldTransform = glm::mat4(1.0f);
+ objectTranslate = glm::mat4(1.0f);
+ objectRotate = glm::mat4(1.0f);
+ objectScale = glm::mat4(1.0f);
+ worldTranslate = glm::mat4(1.0f);
+ worldRotate = glm::mat4(1.0f);
+ worldScale = glm::mat4(1.0f);
 }
 
 MeshModel::~MeshModel()
@@ -96,43 +103,49 @@ void MeshModel::printObj()
 void MeshModel::ScaleTranslateBunny()
 {
 	worldTransform = glm::mat4(1.0f);
-	//objectTransform = glm::mat4(1.0f);
-
+	objectTransform = glm::mat4(1.0f);
 
 	WorldTranslateModel(600, 400, 300);
-	WorldScaleModel(400, 400,400 );
-	//ObjectRotateModelZ(9, glm::vec3(1.0f, 1.0f, 1.0f));
-
-
+	WorldScaleModel(200, 200,200 );
+	
 }
 void MeshModel::WorldTranslateModel(float x, float y, float z)
 {
-	worldTransform = glm::translate(worldTransform, { x,y,z });
+	worldTranslate = glm::translate(worldTranslate, { x,y,z });
+	//update world transform matrix
+	worldTransform = worldTranslate * worldRotate * worldScale;
+
 }
 void MeshModel::WorldScaleModel(float x, float y, float z)
 {
-	worldTransform = glm::scale(worldTransform, { x,y,z });
-	
+	worldScale = glm::scale(worldScale, { x,y,z });
+	//update world transform matrix
+	worldTransform = worldTranslate * worldRotate * worldScale;
 }
-
-void MeshModel::WorldRotateModelZ(float angle,  glm::vec3 axis)
+void MeshModel::WorldRotateModel(float angle,  glm::vec3 axis)
 {
-	worldTransform = glm::rotate(worldTransform, glm::radians(angle), axis);
+	worldRotate = glm::rotate(worldRotate, glm::radians(angle), axis);
+	//update world transform matrix
+	worldTransform = worldTranslate * worldRotate * worldScale;
 }
-
 void MeshModel::ObjectTranslateModel(float x, float y, float z)
 {
-	objectTransform = glm::translate(objectTransform, { x,y,z });
+	objectTranslate = glm::translate(objectTranslate, { x,y,z });
+	//update object transform matrix
+	objectTransform = objectTranslate * objectRotate * objectScale;
 }
 void MeshModel::ObjectScaleModel(float x, float y, float z)
 {
-	objectTransform = glm::scale(objectTransform, { x,y,z });
-
+	objectScale = glm::scale(objectScale, { x,y,z });
+	//update object transform matrix
+	objectTransform = objectTranslate * objectRotate * objectScale;
 }
-
-void MeshModel::ObjectRotateModelZ(float angle, glm::vec3 axis)
+void MeshModel::ObjectRotateModel(float angle, glm::vec3 axis)
 {
-	objectTransform = glm::rotate(objectTransform, glm::radians(angle), axis);
+	objectRotate = glm::rotate(objectRotate, glm::radians(angle), axis);
+	//update objec ttransform matrix
+	objectTransform = objectTranslate * objectRotate * objectScale;
 }
+
 
 
