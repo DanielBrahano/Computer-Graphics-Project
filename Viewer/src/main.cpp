@@ -55,9 +55,9 @@ int main(int argc, char **argv)
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 	//loading bunny
-	scene.AddModel(Utils::LoadMeshModel("C:/Compute-Graphics/Data/bunny.obj"));
+	//scene.AddModel(Utils::LoadMeshModel("C:/Compute-Graphics/Data/bunny.obj"));
 	//position it in the middle of the screen
-	scene.GetModel(0).ScaleTranslateBunny();
+	//scene.GetModel(0).ScaleTranslateBunny();
 
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);

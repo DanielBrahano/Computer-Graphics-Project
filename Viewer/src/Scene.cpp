@@ -5,6 +5,7 @@
 Scene::Scene() :
 	active_camera_index(0),
 	active_model_index(0)
+	
 {
 
 }

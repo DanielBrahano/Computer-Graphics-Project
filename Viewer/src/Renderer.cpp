@@ -268,33 +268,39 @@ void Renderer::Render(Scene& scene)
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 
-	//get the number of faces in model
-	int faceCounts = scene.GetModel(0).GetFacesCount();
-
-	//run on all faces and print triangles
-	for (int i = 0; i < faceCounts; i++)
-	{
 	
-		glm::vec3 black{ 0,0,0 };
+	//for every model in the scene do the following
+	for (int j = 0; j < scene.GetModelCount(); j++) {
 
-		//find index of each face
-		int index1 = scene.GetModel(0).GetFace(i).GetVertexIndex(0)-1;
-		int index2 = scene.GetModel(0).GetFace(i).GetVertexIndex(1)-1;
-		int index3 = scene.GetModel(0).GetFace(i).GetVertexIndex(2)-1;
+		//get the number of faces in model
+		int faceCounts = scene.GetModel(j).GetFacesCount();
 
-		//find actual vertices in homogeneous
-		glm::vec4 p1{scene.GetModel(0).GetVertex(index1,0),scene.GetModel(0).GetVertex(index1,1),scene.GetModel(0).GetVertex(index1,2), 1.0f };
-		glm::vec4 p2{scene.GetModel(0).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(0).GetVertex(index2,2), 1.0f };
-		glm::vec4 p3{scene.GetModel(0).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(0).GetVertex(index3,2), 1.0f };
+		//run on all faces and print triangles
+		for (int i = 0; i < faceCounts; i++)
+		{
 
-		//perform transformation on vertices
-		 p1 = scene.GetModel(0).GetTransform()* p1;
-		 p2 = scene.GetModel(0).GetTransform()* p2;
-		 p3 = scene.GetModel(0).GetTransform()* p3;
+			glm::vec3 black{ 0,0,0 };
 
-		//draw triangle
-		DrawTriangle(p1, p2, p3, black);
+			//find index of each face
+			int index1 = scene.GetModel(j).GetFace(i).GetVertexIndex(0) - 1;
+			int index2 = scene.GetModel(j).GetFace(i).GetVertexIndex(1) - 1;
+			int index3 = scene.GetModel(j).GetFace(i).GetVertexIndex(2) - 1;
+
+			//find actual vertices in homogeneous
+			glm::vec4 p1{ scene.GetModel(j).GetVertex(index1,0),scene.GetModel(0).GetVertex(index1,1),scene.GetModel(j).GetVertex(index1,2), 1.0f };
+			glm::vec4 p2{ scene.GetModel(j).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(j).GetVertex(index2,2), 1.0f };
+			glm::vec4 p3{ scene.GetModel(j).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(j).GetVertex(index3,2), 1.0f };
+
+			//perform transformation on vertices
+			p1 = scene.GetModel(j).GetTransform() * p1;
+			p2 = scene.GetModel(j).GetTransform() * p2;
+			p3 = scene.GetModel(j).GetTransform() * p3;
+
+			//draw triangle
+			DrawTriangle(p1, p2, p3, black);
+		}
 	}
+	
 
 }
 
