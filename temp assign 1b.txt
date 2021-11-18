@@ -1,5 +1,8 @@
 # ASSIGNMENT #1B
 
+#### Mesh is loaded through File button and then choose the path to the model.
+
+
 ## Task 1:
 For loading a mesh, i chose the bunny. in order to output its vertices and faces i added a function called printObj that is responsible for that. the function run through all the faces in the model with the order given in Face class and for each face print its vertices (i got access to the vertices with a function i wrote). same proccess for normal vertices and as for faces I used the format given in the obj file.
 
@@ -2217,68 +2220,59 @@ I was able to display the bunny. First I translated x by 600, y by 400 then scal
 
 ![report](https://user-images.githubusercontent.com/92395711/140051544-7071ea12-bbba-45ef-9c72-55c6b76c7cad.png)
 
+## Task 4
+The new interface:
+
+![imgui interface](https://user-images.githubusercontent.com/92395711/141179017-2b1611e6-f9b1-439d-b722-a1283e674857.png)
+
+To control the transformations first we need to choose world/object transformations
+
+then for translation and rotation there are 3 sliders that set always to 0.000. in order to change
+
+with positive value we need to press at the right side of the slider, negative to the left.
+
+As for scaling, I did not want to make independent scaling so I allow scaling for x,y,z together only.
+
+I made functions to apply translate,scale,rotate for world and for model.
+
+Each transformation has its own matrix and everytime I want to make transformation I change the matrix,
+
+then for world transformation I apply this multiplication:
+
+worldTransform = worldTranslate * worldRotate * worldScale;
+
+the same for localTransform and at the end to get the transformation:
+
+worldTransform * objectTransform
+
+and this is the final matrix before multiplying with the vector of the mesh.
+
+## Task 5
+
+Translate model firts then rotate model to the Y world:
+
+I translate the mesh roughly to the center and scaled it a little in object transfromation, then rotate to Y world transformation, as you can see the model is moving around Y.
 
 
-# This is a Heading h1
-## This is a Heading h2 
-###### This is a Heading h6
 
-## Emphasis
+![TRANSLATION MODEL ROTATE WORLD](https://user-images.githubusercontent.com/92395711/141646216-a90d4d36-fa64-4868-9114-eb9a7ae2f694.png)
 
-*This text will be italic*  
-_This will also be italic_
 
-**This text will be bold**  
-__This will also be bold__
+Translate world firts then rotate model to the Y model:
+I translate the mesh roughly to the center and scaled it a little in world transfromation, then rotate to Y object transformation, as you can see the model cis moving around his own Y.
 
-_You **can** combine them_
+![TRANSLATION WORLD ROTATE MODEL](https://user-images.githubusercontent.com/92395711/141646338-1bf46378-c271-4285-ad86-f847c008fc8f.png)
 
-## Lists
 
-### Unordered
+## Task 6: (pairs only)
 
-* Item 1
-* Item 2
-* Item 2a
-* Item 2b
+## Task 7: 
 
-### Ordered
+in RenderFrame function I implemented Transformation through thekeyboard. 
 
-1. Item 1
-1. Item 2
-1. Item 3
-  1. Item 3a
-  1. Item 3b
+for keys **'A','S','D','W'** ,I performed up,down,left,right of object by 0.05 in each direction.
 
-## Images
+**'J','L'** for object rotation around X.
 
-![This is a alt text.](/image/sample.png "This is a sample image.")
-
-## Links
-
-You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
-
-## Blockquotes
-
-> Markdown is a lightweight markup language with plain-text-formatting syntax, created in 2004 by John Gruber with Aaron Swartz.
->
->> Markdown is often used to format readme files, for writing messages in online discussion forums, and to create rich text using a plain text editor.
-
-## Tables
-
-| Left columns  | Right columns |
-| ------------- |:-------------:|
-| left foo      | right foo     |
-| left bar      | right bar     |
-| left baz      | right baz     |
-
-## Blocks of code
-
-```
-let message = 'Hello world';
-alert(message);
-```
-
-## Inline code
-
-This web site is using `markedjs/marked`.
+**'I','K'** rotation around Y, each rotation is by an angle of 1.
+**'Y','T'** making ibject bigger by 1.1 or smaller by 0.9.

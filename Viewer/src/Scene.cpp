@@ -13,7 +13,6 @@ Scene::Scene() :
 void Scene::AddModel(const std::shared_ptr<MeshModel>& mesh_model)
 {
 	mesh_models.push_back(mesh_model);
-	//models_count++;// count the number of models in scene
 }
 
 int Scene::GetModelCount() const
