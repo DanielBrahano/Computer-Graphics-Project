@@ -31,5 +31,7 @@ private:
 	GLuint gl_screen_vtc;
 
 	//drawing triangles
-	void Renderer::DrawTriangle(glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, glm::vec3 color);
+	void DrawTriangle(glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, glm::vec3 color);
+	//drawing mesh using triangles
+	void DrawMesh(Scene scene, int j);
 };

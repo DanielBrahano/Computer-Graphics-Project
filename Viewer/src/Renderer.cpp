@@ -268,10 +268,16 @@ void Renderer::Render(Scene& scene)
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 
-	
-	//for every model in the scene do the following
+
+	//for every model in the scene do 
 	for (int j = 0; j < scene.GetModelCount(); j++) {
 
+		DrawMesh(scene, j);
+	}
+}
+
+	void Renderer::DrawMesh(Scene scene, int j)
+	{
 		//get the number of faces in model
 		int faceCounts = scene.GetModel(j).GetFacesCount();
 
@@ -290,19 +296,27 @@ void Renderer::Render(Scene& scene)
 			glm::vec4 p1{ scene.GetModel(j).GetVertex(index1,0),scene.GetModel(0).GetVertex(index1,1),scene.GetModel(j).GetVertex(index1,2), 1.0f };
 			glm::vec4 p2{ scene.GetModel(j).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(j).GetVertex(index2,2), 1.0f };
 			glm::vec4 p3{ scene.GetModel(j).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(j).GetVertex(index3,2), 1.0f };
+			
+			glm::mat4x4 proj = glm::ortho(-0.05f, 0.05f, -0.05f, 0.05f, 0.5f, -0.5f);
+			//glm::mat4x4 proj = glm::ortho(0.0f, 2.0f, -0.0f, 2.0f, 2.0f, -2.0f);
+		/*	for (int i = 0; i < 4; i++) {
+				for (j = 0; j < 4; j++) {
+					cout << proj[i][j] << " ";
+				}
+				cout << endl;
+			}*/
 
+			
 			//perform transformation on vertices
-			p1 = scene.GetModel(j).GetTransform() * p1;
-			p2 = scene.GetModel(j).GetTransform() * p2;
-			p3 = scene.GetModel(j).GetTransform() * p3;
+			p1 = proj * scene.GetModel(j).GetTransform() * p1;
+			p2 = proj * scene.GetModel(j).GetTransform() * p2;
+			p3 = proj * scene.GetModel(j).GetTransform() * p3;
 
 			//draw triangle
 			DrawTriangle(p1, p2, p3, black);
 		}
 	}
 	
-
-}
 
 int Renderer::GetViewportWidth() const
 {
