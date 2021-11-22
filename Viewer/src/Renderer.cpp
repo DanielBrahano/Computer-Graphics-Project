@@ -284,7 +284,6 @@ void Renderer::Render(Scene& scene)
 		//run on all faces and print triangles
 		for (int i = 0; i < faceCounts; i++)
 		{
-
 			glm::vec3 black{ 0,0,0 };
 
 			//find index of each face
@@ -297,21 +296,16 @@ void Renderer::Render(Scene& scene)
 			glm::vec4 p2{ scene.GetModel(j).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(j).GetVertex(index2,2), 1.0f };
 			glm::vec4 p3{ scene.GetModel(j).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(j).GetVertex(index3,2), 1.0f };
 			
-			glm::mat4x4 proj = glm::ortho(-0.05f, 0.05f, -0.05f, 0.05f, 0.5f, -0.5f);
-			//glm::mat4x4 proj = glm::ortho(0.0f, 2.0f, -0.0f, 2.0f, 2.0f, -2.0f);
-		/*	for (int i = 0; i < 4; i++) {
-				for (j = 0; j < 4; j++) {
-					cout << proj[i][j] << " ";
-				}
-				cout << endl;
-			}*/
-
-			
+			Camera camera=scene.GetActiveCamera();
+			//glm::mat4 proj = glm::ortho<float>(-0.0f, 1.0f/100, -0.0f, 1.0f/100, 0.1f, 100.0f);
+	
+			//camera.WorldTranslate(1, 1, 1);
+			//camera.WorldScale(200, 200, 200);
 			//perform transformation on vertices
-			p1 = proj * scene.GetModel(j).GetTransform() * p1;
-			p2 = proj * scene.GetModel(j).GetTransform() * p2;
-			p3 = proj * scene.GetModel(j).GetTransform() * p3;
-
+			p1 =  camera.GetCameraTransform() * scene.GetModel(j).GetTransform() * p1;
+			p2 =  camera.GetCameraTransform() * scene.GetModel(j).GetTransform() * p2;
+			p3 =  camera.GetCameraTransform() * scene.GetModel(j).GetTransform() * p3;
+			
 			//draw triangle
 			DrawTriangle(p1, p2, p3, black);
 		}

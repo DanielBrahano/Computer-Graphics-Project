@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>//include for mat operations
+#include <iostream>
 
 class Camera
 {
@@ -53,6 +54,11 @@ public:
 	//camera transformation
 	glm::mat4x4 c;
 	glm::mat4x4 c_inverse;
+
+	//lookat parameters
+	glm::vec3 eye;
+	glm::vec3 at;
+	glm::vec3 up;
 
 private:
 	glm::mat4x4 view_transformation;

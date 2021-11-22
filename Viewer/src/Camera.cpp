@@ -12,6 +12,11 @@ Camera::Camera()
 	_near = 0.0f;
 	_far = 0.0f;
 
+	eye = glm::vec3(1.0f, 1.0f, 1.0f);
+	at = glm::vec3(0.0f, 0.0f, 0.0f);
+	up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
 	//transformations
 	localTransform = glm::mat4(1.0f);
 	worldTransform = glm::mat4(1.0f);
@@ -32,8 +37,28 @@ Camera::Camera()
 	inv_worldRotate = glm::mat4(1.0f);
 	inv_worldScale = glm::mat4(1.0f);
 
-	c = glm::mat4(1.0f);
-	c_inverse = glm::mat4(1.0f);
+	
+	c_inverse = glm::lookAt(eye, at, up);
+	c = glm::inverse(c_inverse);
+
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			std::cout << c_inverse[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
+	/*
+	std::cout << "---------------------------------------------" << std::endl;
+
+	glm::mat4 proj = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, 1.0f, -1.0f);
+	c_inverse = proj * c_inverse;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			std::cout << proj[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}*/
 }
 
 Camera::~Camera()
@@ -89,6 +114,8 @@ void Camera::LocalScale(float x, float y, float z)
 	localScale = glm::scale(localScale, { x,y,z });
 	//update local transform matrix
 	localTransform = localTranslate * localRotate * localScale;
+
+	inv_localScale = glm::inverse(localScale);
 	inv_localTransform = inv_localScale * inv_localRotate * inv_localTranslate;
 }
 
@@ -107,18 +134,22 @@ void Camera::LocalRotate(float angle, glm::vec3 axis)
 	localRotate = glm::rotate(localRotate, glm::radians(angle), axis);
 	//update local transform matrix
 	localTransform = localTranslate * localRotate * localScale;
+
+	inv_localRotate = glm::inverse(localRotate);
 	inv_localTransform = inv_localScale * inv_localRotate * inv_localTranslate;
 }
 
 //get camera and inverse camera transformations
 glm::mat4x4 Camera::GetCameraTransform()
 {
-	c = worldTransform * localTransform;
+	//c = worldTransform * localTransform * c;
+	return worldTransform * localTransform * c; //glm::inverse(c);
 }
 
 glm::mat4x4 Camera::GetInverseCameraTransform()
 {
-	c_inverse = inv_localTransform * inv_worldTransform;
+	c_inverse = c_inverse * inv_localTransform * inv_worldTransform;
+	return c_inverse;
 }
 
 
