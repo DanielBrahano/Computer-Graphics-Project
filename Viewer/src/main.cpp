@@ -270,29 +270,31 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	
 
 		static int counter = 0;
-		ImGui::Begin("Hello, Assignment1b!");                          // Create a window called "Hello, world!" and append into it.
+		ImGui::Begin("Model Transformations Control");                          // Create a window called "Hello, world!" and append into it.
 
 		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 		ImGui::Checkbox("Another Window", &show_another_window);
 
 		//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+
+		                        // Create a window called "Hello, world!" and append into it.
 		/*---------------------------------------------MY ADDITION---=======================================---*/
 		/*---------------------------------------------MY ADDITION---=======================================---*/
 
 		//vectors and varibale for transformations we start with 0
-		glm::vec3 translation(0.0f, 0.0f, 0.0f);
-		glm::vec3 rotation(0.0f, 0.0f, 0.0f);
-		float scale = 1.0f;
+		static glm::vec3 translation(0.0f, 0.0f, 0.0f);
+		static glm::vec3 rotation(0.0f, 0.0f, 0.0f);
+		static float scale = 1.0f;
 
 		//(object) vectors and variables to calculate delta (difference in transformations)
-		glm::vec3 object_previous_translation(0.0f, 0.0f, 0.0f);
-		glm::vec3 object_previous_rotation(0.0f, 0.0f, 0.0f);
-		float object_previous_scale = 1.0f;
+		static glm::vec3 object_previous_translation(0.0f, 0.0f, 0.0f);
+		static glm::vec3 object_previous_rotation(0.0f, 0.0f, 0.0f);
+		static float object_previous_scale = 1.0f;
 		//(world) vectors and variables to calculate delta (difference in transformations)
-		glm::vec3 world_previous_translation(0.0f, 0.0f, 0.0f);
-		glm::vec3 world_previous_rotation(0.0f, 0.0f, 0.0f);
-		float world_previous_scale = 1.0f;
+		static glm::vec3 world_previous_translation(0.0f, 0.0f, 0.0f);
+		static glm::vec3 world_previous_rotation(0.0f, 0.0f, 0.0f);
+		static float world_previous_scale = 1.0f;
 
 		//variable for drop down manu
 		static int selectWhichOne = 0; // object or world?
@@ -308,8 +310,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 		//make sliders for the transformations
 		ImGui::SliderFloat3("translation", &translation.x, -0.5f, 0.5f);
-		ImGui::SliderFloat3("rotation", &rotation.x, -10.0f, 10.0f);
-		ImGui::SliderFloat("scale", &scale,0.5f, 1.5f);
+		ImGui::SliderFloat3("rotation", &rotation.x, -180.0f, 180.0f);
+		ImGui::SliderFloat("scale", &scale,0.05f, 15.0f);
 
 		/*I am handling transformations by saving each in a vector and comparing to the last on and apply transformation only if something has changed*/
 	
@@ -319,7 +321,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			//handle translation and scale
 			if ((object_previous_scale != scale) || (object_previous_translation != translation) || (object_previous_rotation != rotation)) {
 				scene.GetModel(0).ObjectTranslateModel(translation.x - object_previous_translation.x, translation.y - object_previous_translation.y, translation.z - object_previous_translation.z);
-				scene.GetModel(0).ObjectScaleModel(scale * object_previous_scale, scale * object_previous_scale, scale * object_previous_scale );
+				object_previous_scale = scale;
+				scene.GetModel(0).objectScale[0][0] = scene.GetModel(0).objectScale[1][1] = scene.GetModel(0).objectScale[2][2]=scale;
 			}
 
 			//handle rotations in all directions
@@ -343,7 +346,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			//handle translation and scale
 			if ((world_previous_scale != scale) || (world_previous_translation != translation) || (world_previous_rotation != rotation)) {
 				scene.GetModel(0).WorldTranslateModel(5*translation.x - 5*world_previous_translation.x, 5*translation.y - 5*world_previous_translation.y, 5*translation.z -5* world_previous_translation.z);
-				scene.GetModel(0).WorldScaleModel(scale * world_previous_scale, scale * world_previous_scale, scale * world_previous_scale );
+				world_previous_scale = scale;
+				scene.GetModel(0).worldScale[0][0] = scene.GetModel(0).worldScale[1][1] = scene.GetModel(0).worldScale[2][2]=scale;
 			}
 
 			//handle rotations in all directions
@@ -387,4 +391,28 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			show_another_window = false;
 		ImGui::End();
 	}
+
+	//before we open the imgui window, let's resize it
+	ImGui::SetNextWindowSize(ImVec2(390, 280));
+
+	ImGui::Begin("Camera/Projection  Control"); 
+	ImGui::Text("Orthographic projection - view volume control");
+
+
+	static float up = 1.0f;
+	static float down = 1.0f;
+	ImGui::SliderFloat("up", &up, 0.05f, 15.0f);
+	ImGui::SliderFloat("down", &down, 0.05f, 15.0f);
+
+	static float left = 1.0f;
+	static float right = 1.0f;
+	ImGui::SliderFloat("left", &left, 0.05f, 15.0f);
+	ImGui::SliderFloat("right", &right, 0.05f, 15.0f);
+
+	static float zNear = 1.0f;
+	static float zFar = 1.0f;
+	ImGui::SliderFloat("near", &zNear, 0.05f, 15.0f);
+	ImGui::SliderFloat("far", &zFar, 0.05f, 15.0f);
+
+	ImGui::End();
 }
