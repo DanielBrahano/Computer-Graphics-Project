@@ -9,13 +9,14 @@ Camera::Camera()
 	left = 0.0f;
 	top = 720.0f;
 	bottom = 0.0f;
-	_near = 0.0f;
-	_far = 0.0f;
+	zNear = 0.0f;
+	zFar = 0.0f;
 
 	eye = glm::vec3(1.0f, 1.0f, 1.0f);
 	at = glm::vec3(0.0f, 0.0f, 0.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+	glm::mat4x4 OrthoProjection = glm::mat4(1.0f);
 
 	
 
@@ -48,16 +49,15 @@ Camera::~Camera()
 	
 }
 
-const glm::mat4x4& Camera::GetProjectionTransformation() const
-{
-	return projection_transformation;
+void Camera::SetOrthographicProjection(float left, float right, float bottom, float top, float zNear, float zFar)
+{	
+	OrthoProjection = glm::ortho(left, right, bottom, top, zNear, zFar);
 }
 
-const glm::mat4x4& Camera::GetViewTransformation() const
+glm::mat4x4 Camera::GetOrthographicProjection()
 {
-	return view_transformation;
+	return glm::inverse(OrthoProjection);
 }
-
 
 
 
