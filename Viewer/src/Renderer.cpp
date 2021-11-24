@@ -310,16 +310,13 @@ void Renderer::Render(Scene& scene)
 			p2.y += 1;
 			p3.x += 1;
 			p3.y += 1;*/
-			p1 =  glm::inverse(proj)  * scene.GetModel(j).GetTransform() * p1;
-			p2 = glm::inverse(proj) * scene.GetModel(j).GetTransform() * p2;
-			p3 = glm::inverse(proj) * scene.GetModel(j).GetTransform() * p3;
+			p1 = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetModel(j).GetTransform() * p1;
+			p2 = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetModel(j).GetTransform() * p2;
+			p3 = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetModel(j).GetTransform() * p3;
 
 			DrawLine({ viewport_width/2,0}, { viewport_width/2 ,viewport_height }, { 1,0,0 });
 			DrawLine({ viewport_width,viewport_height /2}, { 0, viewport_height/2 }, { 1,0,0 });
 
-
-		
-			
 			//draw triangle
 			DrawTriangle(p1, p2, p3, black);
 		}

@@ -399,20 +399,24 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::Text("Orthographic projection - view volume control");
 
 
-	static float up = 1.0f;
-	static float down = 1.0f;
-	ImGui::SliderFloat("up", &up, 0.05f, 15.0f);
-	ImGui::SliderFloat("down", &down, 0.05f, 15.0f);
+	static float top = 720.0f;
+	static float bottom = 0.0f;
+	ImGui::SliderFloat("up", &top, -720.0f, 720.0f);
+	ImGui::SliderFloat("down", &bottom, -720.0f, 720.0f);
 
-	static float left = 1.0f;
-	static float right = 1.0f;
-	ImGui::SliderFloat("left", &left, 0.05f, 15.0f);
-	ImGui::SliderFloat("right", &right, 0.05f, 15.0f);
+	static float left = 0.0;
+	static float right = 1280.0f;
+	ImGui::SliderFloat("left", &left, -1280.0f, 1280.0f);
+	ImGui::SliderFloat("right", &right, -1280.0f, 1280.0f);
 
 	static float zNear = 1.0f;
-	static float zFar = 1.0f;
-	ImGui::SliderFloat("near", &zNear, 0.05f, 15.0f);
-	ImGui::SliderFloat("far", &zFar, 0.05f, 15.0f);
+	static float zFar = -1.0f;
+	ImGui::SliderFloat("near", &zNear, 0.00f, 1000.0f);
+	ImGui::SliderFloat("far", &zFar, -1000.0f, 0.0f);
+
+	scene.GetActiveCamera().SetOrthographicProjection(left, right, bottom, top, zNear, zFar);
+
+
 
 	ImGui::End();
 }
