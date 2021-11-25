@@ -304,13 +304,13 @@ void Renderer::Render(Scene& scene)
 			p3.x += 1;
 			p3.y += 1;*/
 
-			glm::vec3 eye = glm::vec3(2.0f, 2.0f, 2.0f);
+			glm::vec3 eye = glm::vec3(0.0f, 0.0f, -1.0f);
 			glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
 			glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-			glm::mat4 test = glm::lookAt(eye, at, up);
+			glm::mat4 test = glm::mat4(1.0f);//glm::lookAt(eye, at, up);
 
 			scene.GetActiveCamera().GetViewTransformation();
-	
+																			 
 			p1 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p1;
 			p2 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p2;
 			p3 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p3;
