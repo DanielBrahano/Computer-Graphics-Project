@@ -296,13 +296,6 @@ void Renderer::Render(Scene& scene)
 			glm::vec4 p2{ scene.GetModel(j).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(j).GetVertex(index2,2), 1.0f };
 			glm::vec4 p3{ scene.GetModel(j).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(j).GetVertex(index3,2), 1.0f };
 			
-			Camera camera=scene.GetActiveCamera();
-			glm::mat4 proj = glm::ortho<float>(0, viewport_width , 0, viewport_height , 1, -1);
-
-	
-			//camera.WorldTranslate(1, 1, 1);
-			//camera.WorldScale(200, 200, 200);
-			//perform transformation on vertices
 
 			/*p1.x += 1;
 			p1.y += 1;
@@ -310,10 +303,18 @@ void Renderer::Render(Scene& scene)
 			p2.y += 1;
 			p3.x += 1;
 			p3.y += 1;*/
-			p1 = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetModel(j).GetTransform() * p1;
-			p2 = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetModel(j).GetTransform() * p2;
-			p3 = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetModel(j).GetTransform() * p3;
 
+			glm::vec3 eye = glm::vec3(2.0f, 2.0f, 2.0f);
+			glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
+			glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+			glm::mat4 test = glm::lookAt(eye, at, up);
+
+			scene.GetActiveCamera().GetViewTransformation();
+	
+			p1 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p1;
+			p2 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p2;
+			p3 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p3;
+																
 			DrawLine({ viewport_width/2,0}, { viewport_width/2 ,viewport_height }, { 1,0,0 });
 			DrawLine({ viewport_width,viewport_height /2}, { 0, viewport_height/2 }, { 1,0,0 });
 

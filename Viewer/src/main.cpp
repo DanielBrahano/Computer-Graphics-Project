@@ -56,9 +56,22 @@ int main(int argc, char **argv)
 	Scene scene = Scene();
 	/*********************************************************************************************/
 	Camera camera;
+	glm::mat4 test1= glm::inverse(camera.test);
+	///*88888888888----------------------------------------------------------------*/
+	//for (int i = 0; i < 4; i++) {
+	//	for (int j = 0; j < 4; j++)
+	//	{
+	//		std::cout << test1[i][j] << " ";
+	//	}
+	//	std::cout << std::endl;
+	//}
+	//std::cout << std::endl;
+	//std::cout << std::endl;
+	//std::cout << std::endl;
+
+	///*88888888888----------------------------------------------------------------*/
 	scene.AddCamera(std::make_shared<Camera>(camera));
-	camera = scene.GetActiveCamera();
-	
+	scene.SetActiveCameraIndex(0);
 
 	/*********************************************************************************************/
 	ImGuiIO& io = SetupDearImgui(window);
