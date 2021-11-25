@@ -11,9 +11,7 @@ public:
 
 	void SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 
-	const glm::mat4x4& GetProjectionTransformation() const;
-	const glm::mat4x4& GetViewTransformation() const;
-
+	glm::mat4x4 Camera::GetViewTransformation();
 	void SetOrthographicProjection(float left, float right, float bottom, float top, float zNear, float zFar);
 	glm::mat4x4 GetOrthographicProjection();
 
@@ -23,15 +21,13 @@ public:
 	float top, bottom;
 	float zNear, zFar;
 
-	//camera transformation
-	glm::mat4x4 c;
-	glm::mat4x4 c_inverse;
-
 	//lookat parameters
 	glm::vec3 eye;
 	glm::vec3 at;
 	glm::vec3 up;
 
+	glm::mat4x4 viewTransformation;
+	glm::mat4x4 test;
 	glm::mat4x4 OrthoProjection;
 
 private:
