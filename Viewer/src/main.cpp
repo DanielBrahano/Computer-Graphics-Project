@@ -19,6 +19,13 @@ static float top = 720.0f;
 static float bottom = 0.0f;
 static float _left = 0.0;
 static float _right = 1280.0f;
+static float zNear = 1.0f;
+static float zFar = -1.0f;
+
+//control lookAt
+static glm::vec3 eye = { 0,0,1 };
+static glm::vec3 at = { 0,0,0 };
+static glm::vec3 up = { 0,1,0 };
 
 /**
  * Fields
@@ -418,26 +425,34 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	//before we open the imgui window, let's resize it
-	ImGui::SetNextWindowSize(ImVec2(390, 280));
+	ImGui::SetNextWindowSize(ImVec2(390, 390));
 
 	ImGui::Begin("Camera/Projection  Control");
 	ImGui::Text("Orthographic projection - view volume control");
 
 
 	/* UP, DOWN , TOP , BOTTOM sliders*/
-	ImGui::SliderFloat("up", &top, -720.0f, 720.0f);
 	ImGui::SliderFloat("down", &bottom, -720.0f, 720.0f);
+	ImGui::SliderFloat("up", &top, -720.0f, 720.0f);
 
 	ImGui::SliderFloat("left", &_left, -1280.0f, 1280.0f);
 	ImGui::SliderFloat("right", &_right, -1280.0f, 1280.0f);
 
-	static float zNear = 1.0f;
-	static float zFar = -1.0f;
+
 	ImGui::SliderFloat("near", &zNear, 0.00f, 1000.0f);
 	ImGui::SliderFloat("far", &zFar, -1000.0f, 0.0f);
 
 	scene.GetActiveCamera().SetOrthographicProjection(_left, _right, bottom, top, zNear, zFar);
 
+	ImGui::Text("           ");
+	ImGui::Text("           LookAt Control");
+	
+	
+	ImGui::Text("      X           Y           Z  ");
+	ImGui::InputFloat3("Eye", &eye.x);
+	ImGui::InputFloat3("At", &at.x);
+	ImGui::InputFloat3("Up", &up.x);
+	scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
 
 	ImGui::End();
 }
