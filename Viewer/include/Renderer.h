@@ -23,6 +23,7 @@ private:
 	void DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color);
 	//draw world and model ccordinates fucntions
 	void DrawWorldCoordinates(Scene scene, int j);
+	void DrawLocalCoordinates(Scene scene, int j);
 
 	void CreateBuffers(int w, int h);
 	void CreateOpenglBuffer();

@@ -131,6 +131,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 	}
 }
 
+
 void Renderer::CreateBuffers(int w, int h)
 {
 	CreateOpenglBuffer(); //Do not remove this line.
@@ -273,6 +274,8 @@ void Renderer::Render(Scene& scene)
 	for (int j = 0; j < scene.GetModelCount(); j++) {
 
 		DrawMesh(scene, j);
+		DrawWorldCoordinates(scene, j);
+		DrawLocalCoordinates(scene, j);
 	}
 }
 
@@ -297,30 +300,39 @@ void Renderer::Render(Scene& scene)
 			glm::vec4 p3{ scene.GetModel(j).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(j).GetVertex(index3,2), 1.0f };
 			
 
-			/*p1.x += 1;
-			p1.y += 1;
-			p2.x += 1;
-			p2.y += 1;
-			p3.x += 1;
-			p3.y += 1;*/
-
-			glm::vec3 eye = glm::vec3(0.0f, 0.0f, -1.0f);
+			//p1.x += 1;
+			//p1.y += 1;
+			//p2.x += 1;
+			//p2.y += 1;
+			//p3.x += 1;
+			//p3.y += 1;
+	
+			glm::vec3 eye = glm::vec3(20.0f, 20.0f, 20.0f);
 			glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
 			glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-			glm::mat4 test = glm::mat4(1.0f);//glm::lookAt(eye, at, up);
+			glm::mat4 test = glm::lookAt(eye, at, up);
+			
 
-			scene.GetActiveCamera().GetViewTransformation();
-																			 
+															 
 			p1 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p1;
 			p2 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p2;
 			p3 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p3;
+
+		
+
 																
-			DrawLine({ viewport_width/2,0}, { viewport_width/2 ,viewport_height }, { 1,0,0 });
-			DrawLine({ viewport_width,viewport_height /2}, { 0, viewport_height/2 }, { 1,0,0 });
+			//DrawLine({ viewport_width/2,0}, { viewport_width/2 ,viewport_height }, { 1,0,0 });
+			//DrawLine({ viewport_width,viewport_height /2}, { 0, viewport_height/2 }, { 1,0,0 });
 
 			//draw triangle
 			DrawTriangle(p1, p2, p3, black);
 		}
+	}
+
+	void Renderer::SetSize(int width, int height)
+	{
+		viewport_width = width;
+		viewport_height = height;
 	}
 	
 
@@ -345,4 +357,52 @@ void Renderer::DrawTriangle(glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, glm::vec3 
 	DrawLine(q1, q2, color);
 	DrawLine(q1, q3, color);
 	DrawLine(q2, q3, color);
+}
+
+void Renderer::DrawWorldCoordinates(Scene scene, int j)
+{
+	glm::vec4 world_x_axis{ 4.0f,0.0f,0.0f,1.0f };
+	glm::vec4 world_y_axis{ 0.0f,4.0f,0.0f,1.0f };
+	glm::vec4 world_z_axis{ 0.0f,0.0f,4.0f,1.0f };
+	glm::vec4 world_origin{ 0.0f,0.0f,0.0f,1.0f };
+
+	glm::vec3 eye = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::mat4 test = glm::lookAt(eye, at, up);
+	
+
+
+	world_x_axis = scene.GetActiveCamera().GetOrthographicProjection()*test *scene.GetModel(j).worldTransform*world_x_axis;
+	world_y_axis = scene.GetActiveCamera().GetOrthographicProjection()*test *scene.GetModel(j).worldTransform*world_y_axis;
+	world_z_axis = scene.GetActiveCamera().GetOrthographicProjection()*test *scene.GetModel(j).worldTransform*world_z_axis;
+	world_origin = scene.GetActiveCamera().GetOrthographicProjection()*test *scene.GetModel(j).worldTransform*world_origin;
+
+	DrawLine(world_origin, world_x_axis, { 1,0,0 });
+	DrawLine(world_origin, world_y_axis, { 1,0,0 });
+	DrawLine(world_origin, world_z_axis, { 1,0,0 });
+}
+
+void Renderer::DrawLocalCoordinates(Scene scene, int j)
+{
+	glm::vec4 local_x_axis{ 4.0f,0.0f,0.0f,1.0f };
+	glm::vec4 local_y_axis{ 0.0f,4.0f,0.0f,1.0f };
+	glm::vec4 local_z_axis{ 0.0f,0.0f,4.0f,1.0f };
+	glm::vec4 local_origin{ 0.0f,0.0f,0.0f,1.0f };
+
+	glm::vec3 eye = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::mat4 test = glm::lookAt(eye, at, up);
+
+
+
+	local_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * test * scene.GetModel(j).objectTransform * local_x_axis;
+	local_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * test * scene.GetModel(j).objectTransform * local_y_axis;
+	local_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * test * scene.GetModel(j).objectTransform * local_z_axis;
+	local_origin = scene.GetActiveCamera().GetOrthographicProjection() * test * scene.GetModel(j).objectTransform * local_origin;
+
+	DrawLine(local_origin, local_x_axis, { 0,1,0 });
+	DrawLine(local_origin, local_y_axis, { 0,1,0 });
+	DrawLine(local_origin, local_z_axis, { 0,1,0 });
 }
