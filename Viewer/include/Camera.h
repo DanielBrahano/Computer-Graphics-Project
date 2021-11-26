@@ -11,9 +11,10 @@ public:
 
 	void SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 
-	glm::mat4x4 Camera::GetViewTransformation();
+	
 	void SetOrthographicProjection(float left, float right, float bottom, float top, float zNear, float zFar);
 	glm::mat4x4 GetOrthographicProjection();
+	glm::mat4x4 GetViewTransformation();
 
 
 	//fields additions
