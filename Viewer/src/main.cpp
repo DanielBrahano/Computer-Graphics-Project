@@ -14,6 +14,12 @@
 #include "Utils.h"
 #include <iostream>
 
+//variables for window size
+static float top = 720.0f;
+static float bottom = 0.0f;
+static float _left = 0.0;
+static float _right = 1280.0f;
+
 /**
  * Fields
  */
@@ -144,6 +150,12 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	if (frameBufferWidth != renderer.GetViewportWidth() || frameBufferHeight != renderer.GetViewportHeight())
 	{
 		// TODO: Set new aspect ratio
+		if (scene.GetCameraCount() != 0) {
+			renderer.SetSize(frameBufferWidth, frameBufferHeight);
+			scene.GetActiveCamera().SetOrthographicProjection(0, frameBufferWidth, 0, frameBufferHeight, 1, -1);
+			top = frameBufferHeight;
+			_right = frameBufferWidth;
+		}
 	}
 
 	if (!io.WantCaptureKeyboard)
@@ -412,23 +424,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::Text("Orthographic projection - view volume control");
 
 
-	static float top = 720.0f;
-	static float bottom = 0.0f;
+	/* UP, DOWN , TOP , BOTTOM sliders*/
 	ImGui::SliderFloat("up", &top, -720.0f, 720.0f);
 	ImGui::SliderFloat("down", &bottom, -720.0f, 720.0f);
 
-	static float left = 0.0;
-	static float right = 1280.0f;
-	ImGui::SliderFloat("left", &left, -1280.0f, 1280.0f);
-	ImGui::SliderFloat("right", &right, -1280.0f, 1280.0f);
+	ImGui::SliderFloat("left", &_left, -1280.0f, 1280.0f);
+	ImGui::SliderFloat("right", &_right, -1280.0f, 1280.0f);
 
 	static float zNear = 1.0f;
 	static float zFar = -1.0f;
 	ImGui::SliderFloat("near", &zNear, 0.00f, 1000.0f);
 	ImGui::SliderFloat("far", &zFar, -1000.0f, 0.0f);
 
-	scene.GetActiveCamera().SetOrthographicProjection(left, right, bottom, top, zNear, zFar);
-
+	scene.GetActiveCamera().SetOrthographicProjection(_left, _right, bottom, top, zNear, zFar);
 
 
 	ImGui::End();
