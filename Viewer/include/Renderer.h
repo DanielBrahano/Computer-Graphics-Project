@@ -14,12 +14,15 @@ public:
 	void ClearColorBuffer(const glm::vec3& color);
 	int GetViewportWidth() const;
 	int GetViewportHeight() const;
+	void SetSize(int width, int height);
 
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);
 
 	//assignment 1a, drawline
 	void DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color);
+	//draw world and model ccordinates fucntions
+	void DrawWorldCoordinates(Scene scene, int j);
 
 	void CreateBuffers(int w, int h);
 	void CreateOpenglBuffer();
@@ -35,4 +38,6 @@ private:
 	void DrawTriangle(glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, glm::vec3 color);
 	//drawing mesh using triangles
 	void DrawMesh(Scene scene, int j);
+
+	
 };
