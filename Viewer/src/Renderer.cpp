@@ -274,8 +274,8 @@ void Renderer::Render(Scene& scene)
 	for (int j = 0; j < scene.GetModelCount(); j++) {
 
 		DrawMesh(scene, j);
-		DrawWorldCoordinates(scene, j);
-		DrawLocalCoordinates(scene, j);
+		//DrawWorldCoordinates(scene, j);
+		//DrawLocalCoordinates(scene, j);
 	}
 }
 
@@ -307,16 +307,16 @@ void Renderer::Render(Scene& scene)
 			//p3.x += 1;
 			//p3.y += 1;
 	
-			glm::vec3 eye = glm::vec3(20.0f, 20.0f, 20.0f);
+			glm::vec3 eye = glm::vec3(2.0f, 2.0f, 2.0f);
 			glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
 			glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 			glm::mat4 test = glm::lookAt(eye, at, up);
 			
 
 															 
-			p1 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p1;
-			p2 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p2;
-			p3 = scene.GetActiveCamera().GetOrthographicProjection()*test* scene.GetModel(j).GetTransform() * p3;
+			p1 = scene.GetActiveCamera().GetOrthographicProjection()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p1;
+			p2 = scene.GetActiveCamera().GetOrthographicProjection()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p2;
+			p3 = scene.GetActiveCamera().GetOrthographicProjection()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p3;
 
 		
 
