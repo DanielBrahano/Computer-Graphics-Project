@@ -274,9 +274,18 @@ void Renderer::Render(Scene& scene)
 	for (int j = 0; j < scene.GetModelCount(); j++) {
 
 		DrawMesh(scene, j);
-		//DrawWorldCoordinates(scene, j);
-		//DrawLocalCoordinates(scene, j);
+
+		//if world/model checkbox is checked then draw axes
+		if (scene.GetModel(j).DrawWorldAxes)
+		{
+			DrawWorldCoordinates(scene, j);
+		}
+		if (scene.GetModel(j).DrawModelAxes)
+		{
+			DrawLocalCoordinates(scene, j);
+		}
 	}
+
 }
 
 	void Renderer::DrawMesh(Scene scene, int j)
@@ -364,45 +373,54 @@ void Renderer::DrawWorldCoordinates(Scene scene, int j)
 	glm::vec4 world_x_axis{ 4.0f,0.0f,0.0f,1.0f };
 	glm::vec4 world_y_axis{ 0.0f,4.0f,0.0f,1.0f };
 	glm::vec4 world_z_axis{ 0.0f,0.0f,4.0f,1.0f };
-	glm::vec4 world_origin{ 0.0f,0.0f,0.0f,1.0f };
+	//glm::vec4 world_origin{ 0.0f,0.0f,0.0f,1.0f };
 
-	glm::vec3 eye = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::mat4 test = glm::lookAt(eye, at, up);
+	glm::vec4 world_neg_x_axis{ -4.0f,0.0f,0.0f,1.0f };
+	glm::vec4 world_neg_y_axis{ 0.0f,-4.0f,0.0f,1.0f };
+	glm::vec4 world_neg_z_axis{ 0.0f,0.0f,-4.0f,1.0f };
+
+
+
+	//calculate positive end
+	world_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_x_axis;
+	world_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_y_axis;
+	world_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_z_axis;
+	//world_origin = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_origin;
 	
+	//calculate negative end
+	world_neg_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_x_axis;
+	world_neg_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_y_axis;
+	world_neg_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_z_axis;
 
-
-	world_x_axis = scene.GetActiveCamera().GetOrthographicProjection()*test *scene.GetModel(j).worldTransform*world_x_axis;
-	world_y_axis = scene.GetActiveCamera().GetOrthographicProjection()*test *scene.GetModel(j).worldTransform*world_y_axis;
-	world_z_axis = scene.GetActiveCamera().GetOrthographicProjection()*test *scene.GetModel(j).worldTransform*world_z_axis;
-	world_origin = scene.GetActiveCamera().GetOrthographicProjection()*test *scene.GetModel(j).worldTransform*world_origin;
-
-	DrawLine(world_origin, world_x_axis, { 1,0,0 });
-	DrawLine(world_origin, world_y_axis, { 1,0,0 });
-	DrawLine(world_origin, world_z_axis, { 1,0,0 });
+	DrawLine(world_neg_x_axis, world_x_axis, { 1,0,0 });
+	DrawLine(world_neg_y_axis, world_y_axis, { 1,0,0 });
+	DrawLine(world_neg_z_axis, world_z_axis, { 1,0,0 });
 }
 
 void Renderer::DrawLocalCoordinates(Scene scene, int j)
 {
-	glm::vec4 local_x_axis{ 4.0f,0.0f,0.0f,1.0f };
-	glm::vec4 local_y_axis{ 0.0f,4.0f,0.0f,1.0f };
-	glm::vec4 local_z_axis{ 0.0f,0.0f,4.0f,1.0f };
+	glm::vec4 local_x_axis{ 1.0f,0.0f,0.0f,1.0f };
+	glm::vec4 local_y_axis{ 0.0f,1.0f,0.0f,1.0f };
+	glm::vec4 local_z_axis{ 0.0f,0.0f,1.0f,1.0f };
 	glm::vec4 local_origin{ 0.0f,0.0f,0.0f,1.0f };
 
-	glm::vec3 eye = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::mat4 test = glm::lookAt(eye, at, up);
+	glm::vec4 local_neg_x_axis{ -4.0f,0.0f,0.0f,1.0f };
+	glm::vec4 local_neg_y_axis{ 0.0f,-4.0f,0.0f,1.0f };
+	glm::vec4 local_neg_z_axis{ 0.0f,0.0f,-4.0f,1.0f };
 
 
+	//calculate positive end
+	local_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_x_axis;
+	local_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_y_axis;
+	local_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_z_axis;
+	//local_origin = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).objectTransform * local_origin;
 
-	local_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * test * scene.GetModel(j).objectTransform * local_x_axis;
-	local_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * test * scene.GetModel(j).objectTransform * local_y_axis;
-	local_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * test * scene.GetModel(j).objectTransform * local_z_axis;
-	local_origin = scene.GetActiveCamera().GetOrthographicProjection() * test * scene.GetModel(j).objectTransform * local_origin;
+	//calculate negative end
+	local_neg_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_x_axis;
+	local_neg_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_y_axis;
+	local_neg_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_z_axis;
 
-	DrawLine(local_origin, local_x_axis, { 0,1,0 });
-	DrawLine(local_origin, local_y_axis, { 0,1,0 });
-	DrawLine(local_origin, local_z_axis, { 0,1,0 });
+	DrawLine(local_neg_x_axis, local_x_axis, { 0,1,0 });
+	DrawLine(local_neg_y_axis, local_y_axis, { 1,1,0 });
+	DrawLine(local_neg_z_axis, local_z_axis, { 0,1,1 });
 }

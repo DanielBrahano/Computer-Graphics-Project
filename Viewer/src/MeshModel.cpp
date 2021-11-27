@@ -7,14 +7,17 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	normals(normals)
 {
 	//initialize all matrices to identity
- objectTransform = glm::mat4(1.0f);
- worldTransform = glm::mat4(1.0f);
- objectTranslate = glm::mat4(1.0f);
- objectRotate = glm::mat4(1.0f);
- objectScale = glm::mat4(1.0f);
- worldTranslate = glm::mat4(1.0f);
- worldRotate = glm::mat4(1.0f);
- worldScale = glm::mat4(1.0f);
+	 objectTransform = glm::mat4(1.0f);
+	 worldTransform = glm::mat4(1.0f);
+	 objectTranslate = glm::mat4(1.0f);
+	 objectRotate = glm::mat4(1.0f);
+	 objectScale = glm::mat4(1.0f);
+	 worldTranslate = glm::mat4(1.0f);
+	 worldRotate = glm::mat4(1.0f);
+	 worldScale = glm::mat4(1.0f);
+	
+	 DrawWorldAxes = false;
+	 DrawModelAxes = false;
 }
 
 MeshModel::~MeshModel()
