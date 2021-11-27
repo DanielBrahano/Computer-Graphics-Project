@@ -43,6 +43,8 @@ public:
 	glm::mat4 worldRotate;
 	glm::mat4 worldScale;
 
+	bool DrawWorldAxes;
+	bool DrawModelAxes;
 
 private:
 	std::vector<Face> faces;

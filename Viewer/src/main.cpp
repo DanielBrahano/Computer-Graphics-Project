@@ -15,10 +15,10 @@
 #include <iostream>
 
 //variables for window size
-static float top = 720.0f;
+static float top = 1000.0f;
 static float bottom = 0.0f;
 static float _left = 0.0;
-static float _right = 1280.0f;
+static float _right = 1000.0f;
 static float zNear = 1.0f;
 static float zFar = -1.0f;
 
@@ -26,6 +26,9 @@ static float zFar = -1.0f;
 static glm::vec3 eye = { 0,0,1 };
 static glm::vec3 at = { 0,0,0 };
 static glm::vec3 up = { 0,1,0 };
+
+bool world_axes = false;
+bool model_axes = false;
 
 /**
  * Fields
@@ -56,7 +59,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(int argc, char** argv)
 {
-	int windowWidth = 1280, windowHeight = 720;
+	int windowWidth = 1000, windowHeight = 1000;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
 		return 1;
@@ -432,11 +435,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 
 	/* UP, DOWN , TOP , BOTTOM sliders*/
-	ImGui::SliderFloat("down", &bottom, -720.0f, 720.0f);
-	ImGui::SliderFloat("up", &top, -720.0f, 720.0f);
+	ImGui::SliderFloat("down", &bottom, -1000.0f, 1000.0f);
+	ImGui::SliderFloat("up", &top, -1000.0f, 1000.0f);
 
-	ImGui::SliderFloat("left", &_left, -1280.0f, 1280.0f);
-	ImGui::SliderFloat("right", &_right, -1280.0f, 1280.0f);
+	ImGui::SliderFloat("left", &_left, -1000.0f, 1000.0f);
+	ImGui::SliderFloat("right", &_right, -1000.0f, 1000.0f);
 
 
 	ImGui::SliderFloat("near", &zNear, 0.00f, 1000.0f);
@@ -453,6 +456,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::InputFloat3("At", &at.x);
 	ImGui::InputFloat3("Up", &up.x);
 	scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
+
+	//option to draw axis for model and world
+	ImGui::Checkbox("World axes", &world_axes);
+	ImGui::Checkbox("Model axes", &model_axes);
+	if (scene.GetModelCount()) {
+		scene.GetModel(0).DrawWorldAxes = world_axes;
+		scene.GetModel(0).DrawModelAxes = model_axes;
+	}
+
+
 
 	ImGui::End();
 }
