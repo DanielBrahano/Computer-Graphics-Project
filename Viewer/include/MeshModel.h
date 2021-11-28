@@ -12,11 +12,16 @@ public:
 	const Face& GetFace(int index) const;
 	int GetFacesCount() const;
 	const std::string& GetModelName() const;
-	/*---my finction members---*/
+	/*---my function members---*/
+	int getVerticesSize() {
+		return vertices.size();
+	}
 	//get the value of #vertex
 	float GetVertex(int index, int coordinate);
 	//get the value of #normal
 	float GetNormal(int index, int coordinate);
+	//get normals vec
+	std::vector<glm::vec3> GetNormals();
 	void printObj();
 	//print for sanity check
 	void ScaleTranslateBunny();
