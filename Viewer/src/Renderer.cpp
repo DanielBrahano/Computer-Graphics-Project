@@ -317,6 +317,9 @@ void Renderer::Render(Scene& scene)
 			glm::vec4 p1{ scene.GetModel(j).GetVertex(index1,0),scene.GetModel(0).GetVertex(index1,1),scene.GetModel(j).GetVertex(index1,2), 1.0f };
 			glm::vec4 p2{ scene.GetModel(j).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(j).GetVertex(index2,2), 1.0f };
 			glm::vec4 p3{ scene.GetModel(j).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(j).GetVertex(index3,2), 1.0f };
+
+
+			viewport(p1, p2, p3, viewport_height);
 			
 			//apply matrices multiplications
 			p1 = scene.GetActiveCamera().GetProjectionTransformation()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p1;
@@ -370,6 +373,10 @@ void Renderer::DrawWorldCoordinates(Scene scene, int j)
 	glm::vec4 world_neg_y_axis{ 0.0f,-4.0f,0.0f,1.0f };
 	glm::vec4 world_neg_z_axis{ 0.0f,0.0f,-4.0f,1.0f };
 
+	viewport(world_x_axis, world_y_axis, world_z_axis, viewport_height);
+
+	viewport(world_neg_x_axis, world_neg_y_axis, world_neg_z_axis, viewport_height);
+
 
 
 	//calculate positive end
@@ -399,6 +406,9 @@ void Renderer::DrawLocalCoordinates(Scene scene, int j)
 	glm::vec4 local_neg_y_axis{ 0.0f,-4.0f,0.0f,1.0f };
 	glm::vec4 local_neg_z_axis{ 0.0f,0.0f,-4.0f,1.0f };
 
+
+	viewport(local_neg_x_axis, local_neg_y_axis, local_neg_z_axis, viewport_height);
+	viewport(local_x_axis, local_y_axis, local_z_axis, viewport_height);
 
 	//calculate positive end
 	local_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_x_axis;
@@ -447,6 +457,11 @@ void Renderer::DrawBoundingBox(Scene scene, MeshModel model)
 	glm::vec4 a6{ max_right, min_bottom, max_far, 1.0f };
 	glm::vec4 a7{ max_right, max_top, min_near, 1.0f };
 	glm::vec4 a8{ max_right, max_top, max_far, 1.0f };
+	glm::vec4 a9{ max_right, max_top, max_far, 1.0f };
+
+	viewport(a1, a2, a3, viewport_height);
+	viewport(a4, a5, a6, viewport_height);
+	viewport(a7, a8, a9, viewport_height);
 
 	//transform edges
 	a1 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a1;
@@ -511,6 +526,9 @@ void Renderer::DrawNormal(Scene scene, MeshModel model)
 		normal2.w = 1.0f;
 		normal3.w = 1.0f;
 
+		viewport(normal1, normal2, normal3, viewport_height);
+		viewport(vertex1, vertex2, vertex3, viewport_height);
+
 		//apply transformations
 		normal1 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * normal1;
 		normal2 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * normal2;
@@ -555,7 +573,22 @@ void Renderer::DrawNormal(Scene scene, MeshModel model)
 //	DrawLine(startPoint, endPoint, vec3(1, 0, 0));
 //}
 
+void Renderer::viewport(glm::vec4& p1, glm::vec4& p2, glm::vec4& p3, float height)
+{
+	p1.x += 1;
+	p1.y += 1;
+	p1.z += 1;
+	p2.x += 1;
+	p2.y += 1;
+	p2.z += 1;
+	p3.x += 1;
+	p3.y += 1;
+	p3.z += 1;
 
+	p1 = (float)height / 2 * p1;
+	p2 = (float)height / 2 * p2;
+	p3 = (float)height / 2 * p3;
+}
 
 
 

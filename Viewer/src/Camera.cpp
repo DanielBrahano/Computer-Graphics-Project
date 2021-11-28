@@ -56,18 +56,18 @@ void Camera::SetPerspectiveProjection(const float fovy, const float aspectRatio,
 
 	proj= glm::perspective(fovy, aspectRatio, zNear, zFar);
 	
-	/*std::cout << "Pres:" << std::endl;
+	std::cout << "Pres:" << std::endl;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++)
 		{
 			std::cout << proj[i][j] << " ";
 		}
 		std::cout << std::endl;
-	}*/
+	}
 }
 glm::mat4x4 Camera:: GetProjectionTransformation()
 {
-	return glm::inverse(proj);
+	return proj;
 }
 
 glm::mat4x4 Camera::GetViewTransformation()

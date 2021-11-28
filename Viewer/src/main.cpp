@@ -15,10 +15,10 @@
 #include <iostream>
 
 //variables for window size
-static float top = 1000.0f;
-static float bottom = 0.0f;
-static float _left = 0.0;
-static float _right = 1000.0f;
+static float top = 1.0f;
+static float bottom = -1.0f;
+static float _left = -1.0;
+static float _right = 1.0f;
 static float zNear = 0.1f;
 static float zFar = 1000.0f;
 static float fovy = 45.0f;
@@ -461,9 +461,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	{
 		scene.GetActiveCamera().SetOrthographicProjection(_left, _right, bottom, top, zNear, zFar);
 	}
+	static float f0 = 0.001f;
 	if ((projection == 2) && (scene.GetModelCount()))
 	{
-		ImGui::SliderFloat("fovy", &fovy, 0.0f, 180.0f);
+		
+		ImGui::InputFloat("fovy", &fovy, 0.01f, 1.0f, "%.2f");
 		float aspectRatio = (_right - _left) / (top - bottom);
 		scene.GetActiveCamera().SetPerspectiveProjection(glm::radians(fovy), aspectRatio, zNear, zFar);
 	}
@@ -480,7 +482,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	
 	
 	ImGui::Text("      X           Y           Z  ");
-	ImGui::InputFloat3("Eye", &eye.x);
+	ImGui::SliderFloat3("Eye", &eye.x,-100.0f,100.0f);
 	ImGui::InputFloat3("At", &at.x);
 	ImGui::InputFloat3("Up", &up.x);
 	scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
