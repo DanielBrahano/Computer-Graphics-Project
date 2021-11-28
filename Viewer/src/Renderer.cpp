@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Utils.h"
 #include <iostream>
+#include <algorithm> 
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
@@ -265,6 +266,7 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 
 void Renderer::Render(Scene& scene)
 {
+	
 	// TODO: Replace this code with real scene rendering code
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
@@ -272,27 +274,35 @@ void Renderer::Render(Scene& scene)
 
 	//for every model in the scene do 
 	for (int j = 0; j < scene.GetModelCount(); j++) {
-
+		
 		DrawMesh(scene, j);
-
+		
 		//if world/model checkbox is checked then draw axes
 		if (scene.GetModel(j).DrawWorldAxes)
-		{
+		{	
 			DrawWorldCoordinates(scene, j);
 		}
 		if (scene.GetModel(j).DrawModelAxes)
 		{
 			DrawLocalCoordinates(scene, j);
 		}
+		//check if draw box
+		if (scene.draw_box)
+			DrawBoundingBox(scene, scene.GetModel(j));
+
+		//check if draw normals
+		if(scene.draw_normals)
+			DrawNormal(scene, scene.GetModel(j));
 	}
 
 }
 
 	void Renderer::DrawMesh(Scene scene, int j)
 	{
+		
 		//get the number of faces in model
-		int faceCounts = scene.GetModel(j).GetFacesCount();
-
+		int faceCounts = scene.GetModel(j).GetFacesCount(); 
+		
 		//run on all faces and print triangles
 		for (int i = 0; i < faceCounts; i++)
 		{
@@ -308,35 +318,16 @@ void Renderer::Render(Scene& scene)
 			glm::vec4 p2{ scene.GetModel(j).GetVertex(index2,0),scene.GetModel(0).GetVertex(index2,1),scene.GetModel(j).GetVertex(index2,2), 1.0f };
 			glm::vec4 p3{ scene.GetModel(j).GetVertex(index3,0),scene.GetModel(0).GetVertex(index3,1),scene.GetModel(j).GetVertex(index3,2), 1.0f };
 			
-
-			//p1.x += 1;
-			//p1.y += 1;
-			//p2.x += 1;
-			//p2.y += 1;
-			//p3.x += 1;
-			//p3.y += 1;
-	
-			glm::vec3 eye = glm::vec3(2.0f, 2.0f, 2.0f);
-			glm::vec3 at = glm::vec3(0.0f, 0.0f, 0.0f);
-			glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-			glm::mat4 test = glm::lookAt(eye, at, up);
-			
-
-															 
-			p1 = scene.GetActiveCamera().GetOrthographicProjection()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p1;
-			p2 = scene.GetActiveCamera().GetOrthographicProjection()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p2;
-			p3 = scene.GetActiveCamera().GetOrthographicProjection()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p3;
-
-		
-
-																
-			//DrawLine({ viewport_width/2,0}, { viewport_width/2 ,viewport_height }, { 1,0,0 });
-			//DrawLine({ viewport_width,viewport_height /2}, { 0, viewport_height/2 }, { 1,0,0 });
+			//apply matrices multiplications
+			p1 = scene.GetActiveCamera().GetProjectionTransformation()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p1;
+			p2 = scene.GetActiveCamera().GetProjectionTransformation()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p2;
+			p3 = scene.GetActiveCamera().GetProjectionTransformation()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p3;
 
 			//draw triangle
 			DrawTriangle(p1, p2, p3, black);
 		}
 	}
+
 
 	void Renderer::SetSize(int width, int height)
 	{
@@ -370,9 +361,9 @@ void Renderer::DrawTriangle(glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, glm::vec3 
 
 void Renderer::DrawWorldCoordinates(Scene scene, int j)
 {
-	glm::vec4 world_x_axis{ 4.0f,0.0f,0.0f,1.0f };
-	glm::vec4 world_y_axis{ 0.0f,4.0f,0.0f,1.0f };
-	glm::vec4 world_z_axis{ 0.0f,0.0f,4.0f,1.0f };
+	glm::vec4 world_x_axis{ 20.0f,0.0f,0.0f,1.0f };
+	glm::vec4 world_y_axis{ 0.0f,20.0f,0.0f,1.0f };
+	glm::vec4 world_z_axis{ 0.0f,0.0f,20.0f,1.0f };
 	//glm::vec4 world_origin{ 0.0f,0.0f,0.0f,1.0f };
 
 	glm::vec4 world_neg_x_axis{ -4.0f,0.0f,0.0f,1.0f };
@@ -382,15 +373,15 @@ void Renderer::DrawWorldCoordinates(Scene scene, int j)
 
 
 	//calculate positive end
-	world_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_x_axis;
-	world_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_y_axis;
-	world_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_z_axis;
+	world_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_x_axis;
+	world_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_y_axis;
+	world_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_z_axis;
 	//world_origin = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_origin;
 	
 	//calculate negative end
-	world_neg_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_x_axis;
-	world_neg_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_y_axis;
-	world_neg_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_z_axis;
+	world_neg_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_x_axis;
+	world_neg_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_y_axis;
+	world_neg_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_z_axis;
 
 	DrawLine(world_neg_x_axis, world_x_axis, { 1,0,0 });
 	DrawLine(world_neg_y_axis, world_y_axis, { 1,0,0 });
@@ -410,17 +401,162 @@ void Renderer::DrawLocalCoordinates(Scene scene, int j)
 
 
 	//calculate positive end
-	local_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_x_axis;
-	local_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_y_axis;
-	local_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_z_axis;
+	local_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_x_axis;
+	local_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_y_axis;
+	local_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_z_axis;
 	//local_origin = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).objectTransform * local_origin;
 
 	//calculate negative end
-	local_neg_x_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_x_axis;
-	local_neg_y_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_y_axis;
-	local_neg_z_axis = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_z_axis;
+	local_neg_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_x_axis;
+	local_neg_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_y_axis;
+	local_neg_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_z_axis;
 
 	DrawLine(local_neg_x_axis, local_x_axis, { 0,1,0 });
 	DrawLine(local_neg_y_axis, local_y_axis, { 1,1,0 });
 	DrawLine(local_neg_z_axis, local_z_axis, { 0,1,1 });
 }
+
+void Renderer::DrawBoundingBox(Scene scene, MeshModel model)
+{
+	//find the extreme vertices in model, start with face vertex 1 and find with a  loop
+	float max_right = model.GetVertex(0, 0);
+	float max_top = model.GetVertex(0, 1);
+	float max_far = model.GetVertex(0, 2);
+	float min_left = model.GetVertex(0, 0);
+	float min_bottom = model.GetVertex(0, 1);
+	float min_near = model.GetVertex(0, 2);
+
+	for (int i = 0; i < model.getVerticesSize(); i++) {
+		float modelX = model.GetVertex(i, 0);
+		float modelY = model.GetVertex(i, 1);
+		float modelZ = model.GetVertex(i, 2);
+
+		max_right = max(modelX, max_right);
+		max_top = max(modelY, max_top);
+		max_far = max(modelZ, max_far);
+		min_left = min(modelX, min_left);
+		min_bottom = min(modelY, min_bottom);
+		min_near = min(modelZ, min_near);
+	}
+
+	glm::vec4 a1{ min_left, min_bottom, min_near, 1.0f };
+	glm::vec4 a2{ min_left, min_bottom, max_far, 1.0f };
+	glm::vec4 a3{ min_left, max_top, min_near, 1.0f };
+	glm::vec4 a4{ min_left, max_top, max_far, 1.0f };
+	glm::vec4 a5{ max_right, min_bottom, min_near, 1.0f };
+	glm::vec4 a6{ max_right, min_bottom, max_far, 1.0f };
+	glm::vec4 a7{ max_right, max_top, min_near, 1.0f };
+	glm::vec4 a8{ max_right, max_top, max_far, 1.0f };
+
+	//transform edges
+	a1 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a1;
+	a2 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a2;
+	a3 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a3;
+	a4 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a4;
+	a5 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a5;
+	a6 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a6;
+	a7 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a7;
+	a8 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a8;
+
+
+	//connect edges
+	DrawLine(a1, a2, glm::vec3(0, 0, 0));
+	DrawLine(a1, a3, glm::vec3(0, 0, 0));
+	DrawLine(a1, a5, glm::vec3(0, 0, 0));
+	DrawLine(a2, a4, glm::vec3(0, 0, 0));
+	DrawLine(a2, a6, glm::vec3(0, 0, 0));
+	DrawLine(a3, a4, glm::vec3(0, 0, 0));
+	DrawLine(a3, a7, glm::vec3(0, 0, 0));
+	DrawLine(a4, a8, glm::vec3(0, 0, 0));
+	DrawLine(a5, a6, glm::vec3(0, 0, 0));
+	DrawLine(a5, a7, glm::vec3(0, 0, 0));
+	DrawLine(a6, a8, glm::vec3(0, 0, 0));
+	DrawLine(a7, a8, glm::vec3(0, 0, 0));
+	
+	
+}
+
+
+void Renderer::DrawNormal(Scene scene, MeshModel model)
+{
+	for (int i = 0; i < model.GetFacesCount() - 50; i++) {
+		Face face = model.GetFace(i);
+
+		//get index
+		int v_index1 = face.GetVertexIndex(0);
+		int v_index2 = face.GetVertexIndex(1);
+		int v_index3 = face.GetVertexIndex(2);
+
+		//get normal index
+		int vn_index1 = face.GetNormalIndex(0);
+		int vn_index2 = face.GetNormalIndex(1);
+		int vn_index3 = face.GetNormalIndex(2);
+	
+		//get vertices
+		glm::vec4 vertex1 = { model.GetVertex(v_index1,0),model.GetVertex(v_index1,1) ,model.GetVertex(v_index1,2),1.0f };
+		glm::vec4 vertex2 = { model.GetVertex(v_index2,0),model.GetVertex(v_index2,1) ,model.GetVertex(v_index2,2),1.0f };
+		glm::vec4 vertex3 = { model.GetVertex(v_index3,0),model.GetVertex(v_index3,1) ,model.GetVertex(v_index3,2),1.0f };
+
+		//get normals
+		glm::vec4 normal1 = { model.GetNormal(vn_index1,0),model.GetNormal(vn_index1,1) ,model.GetNormal(vn_index1,2),1.0f };
+		glm::vec4 normal2 = { model.GetNormal(vn_index2,0),model.GetNormal(vn_index2,1) ,model.GetNormal(vn_index2,2),1.0f };
+		glm::vec4 normal3 = { model.GetNormal(vn_index3,0),model.GetNormal(vn_index3,1) ,model.GetNormal(vn_index3,2),1.0f };
+
+		//add the normal to vertex
+		normal1 = vertex1 + 0.05f * normal1;
+		normal2 = vertex2 + 0.05f * normal2;
+		normal3 = vertex3 + 0.05f * normal3;
+
+		normal1.w = 1.0f;
+		normal2.w = 1.0f;
+		normal3.w = 1.0f;
+
+		//apply transformations
+		normal1 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * normal1;
+		normal2 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * normal2;
+		normal3 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * normal3;
+
+		vertex1 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * vertex1;
+		vertex2 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * vertex2;
+		vertex3 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * vertex3;
+
+		//draw the normals
+		DrawLine(vertex1, normal1, { 0,0,1 });
+		DrawLine(vertex2, normal2, { 0,0,1 });
+		DrawLine(vertex3, normal3, { 0,0,1 });
+
+
+	}
+}
+
+//void Renderer::DrawFaceNormal(Scene scene, MeshModel model)
+//{
+//
+//	//get index
+//	int v_index1 = face.GetVertexIndex(0);
+//	int v_index2 = face.GetVertexIndex(1);
+//	int v_index3 = face.GetVertexIndex(2);
+//
+//	// get vertices
+//	glm::vec4 p1 = { model.GetVertex(v_index1,0),model.GetVertex(v_index1,1) ,model.GetVertex(v_index1,2),1.0f };
+//	glm::vec4 p2 = { model.GetVertex(v_index2,0),model.GetVertex(v_index2,1) ,model.GetVertex(v_index2,2),1.0f };
+//	glm::vec4 p3 = { model.GetVertex(v_index3,0),model.GetVertex(v_index3,1) ,model.GetVertex(v_index3,2),1.0f };
+//
+//
+//	glm::vec3 midp2p3 = (p2 + p3) *0.25f;
+//	float normal = glm::cross((p2 - p1), (p3 - p1));
+//	glm::vec3 startPoint = p1 - (normal * glm::vec3(0.25f, 0.25f, 0.25f));
+//	glm::vec3 endPoint = p1 + (normal * glm::vec3(0.25f, 0.25f, 0.25f));
+//
+//	glm::vec4 endPoint4{ endPoint,1 };
+//	glm::vec4 startPoint4{ startPoint,1 };
+//		
+//
+//	DrawLine(startPoint, endPoint, vec3(1, 0, 0));
+//}
+
+
+
+
+
+	

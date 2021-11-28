@@ -40,5 +40,7 @@ private:
 	//drawing mesh using triangles
 	void DrawMesh(Scene scene, int j);
 
-	
+	void DrawBoundingBox(Scene scene, MeshModel model);
+	void DrawNormal(Scene scene, MeshModel model);
+	void DrawFaceNormal(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::mat4 m);
 };
