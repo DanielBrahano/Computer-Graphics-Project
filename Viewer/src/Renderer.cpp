@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm> 
 
+
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
 
@@ -293,6 +294,10 @@ void Renderer::Render(Scene& scene)
 		//check if draw normals
 		if(scene.draw_normals)
 			DrawNormal(scene, scene.GetModel(j));
+
+		//check if draw normals
+		if (scene.draw_face_normals)
+			DrawFaceNormal(scene, scene.GetModel(j));
 	}
 
 }
@@ -589,6 +594,43 @@ void Renderer::viewport(glm::vec4& p1, glm::vec4& p2, glm::vec4& p3, float heigh
 	p2 = (float)height / 2 * p2;
 	p3 = (float)height / 2 * p3;
 }
+
+void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
+
+	for (int i = 0; i < model.GetFacesCount() - 50; i++) {
+		Face face = model.GetFace(i);
+
+		//get index
+		int v_index1 = face.GetVertexIndex(0);
+		int v_index2 = face.GetVertexIndex(1);
+		int v_index3 = face.GetVertexIndex(2);
+
+		//get vertices
+		glm::vec3 vertex1 = { model.GetVertex(v_index1,0),model.GetVertex(v_index1,1) ,model.GetVertex(v_index1,2) };
+		glm::vec3 vertex2 = { model.GetVertex(v_index2,0),model.GetVertex(v_index2,1) ,model.GetVertex(v_index2,2) };
+		glm::vec3 vertex3 = { model.GetVertex(v_index3,0),model.GetVertex(v_index3,1) ,model.GetVertex(v_index3,2) };
+
+		glm::cross(vertex1 , vertex1 - vertex3);
+		glm::vec4 average = { 0,0,0,1 };
+		glm::vec4 normal = glm::vec4(glm::normalize(glm::cross(vertex1 -vertex2, vertex1 - vertex3)	), 0);
+
+		
+		average += glm::vec4((vertex1 + vertex2 + vertex3) / 3.f, 0);
+		normal = average + 0.25f * normal;
+		glm::vec4 p1 = glm::vec4(1, 1, 1, 1);
+		
+		viewport(p1, average, normal, viewport_height);
+
+		average = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * average;
+		normal = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * normal;
+	
+
+		DrawLine(average, normal,{ 1,0,1 });
+	}
+		
+		
+	}
+
 
 
 

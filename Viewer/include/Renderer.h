@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>//include for mat operations
+#include <GLFW/glfw3.h>
 
 class Renderer
 {
@@ -47,5 +48,6 @@ private:
 
 	void DrawNormal(Scene scene, MeshModel model);
 
-	void DrawFaceNormal(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::mat4 m);
+
+	void Renderer::DrawFaceNormal(Scene scene, MeshModel model);
 };

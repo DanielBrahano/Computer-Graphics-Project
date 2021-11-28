@@ -15,10 +15,10 @@
 #include <iostream>
 
 //variables for window size
-static float top = 1.0f;
-static float bottom = -1.0f;
-static float _left = -1.0;
-static float _right = 1.0f;
+static int top = 1.0f;
+static int bottom = -1.0f;
+static int _left = -1.0;
+static int _right = 1.0f;
 static float zNear = 0.1f;
 static float zFar = 1000.0f;
 static float fovy = 90.0f;
@@ -355,7 +355,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Text("       World Transformations  ");
 		ImGui::Text("      X           Y           Z  ");
 		//make sliders for the transformations
-		ImGui::SliderFloat3("translation_W", &world_translation.x, -1.5f, 0.5f);
+		ImGui::SliderFloat3("translation_W", &world_translation.x, -1.5f, 1.5f);
 		ImGui::SliderFloat3("rotation_W", &world_rotation.x, -180.0f, 180.0f);
 		ImGui::SliderFloat("scale_W", &world_scale, 0.5f, 1.5f);
 
@@ -433,7 +433,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	//before we open the imgui window, let's resize it
-	ImGui::SetNextWindowSize(ImVec2(390, 390));
+	ImGui::SetNextWindowSize(ImVec2(390, 450));
 
 	ImGui::Begin("Camera/Projection  Control");
 	ImGui::Text("Choose Projection");
@@ -444,11 +444,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	
 
 	/* UP, DOWN , TOP , BOTTOM sliders*/
-	ImGui::SliderFloat("down", &bottom, -5.0f, 5.0f);
-	ImGui::SliderFloat("up", &top, -5.0f, 5.0f);
+	ImGui::SliderInt("down", &bottom, -5, 5);
+	ImGui::SliderInt("up", &top, -5, 5);
 
-	ImGui::SliderFloat("left", &_left, -5.0f, 5.0f);
-	ImGui::SliderFloat("right", &_right, -5.0f, 5.0f);
+	ImGui::SliderInt("left", &_left, -5.0f, 5.0f);
+	ImGui::SliderInt("right", &_right, -5.0f, 5.0f);
 
 
 	ImGui::SliderFloat("near", &zNear, -1.00f, 100.0f);
@@ -474,12 +474,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::Checkbox("Draw Normals", &DrawNormals);
 	scene.draw_normals = DrawNormals;
 
+	static bool DrawFaceNormals = false;
+	ImGui::Checkbox("Draw Face Normals", &DrawFaceNormals);
+	scene.draw_face_normals = DrawFaceNormals;
+
 	ImGui::Text("           ");
 	ImGui::Text("           LookAt Control");
 	
 	
 	ImGui::Text("      X           Y           Z  ");
-	ImGui::SliderFloat3("Eye", &eye.x,-100.0f,100.0f);
+	ImGui::InputFloat3("Eye", &eye.x);
 	ImGui::InputFloat3("At", &at.x);
 	ImGui::InputFloat3("Up", &up.x);
 	scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
