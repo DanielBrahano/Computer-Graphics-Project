@@ -49,6 +49,11 @@ float MeshModel::GetNormal(int index, int coordinate)
 	return normals[index][coordinate];
 }
 
+std::vector<glm::vec3> MeshModel::GetNormals()
+{
+	return normals;
+}
+
 void MeshModel::printObj()
 {
 	int faceCounts = GetFacesCount();

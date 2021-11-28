@@ -19,8 +19,9 @@ static float top = 1000.0f;
 static float bottom = 0.0f;
 static float _left = 0.0;
 static float _right = 1000.0f;
-static float zNear = 1.0f;
-static float zFar = -1.0f;
+static float zNear = 0.1f;
+static float zFar = 1000.0f;
+static float fovy = 45.0f;
 
 //control lookAt
 static glm::vec3 eye = { 0,0,1 };
@@ -29,6 +30,12 @@ static glm::vec3 up = { 0,1,0 };
 
 bool world_axes = false;
 bool model_axes = false;
+
+bool Ortho = false;
+bool BoundingBox = false;
+bool DrawNormals = false;
+int Orthographic = 0;
+
 
 /**
  * Fields
@@ -72,18 +79,19 @@ int main(int argc, char** argv)
 	Scene scene = Scene();
 	/*********************************************************************************************/
 	Camera camera;
-	glm::mat4 test1 = glm::inverse(camera.test);
+
 	///*88888888888----------------------------------------------------------------*/
-	//for (int i = 0; i < 4; i++) {
-	//	for (int j = 0; j < 4; j++)
-	//	{
-	//		std::cout << test1[i][j] << " ";
-	//	}
-	//	std::cout << std::endl;
-	//}
-	//std::cout << std::endl;
-	//std::cout << std::endl;
-	//std::cout << std::endl;
+	glm::mat4 proj = glm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
+	glm::vec4 test = { -0.21627, 0.31021, 0.64313,1.0f };
+	test = proj * test;
+	std::cout << "Pres:" << std::endl;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++)
+		{
+			std::cout <<(test[j]+1) << " ";
+		}
+		std::cout << std::endl;
+	}
 
 	///*88888888888----------------------------------------------------------------*/
 	scene.AddCamera(std::make_shared<Camera>(camera));
@@ -342,7 +350,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Text("      X           Y           Z  ");
 
 		//make sliders for the transformations
-		ImGui::SliderFloat3("translation_L", &local_translation.x, -0.5f, 0.5f);
+		ImGui::SliderFloat3("translation_L", &local_translation.x, -1.5f, 1.5f);
 		ImGui::SliderFloat3("rotation_L", &local_rotation.x, -180.0f, 180.0f);
 		ImGui::SliderFloat("scale_L", &local_scale, 0.5f, 1.5f);
 
@@ -350,9 +358,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Text("       World Transformations  ");
 		ImGui::Text("      X           Y           Z  ");
 		//make sliders for the transformations
-		ImGui::SliderFloat3("translation_W", &world_translation.x, -0.5f, 0.5f);
+		ImGui::SliderFloat3("translation_W", &world_translation.x, -1.5f, 1.5f);
 		ImGui::SliderFloat3("rotation_W", &world_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("scale_W", &world_scale, 0.5f, 1.5f);
+		ImGui::SliderFloat("scale_W", &world_scale, 0.5f, 1500.0f);
 
 		/*I am handling transformations by saving each in a vector and comparing to the last on and apply transformation only if something has changed*/
 
@@ -431,8 +439,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::SetNextWindowSize(ImVec2(390, 390));
 
 	ImGui::Begin("Camera/Projection  Control");
-	ImGui::Text("Orthographic projection - view volume control");
-
+	ImGui::Text("Choose Projection");
+	static int projection = 0;
+	ImGui::RadioButton("Orthographic", &projection, 1); ImGui::SameLine();
+	ImGui::RadioButton("Perspective", &projection, 2);
+	
+	
 
 	/* UP, DOWN , TOP , BOTTOM sliders*/
 	ImGui::SliderFloat("down", &bottom, -1000.0f, 1000.0f);
@@ -442,10 +454,26 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::SliderFloat("right", &_right, -1000.0f, 1000.0f);
 
 
-	ImGui::SliderFloat("near", &zNear, 0.00f, 1000.0f);
-	ImGui::SliderFloat("far", &zFar, -1000.0f, 0.0f);
+	ImGui::SliderFloat("near", &zNear, -1.00f, 1000.0f);
+	ImGui::SliderFloat("far", &zFar, -1000.0f, 1000.0f);
 
-	scene.GetActiveCamera().SetOrthographicProjection(_left, _right, bottom, top, zNear, zFar);
+	if ((projection == 1) && (scene.GetModelCount()))
+	{
+		scene.GetActiveCamera().SetOrthographicProjection(_left, _right, bottom, top, zNear, zFar);
+	}
+	if ((projection == 2) && (scene.GetModelCount()))
+	{
+		ImGui::SliderFloat("fovy", &fovy, 0.0f, 180.0f);
+		float aspectRatio = (_right - _left) / (top - bottom);
+		scene.GetActiveCamera().SetPerspectiveProjection(glm::radians(fovy), aspectRatio, zNear, zFar);
+	}
+
+	
+	ImGui::Checkbox("Bounding Box", &BoundingBox);
+	scene.draw_box = BoundingBox;
+
+	ImGui::Checkbox("Draw Normals", &DrawNormals);
+	scene.draw_normals = DrawNormals;
 
 	ImGui::Text("           ");
 	ImGui::Text("           LookAt Control");
