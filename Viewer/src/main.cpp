@@ -21,7 +21,7 @@ static float _left = -1.0;
 static float _right = 1.0f;
 static float zNear = 0.1f;
 static float zFar = 1000.0f;
-static float fovy = 45.0f;
+static float fovy = 90.0f;
 
 //control lookAt
 static glm::vec3 eye = { 0,0,1 };
@@ -170,9 +170,6 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		// TODO: Set new aspect ratio
 		if (scene.GetCameraCount() != 0) {
 			renderer.SetSize(frameBufferWidth, frameBufferHeight);
-			scene.GetActiveCamera().SetOrthographicProjection(0, frameBufferWidth, 0, frameBufferHeight, 1, -1);
-			top = frameBufferHeight;
-			_right = frameBufferWidth;
 		}
 	}
 
@@ -358,9 +355,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Text("       World Transformations  ");
 		ImGui::Text("      X           Y           Z  ");
 		//make sliders for the transformations
-		ImGui::SliderFloat3("translation_W", &world_translation.x, -1.5f, 1.5f);
+		ImGui::SliderFloat3("translation_W", &world_translation.x, -1.5f, 0.5f);
 		ImGui::SliderFloat3("rotation_W", &world_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("scale_W", &world_scale, 0.5f, 1500.0f);
+		ImGui::SliderFloat("scale_W", &world_scale, 0.5f, 1.5f);
 
 		/*I am handling transformations by saving each in a vector and comparing to the last on and apply transformation only if something has changed*/
 
@@ -447,15 +444,15 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	
 
 	/* UP, DOWN , TOP , BOTTOM sliders*/
-	ImGui::SliderFloat("down", &bottom, -1000.0f, 1000.0f);
-	ImGui::SliderFloat("up", &top, -1000.0f, 1000.0f);
+	ImGui::SliderFloat("down", &bottom, -5.0f, 5.0f);
+	ImGui::SliderFloat("up", &top, -5.0f, 5.0f);
 
-	ImGui::SliderFloat("left", &_left, -1000.0f, 1000.0f);
-	ImGui::SliderFloat("right", &_right, -1000.0f, 1000.0f);
+	ImGui::SliderFloat("left", &_left, -5.0f, 5.0f);
+	ImGui::SliderFloat("right", &_right, -5.0f, 5.0f);
 
 
-	ImGui::SliderFloat("near", &zNear, -1.00f, 1000.0f);
-	ImGui::SliderFloat("far", &zFar, -1000.0f, 1000.0f);
+	ImGui::SliderFloat("near", &zNear, -1.00f, 100.0f);
+	ImGui::SliderFloat("far", &zFar, -100.0f, 100.0f);
 
 	if ((projection == 1) && (scene.GetModelCount()))
 	{
