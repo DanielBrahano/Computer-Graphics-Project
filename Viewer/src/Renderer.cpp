@@ -411,10 +411,10 @@ void Renderer::DrawWorldCoordinates(Scene scene, int j)
 
 void Renderer::DrawLocalCoordinates(Scene scene, int j)
 {
-	glm::vec4 local_x_axis{ 1.0f,0.0f,0.0f,1.0f };
-	glm::vec4 local_y_axis{ 0.0f,1.0f,0.0f,1.0f };
-	glm::vec4 local_z_axis{ 0.0f,0.0f,1.0f,1.0f };
-	glm::vec4 local_origin{ 0.0f,0.0f,0.0f,1.0f };
+	glm::vec4 local_x_axis{ 12.0f,0.0f,0.0f,1.0f };
+	glm::vec4 local_y_axis{ 0.0f,12.0f,0.0f,1.0f };
+	glm::vec4 local_z_axis{ 0.0f,0.0f,12.0f,1.0f };
+	glm::vec4 local_origin{ 0.0f,0.0f,0.0f,12.0f };
 
 	glm::vec4 local_neg_x_axis{ -4.0f,0.0f,0.0f,1.0f };
 	glm::vec4 local_neg_y_axis{ 0.0f,-4.0f,0.0f,1.0f };
@@ -628,7 +628,7 @@ void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
 
 
 		average += glm::vec4((vertex1 + vertex2 + vertex3) / 3.f, 0);
-		normal = average + 0.25f * normal;
+		normal = average + 0.05f * normal;
 		glm::vec3 p1 = glm::vec3(1, 1, 1);
 
 		average = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * average;
@@ -639,7 +639,7 @@ void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
 
 		viewport(p1, p2, p3, viewport_height);
 
-		DrawLine(average, normal, { 1,0,1 });
+		DrawLine(p3, p2, { 1,0,1 });
 	}
 
 
