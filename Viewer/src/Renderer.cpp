@@ -331,6 +331,10 @@ void Renderer::Render(Scene& scene)
 			p2 = scene.GetActiveCamera().GetProjectionTransformation()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p2;
 			p3 = scene.GetActiveCamera().GetProjectionTransformation()*scene.GetActiveCamera().GetViewTransformation()*scene.GetModel(j).GetTransform() * p3;
 
+			/*p1 = { HomToCartesian(p1),1 };
+			p2 = { HomToCartesian(p2),1 };
+			p3 = { HomToCartesian(p3),1 };*/
+
 			//draw triangle
 			DrawTriangle(p1, p2, p3, black);
 		}
@@ -464,9 +468,9 @@ void Renderer::DrawBoundingBox(Scene scene, MeshModel model)
 	glm::vec4 a8{ max_right, max_top, max_far, 1.0f };
 	glm::vec4 a9{ max_right, max_top, max_far, 1.0f };
 
-	viewport(a1, a2, a3, viewport_height);
-	viewport(a4, a5, a6, viewport_height);
-	viewport(a7, a8, a9, viewport_height);
+	
+	
+	
 
 	//transform edges
 	a1 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a1;
@@ -478,20 +482,35 @@ void Renderer::DrawBoundingBox(Scene scene, MeshModel model)
 	a7 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a7;
 	a8 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * a8;
 
+	//transform to screen coordinates
+	viewport(a1, a2, a3, viewport_height);
+	viewport(a4, a5, a6, viewport_height);
+	viewport(a7, a8, a9, viewport_height);
+
+	//back to cartesian coordinates
+	
+	glm::vec3 p1 = HomToCartesian(a1);
+	glm::vec3 p2 = HomToCartesian(a2);
+	glm::vec3 p3 = HomToCartesian(a3);
+	glm::vec3 p4 = HomToCartesian(a4);
+	glm::vec3 p5 = HomToCartesian(a5);
+	glm::vec3 p6 = HomToCartesian(a6);
+	glm::vec3 p7 = HomToCartesian(a7);
+	glm::vec3 p8 = HomToCartesian(a8);
 
 	//connect edges
-	DrawLine(a1, a2, glm::vec3(0, 0, 0));
-	DrawLine(a1, a3, glm::vec3(0, 0, 0));
-	DrawLine(a1, a5, glm::vec3(0, 0, 0));
-	DrawLine(a2, a4, glm::vec3(0, 0, 0));
-	DrawLine(a2, a6, glm::vec3(0, 0, 0));
-	DrawLine(a3, a4, glm::vec3(0, 0, 0));
-	DrawLine(a3, a7, glm::vec3(0, 0, 0));
-	DrawLine(a4, a8, glm::vec3(0, 0, 0));
-	DrawLine(a5, a6, glm::vec3(0, 0, 0));
-	DrawLine(a5, a7, glm::vec3(0, 0, 0));
-	DrawLine(a6, a8, glm::vec3(0, 0, 0));
-	DrawLine(a7, a8, glm::vec3(0, 0, 0));
+	DrawLine(p1, p2, glm::vec3(0, 0, 0));
+	DrawLine(p1, p3, glm::vec3(0, 0, 0));
+	DrawLine(p1, p5, glm::vec3(0, 0, 0));
+	DrawLine(p2, p4, glm::vec3(0, 0, 0));
+	DrawLine(p2, p6, glm::vec3(0, 0, 0));
+	DrawLine(p3, p4, glm::vec3(0, 0, 0));
+	DrawLine(p3, p7, glm::vec3(0, 0, 0));
+	DrawLine(p4, p8, glm::vec3(0, 0, 0));
+	DrawLine(p5, p6, glm::vec3(0, 0, 0));
+	DrawLine(p5, p7, glm::vec3(0, 0, 0));
+	DrawLine(p6, p8, glm::vec3(0, 0, 0));
+	DrawLine(p7, p8, glm::vec3(0, 0, 0));
 	
 	
 }
@@ -552,31 +571,6 @@ void Renderer::DrawNormal(Scene scene, MeshModel model)
 	}
 }
 
-//void Renderer::DrawFaceNormal(Scene scene, MeshModel model)
-//{
-//
-//	//get index
-//	int v_index1 = face.GetVertexIndex(0);
-//	int v_index2 = face.GetVertexIndex(1);
-//	int v_index3 = face.GetVertexIndex(2);
-//
-//	// get vertices
-//	glm::vec4 p1 = { model.GetVertex(v_index1,0),model.GetVertex(v_index1,1) ,model.GetVertex(v_index1,2),1.0f };
-//	glm::vec4 p2 = { model.GetVertex(v_index2,0),model.GetVertex(v_index2,1) ,model.GetVertex(v_index2,2),1.0f };
-//	glm::vec4 p3 = { model.GetVertex(v_index3,0),model.GetVertex(v_index3,1) ,model.GetVertex(v_index3,2),1.0f };
-//
-//
-//	glm::vec3 midp2p3 = (p2 + p3) *0.25f;
-//	float normal = glm::cross((p2 - p1), (p3 - p1));
-//	glm::vec3 startPoint = p1 - (normal * glm::vec3(0.25f, 0.25f, 0.25f));
-//	glm::vec3 endPoint = p1 + (normal * glm::vec3(0.25f, 0.25f, 0.25f));
-//
-//	glm::vec4 endPoint4{ endPoint,1 };
-//	glm::vec4 startPoint4{ startPoint,1 };
-//		
-//
-//	DrawLine(startPoint, endPoint, vec3(1, 0, 0));
-//}
 
 void Renderer::viewport(glm::vec4& p1, glm::vec4& p2, glm::vec4& p3, float height)
 {
@@ -590,9 +584,19 @@ void Renderer::viewport(glm::vec4& p1, glm::vec4& p2, glm::vec4& p3, float heigh
 	p3.y += 1;
 	p3.z += 1;
 
+	float q1 = p1.w;
+	float q2 = p2.w;
+	float q3 = p3.w;
+
 	p1 = (float)height / 2 * p1;
 	p2 = (float)height / 2 * p2;
 	p3 = (float)height / 2 * p3;
+
+	p1.w = q1;
+	p2.w = q2;
+	p3.w = q3;
+
+	
 }
 
 void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
@@ -630,6 +634,16 @@ void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
 		
 		
 	}
+
+glm::vec3 Renderer::HomToCartesian(glm::vec4 vec)
+{
+
+	if (vec[3] == 0) {
+		return glm::vec3(vec[0], vec[1], vec[2]);
+
+	}
+	return glm::vec3(vec[0] / vec[3], vec[1] / vec[3], vec[2] / vec[3]);
+}
 
 
 

@@ -48,6 +48,7 @@ private:
 
 	void DrawNormal(Scene scene, MeshModel model);
 
-
 	void Renderer::DrawFaceNormal(Scene scene, MeshModel model);
+
+	glm::vec3 HomToCartesian(glm::vec4 vec);
 };
