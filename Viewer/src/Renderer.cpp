@@ -383,15 +383,15 @@ void Renderer::DrawWorldCoordinates(Scene scene, int j)
 
 
 	//calculate positive end
-	world_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_x_axis;
-	world_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_y_axis;
-	world_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_z_axis;
-	//world_origin = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_origin;
+	world_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() *  world_x_axis;
+	world_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() *  world_y_axis;
+	world_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() *  world_z_axis;
+	//world_origin = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() *  world_origin;
 
 	//calculate negative end
-	world_neg_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_x_axis;
-	world_neg_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_y_axis;
-	world_neg_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * world_neg_z_axis;
+	world_neg_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * world_neg_x_axis;
+	world_neg_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * world_neg_y_axis;
+	world_neg_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * world_neg_z_axis;
 
 	glm::vec3 q1 = HomToCartesian(world_x_axis);
 	glm::vec3 q2 = HomToCartesian(world_y_axis);
@@ -414,22 +414,22 @@ void Renderer::DrawLocalCoordinates(Scene scene, int j)
 	glm::vec4 local_x_axis{ 12.0f,0.0f,0.0f,1.0f };
 	glm::vec4 local_y_axis{ 0.0f,12.0f,0.0f,1.0f };
 	glm::vec4 local_z_axis{ 0.0f,0.0f,12.0f,1.0f };
-	glm::vec4 local_origin{ 0.0f,0.0f,0.0f,12.0f };
+	//glm::vec4 local_origin{ 0.0f,0.0f,0.0f,12.0f };
 
 	glm::vec4 local_neg_x_axis{ -4.0f,0.0f,0.0f,1.0f };
 	glm::vec4 local_neg_y_axis{ 0.0f,-4.0f,0.0f,1.0f };
 	glm::vec4 local_neg_z_axis{ 0.0f,0.0f,-4.0f,1.0f };
 
 	//calculate positive end
-	local_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_x_axis;
-	local_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_y_axis;
-	local_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_z_axis;
+	local_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * local_x_axis;
+	local_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * local_y_axis;
+	local_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * local_z_axis;
 	//local_origin = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).objectTransform * local_origin;
 
 	//calculate negative end
-	local_neg_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_x_axis;
-	local_neg_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_y_axis;
-	local_neg_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * local_neg_z_axis;
+	local_neg_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * local_neg_x_axis;
+	local_neg_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * local_neg_y_axis;
+	local_neg_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).worldTransform * local_neg_z_axis;
 
 	glm::vec3 q1 = HomToCartesian(local_x_axis);
 	glm::vec3 q2 = HomToCartesian(local_y_axis);
@@ -442,9 +442,9 @@ void Renderer::DrawLocalCoordinates(Scene scene, int j)
 	viewport(q1, q2, q3, viewport_height);
 	viewport(p1, p2, p3, viewport_height);
 
-	DrawLine(local_neg_x_axis, local_x_axis, { 0,1,0 });
-	DrawLine(local_neg_y_axis, local_y_axis, { 1,1,0 });
-	DrawLine(local_neg_z_axis, local_z_axis, { 0,1,1 });
+	DrawLine(p1, q1, { 0,1,0 });
+	DrawLine(p2, q2, { 1,1,0 });
+	DrawLine(p3, q3, { 0,1,1 });
 }
 
 void Renderer::DrawBoundingBox(Scene scene, MeshModel model)

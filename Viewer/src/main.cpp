@@ -37,6 +37,7 @@ bool DrawNormals = false;
 int Orthographic = 0;
 
 
+
 /**
  * Fields
  */
@@ -316,6 +317,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 		ImGui::Checkbox("Another Window", &show_another_window);
 
+		ImGui::Button("Reset");
 		//vectors and varibale for transformations we start with 0
 		static glm::vec3 world_translation(0.0f, 0.0f, 0.0f);
 		static glm::vec3 world_rotation(0.0f, 0.0f, 0.0f);
@@ -487,5 +489,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		scene.GetModel(0).DrawWorldAxes = world_axes;
 		scene.GetModel(0).DrawModelAxes = model_axes;
 	}
+
 	ImGui::End();
 }
