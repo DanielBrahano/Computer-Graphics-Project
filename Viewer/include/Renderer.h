@@ -37,12 +37,12 @@ private:
 	GLuint gl_screen_vtc;
 
 	//drawing triangles
-	void DrawTriangle(glm::vec4 p1, glm::vec4 p2, glm::vec4 p3, glm::vec3 color);
+	void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
 	//drawing mesh using triangles
 	void DrawMesh(Scene scene, int j);
 
 	//canonical view volume to screen coordinates
-	void viewport(glm::vec4& p1, glm::vec4& p2, glm::vec4& p3, float height);
+	void viewport(glm::vec3& p1, glm::vec3& p2, glm::vec3& p3, float height);
 
 	void DrawBoundingBox(Scene scene, MeshModel model);
 
