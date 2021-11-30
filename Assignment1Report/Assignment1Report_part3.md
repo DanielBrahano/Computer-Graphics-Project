@@ -1,6 +1,6 @@
 
 
-# ASSIGNMENT #1B
+# ASSIGNMENT #1C
 ###### Mesh is loaded through File button and then choose the path to the model.
 
 ## Task 1
