@@ -78,27 +78,11 @@ int main(int argc, char** argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
-	/*********************************************************************************************/
+
 	Camera camera;
-
-	///*88888888888----------------------------------------------------------------*/
-	glm::mat4 proj = glm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
-	glm::vec4 test = { -0.21627, 0.31021, 0.64313,1.0f };
-	test = proj * test;
-	std::cout << "Pres:" << std::endl;
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++)
-		{
-			std::cout <<(test[j]+1) << " ";
-		}
-		std::cout << std::endl;
-	}
-
-	///*88888888888----------------------------------------------------------------*/
 	scene.AddCamera(std::make_shared<Camera>(camera));
 	scene.SetActiveCameraIndex(0);
 
-	/*********************************************************************************************/
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
 	while (!glfwWindowShouldClose(window))
@@ -317,7 +301,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 		ImGui::Checkbox("Another Window", &show_another_window);
 
-		ImGui::Button("Reset");
 		//vectors and varibale for transformations we start with 0
 		static glm::vec3 world_translation(0.0f, 0.0f, 0.0f);
 		static glm::vec3 world_rotation(0.0f, 0.0f, 0.0f);
@@ -336,6 +319,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static glm::vec3 world_previous_translation(0.0f, 0.0f, 0.0f);
 		static glm::vec3 world_previous_rotation(0.0f, 0.0f, 0.0f);
 		static float world_previous_scale = 1.0f;
+
+		
 
 
 		ImGui::Text("        ");
@@ -431,7 +416,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	ImGui::Begin("Camera/Projection  Control");
 	ImGui::Text("Choose Projection");
-	static int projection = 0;
+	static int projection = 1;
 	ImGui::RadioButton("Orthographic", &projection, 1); ImGui::SameLine();
 	ImGui::RadioButton("Perspective", &projection, 2);
 	

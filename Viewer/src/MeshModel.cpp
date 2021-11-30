@@ -6,7 +6,6 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	vertices(vertices),
 	normals(normals)
 {
-	//initialize all matrices to identity
 	 objectTransform = glm::mat4(1.0f);
 	 worldTransform = glm::mat4(1.0f);
 	 objectTranslate = glm::mat4(1.0f);
