@@ -536,14 +536,14 @@ void Renderer::DrawNormal(Scene scene, MeshModel model)
 		Face face = model.GetFace(i);
 
 		//get index
-		int v_index1 = face.GetVertexIndex(0)-1;
-		int v_index2 = face.GetVertexIndex(1)-1;
-		int v_index3 = face.GetVertexIndex(2)-1;
+		int v_index1 = face.GetVertexIndex(0) - 1;
+		int v_index2 = face.GetVertexIndex(1) - 1;
+		int v_index3 = face.GetVertexIndex(2) - 1;
 
 		//get normal index
-		int vn_index1 = face.GetNormalIndex(0)-1;
-		int vn_index2 = face.GetNormalIndex(1)-1;
-		int vn_index3 = face.GetNormalIndex(2)-1;
+		int vn_index1 = face.GetNormalIndex(0) - 1;
+		int vn_index2 = face.GetNormalIndex(1) - 1;
+		int vn_index3 = face.GetNormalIndex(2) - 1;
 
 		//get vertices
 		glm::vec4 vertex1 = { model.GetVertex(v_index1,0),model.GetVertex(v_index1,1) ,model.GetVertex(v_index1,2),1.0f };
@@ -622,9 +622,9 @@ void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
 		Face face = model.GetFace(i);
 
 		//get index
-		int v_index1 = face.GetVertexIndex(0)-1;
-		int v_index2 = face.GetVertexIndex(1)-1;
-		int v_index3 = face.GetVertexIndex(2)-1;
+		int v_index1 = face.GetVertexIndex(0) - 1;
+		int v_index2 = face.GetVertexIndex(1) - 1;
+		int v_index3 = face.GetVertexIndex(2) - 1;
 
 		//get vertices
 		glm::vec3 vertex1 = { model.GetVertex(v_index1,0),model.GetVertex(v_index1,1) ,model.GetVertex(v_index1,2) };
