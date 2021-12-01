@@ -26,17 +26,19 @@ public:
 	//print for sanity check
 	void ScaleTranslateBunny();
 	//functions to translate, scale and rotate WORLD
-	void MeshModel::WorldTranslateModel(float x, float y, float z);
-	void MeshModel::WorldScaleModel(float x, float y, float z);
-	void MeshModel::WorldRotateModel(float angle, glm::vec3 axis);
+	void WorldTranslateModel(float x, float y, float z);
+	void WorldScaleModel(float x, float y, float z);
+	void WorldRotateModel(float angle, glm::vec3 axis);
 	//functions to translate, scale and rotate MODEL
-	void MeshModel::ObjectTranslateModel(float x, float y, float z);
-	void MeshModel::ObjectScaleModel(float x, float y, float z);
-	void MeshModel::ObjectRotateModel(float angle, glm::vec3 axis);
+	void ObjectTranslateModel(float x, float y, float z);
+	void ObjectScaleModel(float x, float y, float z);
+	void ObjectRotateModel(float angle, glm::vec3 axis);
 	//get the total transformation as seen in the class
 	glm::mat4x4 GetTransform() {
 		return   worldTransform * objectTransform;
 	}
+
+	void ResetTransformations();
 
 	//each model contains its own transformations
 	glm::mat4 objectTransform;

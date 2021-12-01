@@ -24,7 +24,7 @@ static float zFar = 1000.0f;
 static float fovy = 90.0f;
 
 //control lookAt
-static glm::vec3 eye = { 0,0,1 };
+static glm::vec3 eye = { 0,0,2 };
 static glm::vec3 at = { 0,0,0 };
 static glm::vec3 up = { 0,1,0 };
 
@@ -291,7 +291,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		//static float f = 0.0f;
 
 		//before we open the imgui window, let's resize it
-		ImGui::SetNextWindowSize(ImVec2(390, 400));
+		ImGui::SetNextWindowSize(ImVec2(390, 430));
 
 
 		static int counter = 0;
@@ -312,9 +312,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static float local_scale = 1.0f;
 
 		//(object) vectors and variables to calculate delta (difference in transformations)
-		static glm::vec3 object_previous_translation(0.0f, 0.0f, 0.0f);
-		static glm::vec3 object_previous_rotation(0.0f, 0.0f, 0.0f);
-		static float object_previous_scale = 1.0f;
+		static glm::vec3 local_previous_translation(0.0f, 0.0f, 0.0f);
+		static glm::vec3 local_previous_rotation(0.0f, 0.0f, 0.0f);
+		static float local_previous_scale = 1.0f;
 		//(world) vectors and variables to calculate delta (difference in transformations)
 		static glm::vec3 world_previous_translation(0.0f, 0.0f, 0.0f);
 		static glm::vec3 world_previous_rotation(0.0f, 0.0f, 0.0f);
@@ -328,44 +328,44 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Text("      X           Y           Z  ");
 
 		//make sliders for the transformations
-		ImGui::SliderFloat3("translation_L", &local_translation.x, -1.5f, 1.5f);
-		ImGui::SliderFloat3("rotation_L", &local_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("scale_L", &local_scale, 0.5f, 1.5f);
+		ImGui::SliderFloat3("Translation", &local_translation.x, -1.5f, 1.5f);
+		ImGui::SliderFloat3("Rotation", &local_rotation.x, -180.0f, 180.0f);
+		ImGui::SliderFloat("Scale", &local_scale, 0.5f, 1.5f);
 
 		ImGui::Text("        ");
 		ImGui::Text("       World Transformations  ");
 		ImGui::Text("      X           Y           Z  ");
 		//make sliders for the transformations
-		ImGui::SliderFloat3("translation_W", &world_translation.x, -1.5f, 1.5f);
-		ImGui::SliderFloat3("rotation_W", &world_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("scale_W", &world_scale, 0.5f, 1.5f);
+		ImGui::SliderFloat3("_Translation", &world_translation.x, -1.5f, 1.5f);
+		ImGui::SliderFloat3("_Rotation", &world_rotation.x, -180.0f, 180.0f);
+		ImGui::SliderFloat("_Scale", &world_scale, 0.5f, 1.5f);
 
 		/*I am handling transformations by saving each in a vector and comparing to the last on and apply transformation only if something has changed*/
 
 		//switch on which transformations we are about to do. 1 for OBJECT 0 for WORLD
 
 			//handle translation and scale
-			if ((object_previous_scale != local_scale) || (object_previous_translation != local_translation) || (object_previous_rotation != local_rotation)) {
-				scene.GetModel(0).ObjectTranslateModel(local_translation.x - object_previous_translation.x, local_translation.y - object_previous_translation.y, local_translation.z - object_previous_translation.z);
-				object_previous_scale = local_scale;
+			if ((local_previous_scale != local_scale) || (local_previous_translation != local_translation) || (local_previous_rotation != local_rotation)) {
+				scene.GetModel(0).ObjectTranslateModel(local_translation.x - local_previous_translation.x, local_translation.y - local_previous_translation.y, local_translation.z - local_previous_translation.z);
+				local_previous_scale = local_scale;
 				scene.GetModel(0).objectScale[0][0] = scene.GetModel(0).objectScale[1][1] = scene.GetModel(0).objectScale[2][2] = local_scale;
 			}
 
 			//handle rotations in all directions
-			if (local_rotation.x != object_previous_rotation.x) {
-				scene.GetModel(0).ObjectRotateModel(local_rotation.x - object_previous_rotation.x, { 1.0f,0.0f,0.0f });
-			}
-			if (local_rotation.y != object_previous_rotation.y) {
-				scene.GetModel(0).ObjectRotateModel(local_rotation.y - object_previous_rotation.y, { 0.0f,1.0f,0.0f });
-			}
-			if (local_rotation.z != object_previous_rotation.z) {
-				scene.GetModel(0).ObjectRotateModel(local_rotation.z - object_previous_rotation.z, { 0.0f,0.0f,1.0f });
+			if (local_rotation.x != local_previous_rotation.x) {
+				scene.GetModel(0).ObjectRotateModel(local_rotation.x - local_previous_rotation.x, { 1.0f,0.0f,0.0f });
+			}														  
+			if (local_rotation.y != local_previous_rotation.y) {	  
+				scene.GetModel(0).ObjectRotateModel(local_rotation.y - local_previous_rotation.y, { 0.0f,1.0f,0.0f });
+			}														   
+			if (local_rotation.z != local_previous_rotation.z) {	   
+				scene.GetModel(0).ObjectRotateModel(local_rotation.z - local_previous_rotation.z, { 0.0f,0.0f,1.0f });
 			}
 
 			//save the last changes
-			object_previous_scale = local_scale;
-			object_previous_translation = local_translation;
-			object_previous_rotation = local_rotation;
+			local_previous_scale = local_scale;
+			local_previous_translation = local_translation;
+			local_previous_rotation = local_rotation;
 
 			//handle translation and scale
 			if ((world_previous_scale != world_scale) || (world_previous_translation != world_translation) || (world_previous_rotation != world_rotation)) {
@@ -394,6 +394,20 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 			counter++;
+
+		//reset transformations to default
+		if (ImGui::Button("Reset Transformations"))
+		{
+			world_previous_translation = world_translation = glm::vec3{ 0,0,0 };
+			world_previous_rotation = world_rotation = glm::vec3{ 0,0,0 };
+			world_previous_scale = world_scale = 1.f;
+
+			local_previous_translation = local_translation = glm::vec3{ 0,0,0 };
+			local_previous_rotation = local_rotation = glm::vec3{ 0,0,0 };
+			local_previous_scale = local_scale = 1.f;
+
+			scene.GetModel(0).ResetTransformations();
+		}
 		ImGui::SameLine();
 		ImGui::Text("counter = %d", counter);
 
@@ -412,7 +426,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	//before we open the imgui window, let's resize it
-	ImGui::SetNextWindowSize(ImVec2(390, 450));
+	ImGui::SetNextWindowSize(ImVec2(350, 550));
 
 	ImGui::Begin("Camera/Projection  Control");
 	ImGui::Text("Choose Projection");
@@ -460,10 +474,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::Text("           ");
 	ImGui::Text("           LookAt Control");
 	
-	
-	ImGui::Text("      X           Y           Z  ");
-	ImGui::InputFloat3("Eye", &eye.x);
-	ImGui::InputFloat3("At", &at.x);
+
+	if (ImGui::Button("Camera Reset"))
+	{
+		eye = { 0,0,2 };
+		at = { 0,0,0 };
+		up = { 0,1,0 };
+	}
+	ImGui::SliderFloat("x-Eye", &eye.x, -10, 10);
+	ImGui::SliderFloat("y-Eye", &eye.y, -10, 10);
+	ImGui::SliderFloat("z-Eye", &eye.z, -10, 10);
+	ImGui::SliderFloat("x-At", &at.x, -10, 10);
+	ImGui::SliderFloat("y-At", &at.y, -10, 10);
+	ImGui::SliderFloat("z-At", &at.z, -10, 10);
 	ImGui::InputFloat3("Up", &up.x);
 	scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
 

@@ -12,8 +12,8 @@ Camera::Camera()
 	zNear = 0.0f;
 	zFar = 0.0f;
 
-	eye = glm::vec3(1.0f, 1.0f, 1.0f);
-	at = glm::vec3(0.0f, 0.0f, 0.0f);
+	eye = glm::vec3(0.0f, 0.0f, 0.0f);
+	at = glm::vec3(0.0f, 0.0f, -1.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	glm::mat4x4 proj = glm::mat4x4(1.0f);
