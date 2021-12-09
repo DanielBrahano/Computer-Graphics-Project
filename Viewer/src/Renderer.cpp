@@ -336,7 +336,7 @@ void Renderer::DrawMesh(Scene scene, int j)
 		viewport(q1, q2, q3, min(viewport_height, viewport_width));
 
 		//draw triangle
-		DrawTriangle(q1, q2, q3, black);
+		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles);
 	}
 }
 
@@ -358,17 +358,16 @@ int Renderer::GetViewportHeight() const
 	return viewport_height;
 }
 
-void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color)
+void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles)
 {
-	//2 dim for drawing triangles
-	glm::vec2 q1 = p1;
-	glm::vec2 q2 = p2;
-	glm::vec2 q3 = p3;
-
 	//draw triangles
-	DrawLine(q1, q2, color);
-	DrawLine(q1, q3, color);
-	DrawLine(q2, q3, color);
+	DrawLine(p1, p2, color);
+	DrawLine(p1, p3, color);
+	DrawLine(p2, p3, color);
+
+	//if needed to draw bounding rectangles for each triangle
+	if (bounding_rectangles)
+		DrawBoundingRectangleForTriangles(p1, p2, p3);
 }
 
 void Renderer::DrawWorldCoordinates(Scene scene, int j)
@@ -663,6 +662,53 @@ glm::vec3 Renderer::HomToCartesian(glm::vec4 vec)
 
 	}
 	return glm::vec3(vec[0] / vec[3], vec[1] / vec[3], vec[2] / vec[3]);
+}
+
+//glm::vec4 Renderer::TransformationMultiplications(Scene scene, MeshModel model, glm::vec4 p)
+//{
+//	p = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * p;
+//}
+//
+void Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
+{
+
+	//find the extreme vertices in model, start with face vertex 1 and find with a  loop
+	float max_x = max(p1.x, p2.x);
+		  max_x = max(max_x, p3.x);
+	float max_y = max(p1.y, p2.y);
+		  max_y = max(max_y, p3.y);
+	float max_z = max(p1.z, p2.z);
+		  max_z = max(max_z, p3.z);
+	float min_x = min(p1.x, p2.x);
+		  min_x = min(min_x, p3.x);
+	float min_y = min(p1.y, p2.y);
+   		  min_y = min(min_y, p3.y);
+	float min_z = min(p1.z, p2.z);
+		  min_z = min(min_z, p3.z);
+
+	//rectangle coordinates
+	glm::vec4 a1{ min_x, min_y, min_z, 1.0f };
+	glm::vec4 a2{ min_x, min_y, max_z, 1.0f };
+	glm::vec4 a3{ min_x, max_y, min_z, 1.0f };
+	glm::vec4 a4{ min_x, max_y, max_z, 1.0f };
+	glm::vec4 a5{ max_x, min_y, min_z, 1.0f };
+	glm::vec4 a6{ max_x, min_y, max_z, 1.0f };
+	glm::vec4 a7{ max_x, max_y, min_z, 1.0f };
+	glm::vec4 a8{ max_x, max_y, max_z, 1.0f };
+
+	//connect edges
+	DrawLine(a1, a2, glm::vec3(0, 0, 0));
+	DrawLine(a1, a3, glm::vec3(0, 0, 0));
+	DrawLine(a1, a5, glm::vec3(0, 0, 0));
+	DrawLine(a2, a4, glm::vec3(0, 0, 0));
+	DrawLine(a2, a6, glm::vec3(0, 0, 0));
+	DrawLine(a3, a4, glm::vec3(0, 0, 0));
+	DrawLine(a3, a7, glm::vec3(0, 0, 0));
+	DrawLine(a4, a8, glm::vec3(0, 0, 0));
+	DrawLine(a5, a6, glm::vec3(0, 0, 0));
+	DrawLine(a5, a7, glm::vec3(0, 0, 0));
+	DrawLine(a6, a8, glm::vec3(0, 0, 0));
+	DrawLine(a7, a8, glm::vec3(0, 0, 0));
 }
 
 

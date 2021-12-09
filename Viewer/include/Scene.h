@@ -32,6 +32,7 @@ public:
 	bool draw_box;
 	bool draw_normals;
 	bool draw_face_normals;
+	bool bounding_rectangles;
 
 
 private:

@@ -7,7 +7,8 @@ Scene::Scene() :
 	active_model_index(0),
 	draw_box(false),
 	draw_normals(false),
-	draw_face_normals(false)
+	draw_face_normals(false),
+	bounding_rectangles(false)
 	
 {
 

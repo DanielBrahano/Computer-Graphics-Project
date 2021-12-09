@@ -67,7 +67,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(int argc, char** argv)
 {
-	int windowWidth = 1000, windowHeight = 1000;
+	int windowWidth = 1920, windowHeight = 1080;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
 		return 1;
@@ -153,9 +153,9 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	if (frameBufferWidth != renderer.GetViewportWidth() || frameBufferHeight != renderer.GetViewportHeight())
 	{
 		// TODO: Set new aspect ratio
-		if (scene.GetCameraCount() != 0) {
-			renderer.SetSize(frameBufferWidth, frameBufferHeight);
-		}
+		//if (scene.GetCameraCount() != 0) {
+		//	renderer.SetSize(frameBufferWidth, frameBufferHeight);
+		//}
 	}
 
 	if (!io.WantCaptureKeyboard)
@@ -470,6 +470,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	static bool DrawFaceNormals = false;
 	ImGui::Checkbox("Draw Face Normals", &DrawFaceNormals);
 	scene.draw_face_normals = DrawFaceNormals;
+
+	static bool DrawRectangles = false;
+	ImGui::Checkbox("Draw Rectangles", &DrawRectangles);
+	scene.bounding_rectangles = DrawRectangles;
 
 	ImGui::Text("           ");
 	ImGui::Text("           LookAt Control");
