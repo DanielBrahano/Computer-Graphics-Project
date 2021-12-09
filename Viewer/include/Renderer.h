@@ -37,7 +37,7 @@ private:
 	GLuint gl_screen_vtc;
 
 	//drawing triangles
-	void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color,bool bounding_rectangles);
+	void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles, glm::vec3 rectangle_color);
 	//drawing mesh using triangles
 	void DrawMesh(Scene scene, int j);
 
@@ -54,5 +54,5 @@ private:
 
 	glm::vec4 Renderer::TransformationMultiplications(Scene scene, MeshModel model, glm::vec4 p);
 
-	void Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+	void Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
 };

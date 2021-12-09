@@ -307,6 +307,12 @@ void Renderer::DrawMesh(Scene scene, int j)
 	//get the number of faces in model
 	int faceCounts = scene.GetModel(j).GetFacesCount();
 
+	//array of colors
+	vector<glm::vec3> colors;
+	colors.push_back(glm::vec3(0, 0, 1)); colors.push_back(glm::vec3(0, 1, 0)); colors.push_back(glm::vec3(0, 1, 1));
+	colors.push_back(glm::vec3(1, 0, 0)); colors.push_back(glm::vec3(1, 0, 1)); colors.push_back(glm::vec3(1, 1, 0));
+	int number_of_colors = 6;
+
 	//run on all faces and print triangles
 	for (int i = 0; i < faceCounts; i++)
 	{
@@ -334,9 +340,9 @@ void Renderer::DrawMesh(Scene scene, int j)
 
 		//screen coordinates
 		viewport(q1, q2, q3, min(viewport_height, viewport_width));
-
-		//draw triangle
-		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles);
+		
+		glm::vec3 rectangle_color = colors[i % number_of_colors];
+		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, rectangle_color);
 	}
 }
 
@@ -358,7 +364,7 @@ int Renderer::GetViewportHeight() const
 	return viewport_height;
 }
 
-void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles)
+void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles, glm::vec3 rectangle_color)
 {
 	//draw triangles
 	DrawLine(p1, p2, color);
@@ -367,7 +373,7 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 
 	//if needed to draw bounding rectangles for each triangle
 	if (bounding_rectangles)
-		DrawBoundingRectangleForTriangles(p1, p2, p3);
+		DrawBoundingRectangleForTriangles(p1, p2, p3, rectangle_color);
 }
 
 void Renderer::DrawWorldCoordinates(Scene scene, int j)
@@ -669,7 +675,7 @@ glm::vec3 Renderer::HomToCartesian(glm::vec4 vec)
 //	p = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * p;
 //}
 //
-void Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
+void Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3 ,glm::vec3 color )
 {
 
 	//find the extreme vertices in model, start with face vertex 1 and find with a  loop
@@ -697,18 +703,18 @@ void Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm
 	glm::vec4 a8{ max_x, max_y, max_z, 1.0f };
 
 	//connect edges
-	DrawLine(a1, a2, glm::vec3(0, 0, 0));
-	DrawLine(a1, a3, glm::vec3(0, 0, 0));
-	DrawLine(a1, a5, glm::vec3(0, 0, 0));
-	DrawLine(a2, a4, glm::vec3(0, 0, 0));
-	DrawLine(a2, a6, glm::vec3(0, 0, 0));
-	DrawLine(a3, a4, glm::vec3(0, 0, 0));
-	DrawLine(a3, a7, glm::vec3(0, 0, 0));
-	DrawLine(a4, a8, glm::vec3(0, 0, 0));
-	DrawLine(a5, a6, glm::vec3(0, 0, 0));
-	DrawLine(a5, a7, glm::vec3(0, 0, 0));
-	DrawLine(a6, a8, glm::vec3(0, 0, 0));
-	DrawLine(a7, a8, glm::vec3(0, 0, 0));
+	DrawLine(a1, a2, color);
+	DrawLine(a1, a3, color);
+	DrawLine(a1, a5, color);
+	DrawLine(a2, a4, color);
+	DrawLine(a2, a6, color);
+	DrawLine(a3, a4, color);
+	DrawLine(a3, a7, color);
+	DrawLine(a4, a8, color);
+	DrawLine(a5, a6, color);
+	DrawLine(a5, a7, color);
+	DrawLine(a6, a8, color);
+	DrawLine(a7, a8, color);
 }
 
 
