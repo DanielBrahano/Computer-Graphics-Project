@@ -20,11 +20,21 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	InitOpenglRendering();
 	CreateBuffers(viewport_width, viewport_height);
 	paint_triangle = false;
+
+	//array for 2d bolean
+	bool_array = new bool* [viewport_height];
+	for (int i = 0; i < viewport_height; i++)
+		bool_array[i] = new bool[viewport_width];
 }
 
 Renderer::~Renderer()
 {
 	delete[] color_buffer;
+
+	//Delete the array created
+	for (int i = 0; i < viewport_height; i++)  //To delete the inner arrays
+		delete[] bool_array[i];
+	delete[] bool_array;             //To delete the outer array
 }
 
 void Renderer::PutPixel(int i, int j, const glm::vec3& color)
@@ -90,7 +100,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				e = e - 2 * dx;
 			}
 			if (paint_triangle && paintFlag)
-				bool_array[x ][y ] = true;
+				bool_array[x][y] = true;
 			PutPixel(x, y, color);
 			x++;
 			e = e + 2 * dy;
@@ -130,7 +140,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				e = e - 2 * dy;
 			}
 			if (paint_triangle && paintFlag)
-				bool_array [x][y] = true;
+				bool_array[x][y] = true;
 			PutPixel(x, y, color);
 			y++;
 			e = e + 2 * dx;
@@ -316,7 +326,7 @@ void Renderer::DrawMesh(Scene scene, int j)
 	vector<glm::vec3> colors;
 	colors.push_back(glm::vec3(0, 0, 1)); colors.push_back(glm::vec3(0, 1, 0)); colors.push_back(glm::vec3(0, 1, 1));
 	colors.push_back(glm::vec3(1, 0, 0)); colors.push_back(glm::vec3(1, 0, 1)); colors.push_back(glm::vec3(1, 1, 0));
-	colors.push_back(glm::vec3(0, 0, 0)); colors.push_back(glm::vec3(1, 1, 1)); 
+	colors.push_back(glm::vec3(0, 0, 0)); colors.push_back(glm::vec3(1, 1, 1));
 
 	int number_of_colors = 8;
 
@@ -341,13 +351,13 @@ void Renderer::DrawMesh(Scene scene, int j)
 		p3 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * p3;
 
 		//go to cartesian coordinates
-		glm::vec3 q1 =  HomToCartesian(p1);
-		glm::vec3 q2 =  HomToCartesian(p2);
-		glm::vec3 q3 =  HomToCartesian(p3);		
+		glm::vec3 q1 = HomToCartesian(p1);
+		glm::vec3 q2 = HomToCartesian(p2);
+		glm::vec3 q3 = HomToCartesian(p3);
 
 		//screen coordinates
 		viewport(q1, q2, q3, min(viewport_height, viewport_width));
-		
+
 		glm::vec3 rectangle_color = colors[i % number_of_colors];
 		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, rectangle_color);
 		//DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, glm::vec3{ rand() % 255,rand() % 255,rand() % 255 });
@@ -381,14 +391,11 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 	if (paint_triangle)
 	{
 		paintFlag = true;
-		//array for 2d bolean
-		bool_array = new bool* [viewport_height];
-		for (int i = 0; i < viewport_height; i++)
-			bool_array[i] = new bool[viewport_width];
+		
 
 		//initialize to false
-		for (int i = 0; i < viewport_height; i++)
-			for (int j = 0; j < viewport_width; j++)
+		for (int i = offset_x; i < dims[0] + offset_x; i++)
+			for (int j = offset_y; j < dims[1] + offset_y; j++)
 				bool_array[i][j] = false;
 	}
 
@@ -401,13 +408,13 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 	if (paint_triangle)
 	{
 		//run through the bool array and if we need to paint the pixel accourding to scanline, change value to true
-		
-		for (int i = 0; i < viewport_height; i++)
+
+		for (int i = offset_x; i < dims[0] + offset_x; i++)
 		{
 			int counter = 0;
 			int begin = 0;
 			int end = 0;
-			for (int j = 0; j < viewport_width; j++)
+			for (int j = offset_y; j < dims[1] + offset_y; j++)
 			{
 				if (bool_array[i][j] == true && counter == 0)//if we reached an egdle
 				{
@@ -417,7 +424,7 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 				if (bool_array[i][j] == true && counter > 0)
 				{
 					end = j;
-				}				
+				}
 			}
 			if (end > begin)
 				for (int j = begin; j <= end; j++)
@@ -425,26 +432,23 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 			paintFlag = false;
 		}
 
-		PaintTriangle(viewport_height, viewport_width, rectangle_color);
+		PaintTriangle(dims[0], dims[1], rectangle_color);
 
-		//Delete the array created
-		for (int i = 0; i < viewport_height; i++)  //To delete the inner arrays
-			delete[] bool_array[i];
-		delete[] bool_array;             //To delete the outer array
+
 		delete[] dims;
 	}
-	
-	
-	
+
+
+
 }
 
 void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color)
 {
-	for (int i = 0; i < rows; i++)
-		for (int j = 0; j < cols; j++)
+	for (int i = offset_x; i < rows + offset_x; i++)
+		for (int j = offset_y; j < cols + offset_y; j++)
 		{
-			if (bool_array[i ][j ])
-				PutPixel(i , j , color);
+			if (bool_array[i][j])
+				PutPixel(i, j, color);
 		}
 }
 void Renderer::DrawWorldCoordinates(Scene scene, int j)
@@ -460,9 +464,9 @@ void Renderer::DrawWorldCoordinates(Scene scene, int j)
 
 
 	//calculate positive end
-	world_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() *  world_x_axis;
-	world_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() *  world_y_axis;
-	world_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() *  world_z_axis;
+	world_x_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * world_x_axis;
+	world_y_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * world_y_axis;
+	world_z_axis = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * world_z_axis;
 	//world_origin = scene.GetActiveCamera().GetOrthographicProjection() * scene.GetActiveCamera().GetViewTransformation() *  world_origin;
 
 	//calculate negative end
@@ -475,7 +479,7 @@ void Renderer::DrawWorldCoordinates(Scene scene, int j)
 	glm::vec3 q2 = HomToCartesian(world_y_axis);
 	glm::vec3 q3 = HomToCartesian(world_z_axis);
 
-	
+
 	glm::vec3 p1 = HomToCartesian(world_neg_x_axis);
 	glm::vec3 p2 = HomToCartesian(world_neg_y_axis);
 	glm::vec3 p3 = HomToCartesian(world_neg_z_axis);
@@ -608,7 +612,7 @@ void Renderer::DrawBoundingBox(Scene scene, MeshModel model)
 
 void Renderer::DrawNormal(Scene scene, MeshModel model)
 {
-	for (int i = 0; i < model.GetFacesCount() ; i++) {
+	for (int i = 0; i < model.GetFacesCount(); i++) {
 		Face face = model.GetFace(i);
 
 		//get index
@@ -694,7 +698,7 @@ void Renderer::viewport(glm::vec3& p1, glm::vec3& p2, glm::vec3& p3, float heigh
 
 void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
 
-	for (int i = 0; i < model.GetFacesCount() ; i++) {
+	for (int i = 0; i < model.GetFacesCount(); i++) {
 		Face face = model.GetFace(i);
 
 		//get index
@@ -706,7 +710,7 @@ void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
 		glm::vec3 vertex1 = { model.GetVertex(v_index1,0),model.GetVertex(v_index1,1) ,model.GetVertex(v_index1,2) };
 		glm::vec3 vertex2 = { model.GetVertex(v_index2,0),model.GetVertex(v_index2,1) ,model.GetVertex(v_index2,2) };
 		glm::vec3 vertex3 = { model.GetVertex(v_index3,0),model.GetVertex(v_index3,1) ,model.GetVertex(v_index3,2) };
-		
+
 		//calculate normals
 		glm::vec4 average = { 0,0,0,1 };
 		glm::vec4 normal = glm::vec4(glm::normalize(glm::cross(vertex1 - vertex2, vertex1 - vertex3)), 0);
@@ -751,17 +755,17 @@ int* Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm
 
 	//find the extreme vertices in model, start with face vertex 1 and find with a  loop
 	float max_x = max(p1.x, p2.x);
-		  max_x = max(max_x, p3.x);
+	max_x = max(max_x, p3.x);
 	float max_y = max(p1.y, p2.y);
-		  max_y = max(max_y, p3.y);
+	max_y = max(max_y, p3.y);
 	float max_z = max(p1.z, p2.z);
-		  max_z = max(max_z, p3.z);
+	max_z = max(max_z, p3.z);
 	float min_x = min(p1.x, p2.x);
-		  min_x = min(min_x, p3.x);
+	min_x = min(min_x, p3.x);
 	float min_y = min(p1.y, p2.y);
-   		  min_y = min(min_y, p3.y);
+	min_y = min(min_y, p3.y);
 	float min_z = min(p1.z, p2.z);
-		  min_z = min(min_z, p3.z);
+	min_z = min(min_z, p3.z);
 
 	////rectangle coordinates
 	//glm::vec4 a1{ min_x, min_y, min_z, 1.0f };
@@ -801,23 +805,22 @@ int* Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm
 		DrawLine(a7, a8, color);
 
 	}
-	
-	
+
+
 	int dx = max_x - min_x;
 	int dy = max_y - min_y;
 
 	int* dims = new int[2];
 
-	dims[0] = dx+1;
-	dims[1] = dy+1;
+	dims[0] = dx + 1;
+	dims[1] = dy + 1;
 
 	//offset for boolean array
 	offset_x = min_x;
 	offset_y = min_y;
-	
+
 	return dims;
 }
-
 
 
 
