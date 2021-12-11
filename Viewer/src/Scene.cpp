@@ -8,7 +8,8 @@ Scene::Scene() :
 	draw_box(false),
 	draw_normals(false),
 	draw_face_normals(false),
-	bounding_rectangles(false)
+	bounding_rectangles(false),
+	paint_triangles(false)
 	
 {
 

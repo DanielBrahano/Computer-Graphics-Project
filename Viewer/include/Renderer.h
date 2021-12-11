@@ -52,7 +52,15 @@ private:
 
 	glm::vec3 HomToCartesian(glm::vec4 vec);
 
-	glm::vec4 Renderer::TransformationMultiplications(Scene scene, MeshModel model, glm::vec4 p);
+	void Renderer::TransformationMultiplications(Scene scene, MeshModel model, glm::vec4 p);
 
-	void Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color);
+	int* Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles);
+
+	void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color);
+
+	bool** bool_array;
+	int offset_x;
+	int offset_y;
+	bool paint_triangle;
+	bool paintFlag;
 };

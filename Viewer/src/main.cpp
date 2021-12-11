@@ -461,19 +461,35 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	
-	ImGui::Checkbox("Bounding Box", &BoundingBox);
-	scene.draw_box = BoundingBox;
+
 
 	ImGui::Checkbox("Draw Normals", &DrawNormals);
 	scene.draw_normals = DrawNormals;
+
+	ImGui::SameLine();
 
 	static bool DrawFaceNormals = false;
 	ImGui::Checkbox("Draw Face Normals", &DrawFaceNormals);
 	scene.draw_face_normals = DrawFaceNormals;
 
+	ImGui::Checkbox("Bounding Box", &BoundingBox);
+	scene.draw_box = BoundingBox;
+
+	ImGui::SameLine();
+
 	static bool DrawRectangles = false;
 	ImGui::Checkbox("Draw Rectangles", &DrawRectangles);
 	scene.bounding_rectangles = DrawRectangles;
+
+	//option to draw axis for model and world
+	ImGui::Checkbox("World axes  ", &world_axes);	ImGui::SameLine();
+	ImGui::Checkbox("Model axes", &model_axes);
+	if (scene.GetModelCount()) {
+		scene.GetModel(0).DrawWorldAxes = world_axes;
+		scene.GetModel(0).DrawModelAxes = model_axes;
+	}
+
+	ImGui::Checkbox("Paint Triangles", &scene.paint_triangles);
 
 	ImGui::Text("           ");
 	ImGui::Text("           LookAt Control");
@@ -494,13 +510,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::InputFloat3("Up", &up.x);
 	scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
 
-	//option to draw axis for model and world
-	ImGui::Checkbox("World axes", &world_axes);
-	ImGui::Checkbox("Model axes", &model_axes);
-	if (scene.GetModelCount()) {
-		scene.GetModel(0).DrawWorldAxes = world_axes;
-		scene.GetModel(0).DrawModelAxes = model_axes;
-	}
+	
 
 	ImGui::End();
 }
