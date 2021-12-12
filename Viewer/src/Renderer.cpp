@@ -22,9 +22,9 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	paint_triangle = false;
 
 	//array for 2d bolean
-	bool_array = new bool* [viewport_height];
-	for (int i = 0; i < viewport_height; i++)
-		bool_array[i] = new bool[viewport_width];
+	bool_array = new bool* [viewport_width+1];
+	for (int i = 0; i < viewport_width+1; i++)
+		bool_array[i] = new bool[viewport_height+1];
 }
 
 Renderer::~Renderer()
@@ -32,7 +32,7 @@ Renderer::~Renderer()
 	delete[] color_buffer;
 
 	//Delete the array created
-	for (int i = 0; i < viewport_height; i++)  //To delete the inner arrays
+	for (int i = 0; i < viewport_width+1; i++)  //To delete the inner arrays
 		delete[] bool_array[i];
 	delete[] bool_array;             //To delete the outer array
 }
@@ -99,7 +99,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				mirrorFlag ? y-- : y++;
 				e = e - 2 * dx;
 			}
-			if (paint_triangle && paintFlag)
+			if (paint_triangle && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
 				bool_array[x][y] = true;
 			PutPixel(x, y, color);
 			x++;
@@ -139,7 +139,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				mirrorFlag ? x-- : x++;
 				e = e - 2 * dy;
 			}
-			if (paint_triangle && paintFlag)
+			if (paint_triangle && paintFlag&& (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
 				bool_array[x][y] = true;
 			PutPixel(x, y, color);
 			y++;
@@ -392,14 +392,12 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 	{
 		paintFlag = true;
 		
-
 		//initialize to false
-		for (int i = offset_x; i < dims[0] + offset_x; i++)
-			for (int j = offset_y; j < dims[1] + offset_y; j++)
-				bool_array[i][j] = false;
+		for (int i = offset_x-1; i < dims[0] + offset_x+1; i++)
+			for (int j = offset_y-1; j < dims[1] + offset_y+1; j++)
+				if ((i <= viewport_width) && (j <= viewport_height) && i >= 0 && j >= 0)
+					bool_array[i][j] = false;
 	}
-
-
 	//draw triangles
 	DrawLine(p1, p2, color);
 	DrawLine(p1, p3, color);
@@ -409,45 +407,42 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 	{
 		//run through the bool array and if we need to paint the pixel accourding to scanline, change value to true
 
-		for (int i = offset_x; i < dims[0] + offset_x; i++)
+		for (int i = offset_x; i <= dims[0] + offset_x; i++)
 		{
 			int counter = 0;
 			int begin = 0;
 			int end = 0;
-			for (int j = offset_y; j < dims[1] + offset_y; j++)
+			for (int j = offset_y; j <= dims[1] + offset_y; j++)
 			{
-				if (bool_array[i][j] == true && counter == 0)//if we reached an egdle
+				if ((i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0 && bool_array[i][j] == true && counter == 0)//if we reached an egdle
 				{
 					begin = j;
+					end = j;
 					counter++;
 				}
-				if (bool_array[i][j] == true && counter > 0)
+				if ((i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0 && bool_array[i][j] == true && counter > 0)
 				{
 					end = j;
 				}
 			}
-			if (end > begin)
 				for (int j = begin; j <= end; j++)
-					bool_array[i][j] = true;
+					if ((i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0)
+						bool_array[i][j] = true;
 			paintFlag = false;
 		}
 
 		PaintTriangle(dims[0], dims[1], rectangle_color);
 
-
 		delete[] dims;
 	}
-
-
-
 }
 
 void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color)
 {
-	for (int i = offset_x; i < rows + offset_x; i++)
-		for (int j = offset_y; j < cols + offset_y; j++)
+	for (int i = offset_x; i < rows + offset_x+1; i++)
+		for (int j = offset_y; j < cols + offset_y+1; j++)
 		{
-			if (bool_array[i][j])
+			if ((i <= viewport_width) && i > 0 && j > 0 && (j <= viewport_height) && bool_array[i][j])
 				PutPixel(i, j, color);
 		}
 }
