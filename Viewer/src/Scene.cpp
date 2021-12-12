@@ -9,7 +9,8 @@ Scene::Scene() :
 	draw_normals(false),
 	draw_face_normals(false),
 	bounding_rectangles(false),
-	paint_triangles(false)
+	paint_triangles(false),
+	gray_scale(false)
 	
 {
 

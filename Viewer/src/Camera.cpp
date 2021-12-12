@@ -5,12 +5,14 @@ Camera::Camera()
 	view_transformation = glm::mat4x4(1.0f);
 	projection_transformation = glm::mat4x4(1.0f);
 	//initiallize all new variables/transform matrices
-	right = 0.0f;
-	left = 0.0f;
-	top = 0.0f;
-	bottom = 0.0f;
+	right = 1;
+	left = -1;
+	top = 1.0f;
+	bottom = -1.0f;
 	zNear = 0.0f;
-	zFar = 0.0f;
+	zFar = 1.0f;
+	fovy = 45.0f;
+	aspectRatio = 1.0;
 
 	eye = glm::vec3(0.0f, 0.0f, 0.0f);
 	at = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -52,6 +54,7 @@ glm::mat4x4 Camera::GetViewTransformation()
 {
 	return viewTransformation;
 }
+
 
 
 

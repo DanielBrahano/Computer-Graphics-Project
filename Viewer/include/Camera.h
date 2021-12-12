@@ -19,10 +19,11 @@ public:
 
 
 	//fields additions
-	float right, left;
-	float top, bottom;
+	int right, left;
+	int top, bottom;
 	float zNear, zFar;
 	float fovy;
+	float aspectRatio;
 
 	//lookat parameters
 	glm::vec3 eye;

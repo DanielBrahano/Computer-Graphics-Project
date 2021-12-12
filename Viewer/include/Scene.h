@@ -34,6 +34,8 @@ public:
 	bool draw_face_normals;
 	bool bounding_rectangles;
 	bool paint_triangles;
+	bool gray_scale;
+	
 
 
 private:
