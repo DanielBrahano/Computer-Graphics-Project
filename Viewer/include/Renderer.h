@@ -31,13 +31,22 @@ private:
 	void InitOpenglRendering();
 
 	float* color_buffer;
+	float* z_buffer;
 	int viewport_width;
 	int viewport_height;
 	GLuint gl_screen_tex;
 	GLuint gl_screen_vtc;
 
+	bool** bool_array;
+	int offset_x;
+	int offset_y;
+	bool paintFlag;
+	bool paint_triangle;
+	bool gray_scale;
+
+
 	//drawing triangles
-	void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles, glm::vec3 rectangle_color);
+	void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles, glm::vec3 rectangle_color, Scene scene);
 	//drawing mesh using triangles
 	void DrawMesh(Scene scene, int j);
 
@@ -56,13 +65,17 @@ private:
 
 	int* DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles);
 
-	void PaintTriangle(int rows, int cols, glm::vec3 color);
+	void PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_triangle, bool gray_scale, float zFar);
 
 	void CreateBoolArray(bool** bool_array);
 
-	bool** bool_array;
-	int offset_x;
-	int offset_y;
-	bool paint_triangle;
-	bool paintFlag;
+	float CalculateArea(glm::vec3& q1, glm::vec3& q2, glm::vec3& q3);
+
+	float zCalculation(int _x, int  point_y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+
+	void Set_z(int i, int j, float z);
+
+	float Get_z(int i, int j);
+
+
 };

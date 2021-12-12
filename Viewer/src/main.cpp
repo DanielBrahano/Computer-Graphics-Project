@@ -14,15 +14,6 @@
 #include "Utils.h"
 #include <iostream>
 
-//variables for window size
-static int top = 1.0f;
-static int bottom = -1.0f;
-static int _left = -1.0;
-static int _right = 1.0f;
-static float zNear = 0.1f;
-static float zFar = 1000.0f;
-static float fovy = 90.0f;
-
 //control lookAt
 static glm::vec3 eye = { 0,0,2 };
 static glm::vec3 at = { 0,0,0 };
@@ -432,6 +423,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	//before we open the imgui window, let's resize it
 	ImGui::SetNextWindowSize(ImVec2(350, 550));
 
+	Camera& camera = scene.GetActiveCamera();
 	ImGui::Begin("Camera/Projection  Control");
 	ImGui::Text("Choose Projection");
 	static int projection = 1;
@@ -441,28 +433,29 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	
 
 	/* UP, DOWN , TOP , BOTTOM sliders*/
-	ImGui::SliderInt("down", &bottom, -5, 5);
-	ImGui::SliderInt("up", &top, -5, 5);
+	ImGui::SliderInt("down", &camera.bottom, -5, 5);
+	ImGui::SliderInt("up", &camera.top, -5, 5);
 
-	ImGui::SliderInt("left", &_left, -5.0f, 5.0f);
-	ImGui::SliderInt("right", &_right, -5.0f, 5.0f);
+	ImGui::SliderInt("left", &camera.left, -5.0f, 5.0f);
+	ImGui::SliderInt("right", &camera.right, -5.0f, 5.0f);
 
 
-	ImGui::SliderFloat("near", &zNear, -1.00f, 100.0f);
-	ImGui::SliderFloat("far", &zFar, -100.0f, 100.0f);
+	ImGui::SliderFloat("near", &camera.zNear, -1.00f, 1.0f);
+	ImGui::SliderFloat("far", &camera.zFar, 0.0f, 100.0f);
 
 	if ((projection == 1) && (scene.GetModelCount()))
 	{
-		scene.GetActiveCamera().SetOrthographicProjection(_left, _right, bottom, top, zNear, zFar);
+		scene.GetActiveCamera().SetOrthographicProjection(camera.left, camera.right, camera.bottom, camera.top, camera.zNear, camera.zFar);
 	}
 	static float f0 = 0.001f;
 	if ((projection == 2) && (scene.GetModelCount()))
 	{
 		
-		ImGui::InputFloat("fovy", &fovy, 0.01f, 1.0f, "%.2f");
-		float aspectRatio = (_right - _left) / (top - bottom);
-		scene.GetActiveCamera().SetPerspectiveProjection(glm::radians(fovy), aspectRatio, zNear, zFar);
+		ImGui::InputFloat("fovy", &camera.fovy, 0.01f, 1.0f, "%.2f");
+		float aspectRatio = (camera.right - camera.left) / (camera.top - camera.bottom);
+		scene.GetActiveCamera().SetPerspectiveProjection(glm::radians(camera.fovy), camera.aspectRatio, camera.zNear, camera.zFar);
 	}
+	
 
 	
 
@@ -494,6 +487,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	ImGui::Checkbox("Paint Triangles", &scene.paint_triangles);
+	ImGui::Checkbox("Gray Scale", &scene.gray_scale);
 
 	ImGui::Text("           ");
 	ImGui::Text("           LookAt Control");
@@ -514,7 +508,29 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::InputFloat3("Up", &up.x);
 	scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
 
-	
+	static int zbuffer = 1;
+	ImGui::RadioButton("No Color", &zbuffer, 1); ImGui::SameLine();
+	ImGui::RadioButton("Color", &zbuffer, 2); ImGui::SameLine();
+	ImGui::RadioButton("Gray Scale", &zbuffer, 3);
 
+	//if (zbuffer==1)
+	//	{
+	//	scene.gray_scale = false;
+	//	scene.paint_triangles = false;
+	//}
+
+	//if (zbuffer == 2)
+	//{
+	//	scene.gray_scale = false;
+	//	scene.paint_triangles = true;
+
+	//}
+
+	//if (zbuffer == 3)
+	//{
+	//	scene.gray_scale = true;
+	//	scene.paint_triangles = false;
+
+	//}
 	ImGui::End();
 }

@@ -20,16 +20,18 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	InitOpenglRendering();
 	CreateBuffers(viewport_width, viewport_height);
 	paint_triangle = false;
+	gray_scale = false;
 
 	//array for 2d bolean
-	bool_array = new bool* [viewport_width+1];
-	for (int i = 0; i < viewport_width+1; i++)
-		bool_array[i] = new bool[viewport_height+1];
+	bool_array = new bool* [(viewport_width + 1)];
+	for (int i = 0; i < viewport_width + 1; i++)
+		bool_array[i] = new bool[(viewport_height + 1)];
 }
 
 Renderer::~Renderer()
 {
 	delete[] color_buffer;
+	delete[] z_buffer;
 
 	//Delete the array created
 	for (int i = 0; i < viewport_width+1; i++)  //To delete the inner arrays
@@ -99,7 +101,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				mirrorFlag ? y-- : y++;
 				e = e - 2 * dx;
 			}
-			if (paint_triangle && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
+			if ((paint_triangle || gray_scale) && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
 				bool_array[x][y] = true;
 			PutPixel(x, y, color);
 			x++;
@@ -139,7 +141,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				mirrorFlag ? x-- : x++;
 				e = e - 2 * dy;
 			}
-			if (paint_triangle && paintFlag&& (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
+			if ((paint_triangle || gray_scale) && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
 				bool_array[x][y] = true;
 			PutPixel(x, y, color);
 			y++;
@@ -148,12 +150,13 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 	}
 }
 
-
 void Renderer::CreateBuffers(int w, int h)
 {
 	CreateOpenglBuffer(); //Do not remove this line.
-	color_buffer = new float[3 * w * h];
+	color_buffer = new float[(3 * w * h)];
+	z_buffer = new float[w * h];
 	ClearColorBuffer(glm::vec3(0.0f, 0.0f, 0.0f));
+	
 }
 
 //##############################
@@ -276,7 +279,9 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 		for (int j = 0; j < viewport_height; j++)
 		{
 			PutPixel(i, j, color);
+			z_buffer[Z_INDEX(viewport_width, i, j)] = 500;
 		}
+
 	}
 }
 
@@ -288,6 +293,7 @@ void Renderer::Render(Scene& scene)
 	int half_height = viewport_height / 2;
 
 	paint_triangle = scene.paint_triangles;
+	gray_scale = scene.gray_scale;
 	//for every model in the scene do 
 	for (int j = 0; j < scene.GetModelCount(); j++) {
 
@@ -359,18 +365,15 @@ void Renderer::DrawMesh(Scene scene, int j)
 		viewport(q1, q2, q3, min(viewport_height, viewport_width));
 
 		glm::vec3 rectangle_color = colors[i % number_of_colors];
-		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, rectangle_color);
-		//DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, glm::vec3{ rand() % 255,rand() % 255,rand() % 255 });
+		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, rectangle_color, scene);
 	}
 }
-
 
 void Renderer::SetSize(int width, int height)
 {
 	viewport_width = width;
 	viewport_height = height;
 }
-
 
 int Renderer::GetViewportWidth() const
 {
@@ -382,13 +385,13 @@ int Renderer::GetViewportHeight() const
 	return viewport_height;
 }
 
-void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles, glm::vec3 rectangle_color)
+void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles, glm::vec3 rectangle_color, Scene scene)
 {
 
 	//the function drawing the rectangles if needed and returns 2d array
 	int* dims = DrawBoundingRectangleForTriangles(p1, p2, p3, rectangle_color, bounding_rectangles);
 
-	if (paint_triangle)
+	if (paint_triangle || gray_scale)
 	{
 		paintFlag = true;
 		
@@ -403,7 +406,7 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 	DrawLine(p1, p3, color);
 	DrawLine(p2, p3, color);
 
-	if (paint_triangle)
+	if (paint_triangle || gray_scale)
 	{
 		//run through the bool array and if we need to paint the pixel accourding to scanline, change value to true
 
@@ -427,25 +430,44 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 			}
 				for (int j = begin; j <= end; j++)
 					if ((i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0)
+					{
 						bool_array[i][j] = true;
+						float z = zCalculation(i, j, p1, p2, p3);
+						if (z < Get_z(i,j))
+						{
+							Set_z(i, j, z);
+						}
+							
+					}
+						
 			paintFlag = false;
 		}
 
-		PaintTriangle(dims[0], dims[1], rectangle_color);
+		PaintTriangle(dims[0], dims[1], rectangle_color, paint_triangle, gray_scale, scene.GetActiveCamera().zFar);
 
 		delete[] dims;
 	}
 }
 
-void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color)
+void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_triangle, bool gray_scale, float zFar)
 {
 	for (int i = offset_x; i < rows + offset_x+1; i++)
 		for (int j = offset_y; j < cols + offset_y+1; j++)
 		{
-			if ((i <= viewport_width) && i > 0 && j > 0 && (j <= viewport_height) && bool_array[i][j])
+			//if we want to fill the triangles with colors
+			if (paint_triangle && (i <= viewport_width) && i > 0 && j > 0 && (j <= viewport_height) && bool_array[i][j])
 				PutPixel(i, j, color);
+
+			//if gray scale
+			if (gray_scale && (i <= viewport_width) && i > 0 && j > 0 && (j <= viewport_height) && bool_array[i][j])
+			{
+				float z = Get_z(i, j);
+				color = glm::vec3((1-z / zFar), (1- z / zFar), ( 1-z / zFar));
+				PutPixel(i, j, color);
+			}
 		}
 }
+
 void Renderer::DrawWorldCoordinates(Scene scene, int j)
 {
 	glm::vec4 world_x_axis{ 20.0f,0.0f,0.0f,1.0f };
@@ -604,7 +626,6 @@ void Renderer::DrawBoundingBox(Scene scene, MeshModel model)
 
 }
 
-
 void Renderer::DrawNormal(Scene scene, MeshModel model)
 {
 	for (int i = 0; i < model.GetFacesCount(); i++) {
@@ -669,7 +690,6 @@ void Renderer::DrawNormal(Scene scene, MeshModel model)
 
 	}
 }
-
 
 void Renderer::viewport(glm::vec3& p1, glm::vec3& p2, glm::vec3& p3, float height)
 {
@@ -816,6 +836,44 @@ int* Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm
 
 	return dims;
 }
+
+float Renderer::CalculateArea(glm::vec3& q1, glm::vec3& q2, glm::vec3& q3)
+{
+	float x1 = q1.x;
+	float y1 = q1.y;
+	float x2 = q2.x;
+	float y2 = q2.y;
+	float x3 = q3.x;
+	float y3 = q3.y;
+
+	//triangle ara formula
+	return abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
+}
+
+//calculating z coordinate of a point inside triangle using :Linear interpolation - Barycentric method
+float Renderer::zCalculation(int _x, int  _y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
+{
+	float A1 = CalculateArea(glm::vec3(_x, _y, 1), p1, p2);
+	float A2 = CalculateArea(glm::vec3(_x, _y, 1), p1, p3);
+	float A3 = CalculateArea(glm::vec3(_x, _y, 1), p2, p3);
+
+	float Total_Area = A1 + A2 + A3;
+
+	return ((A1 / Total_Area * p1.z) + (A2 / Total_Area * p2.z) + (A3 / Total_Area * p3.z));
+}
+
+//z buffer setter
+void Renderer::Set_z(int i, int j, float z)
+{
+	z_buffer[Z_INDEX(viewport_width, i, j)] = z;
+}
+
+//z buffer getter
+float Renderer::Get_z(int i, int j) 
+{
+	return z_buffer[Z_INDEX(viewport_width, i, j)];
+}
+
 
 
 
