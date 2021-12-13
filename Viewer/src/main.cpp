@@ -441,13 +441,13 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 
 	ImGui::SliderFloat("near", &camera.zNear, -1.00f, 1.0f);
-	ImGui::SliderFloat("far", &camera.zFar, 0.0f, 100.0f);
+	ImGui::SliderFloat("far", &camera.zFar, 0.0f, 10000.0f);
 
 	if ((projection == 1) && (scene.GetModelCount()))
 	{
 		scene.GetActiveCamera().SetOrthographicProjection(camera.left, camera.right, camera.bottom, camera.top, camera.zNear, camera.zFar);
 	}
-	static float f0 = 0.001f;
+
 	if ((projection == 2) && (scene.GetModelCount()))
 	{
 		
@@ -455,10 +455,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		float aspectRatio = (camera.right - camera.left) / (camera.top - camera.bottom);
 		scene.GetActiveCamera().SetPerspectiveProjection(glm::radians(camera.fovy), camera.aspectRatio, camera.zNear, camera.zFar);
 	}
-	
-
-	
-
 
 	ImGui::Checkbox("Draw Normals", &DrawNormals);
 	scene.draw_normals = DrawNormals;

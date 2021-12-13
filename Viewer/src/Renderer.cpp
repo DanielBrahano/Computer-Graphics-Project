@@ -279,7 +279,7 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 		for (int j = 0; j < viewport_height; j++)
 		{
 			PutPixel(i, j, color);
-			z_buffer[Z_INDEX(viewport_width, i, j)] = 500;
+			z_buffer[Z_INDEX(viewport_width, i, j)] = INFINITY;
 		}
 
 	}
@@ -335,6 +335,8 @@ void Renderer::DrawMesh(Scene scene, int j)
 	colors.push_back(glm::vec3(0, 0, 0)); colors.push_back(glm::vec3(1, 1, 1));
 
 	int number_of_colors = 8;
+
+
 
 	//run on all faces and print triangles
 	for (int i = 0; i < faceCounts; i++)
@@ -451,6 +453,8 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 
 void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_triangle, bool gray_scale, float zFar)
 {
+	zFar += 1;
+	zFar *= min(viewport_width, viewport_height);
 	for (int i = offset_x; i < rows + offset_x+1; i++)
 		for (int j = offset_y; j < cols + offset_y+1; j++)
 		{
@@ -462,7 +466,7 @@ void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_tri
 			if (gray_scale && (i <= viewport_width) && i > 0 && j > 0 && (j <= viewport_height) && bool_array[i][j])
 			{
 				float z = Get_z(i, j);
-				color = glm::vec3((1-z / zFar), (1- z / zFar), ( 1-z / zFar));
+				color = glm::vec3((1 - z / zFar), (1 - z / zFar), (1 - z / zFar));
 				PutPixel(i, j, color);
 			}
 		}
@@ -847,15 +851,16 @@ float Renderer::CalculateArea(glm::vec3& q1, glm::vec3& q2, glm::vec3& q3)
 	float y3 = q3.y;
 
 	//triangle ara formula
-	return abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
+	//return abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
+	return abs((((float)q2.x - (float)q1.x) * ((float)q3.y - (float)q1.y) - ((float)q3.x - (float)q1.x) * ((float)q2.y - (float)q1.y)) / 2.0);
 }
 
 //calculating z coordinate of a point inside triangle using :Linear interpolation - Barycentric method
 float Renderer::zCalculation(int _x, int  _y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
-	float A1 = CalculateArea(glm::vec3(_x, _y, 1), p1, p2);
+	float A1 = CalculateArea(glm::vec3(_x, _y, 1), p2, p3);
 	float A2 = CalculateArea(glm::vec3(_x, _y, 1), p1, p3);
-	float A3 = CalculateArea(glm::vec3(_x, _y, 1), p2, p3);
+	float A3 = CalculateArea(glm::vec3(_x, _y, 1), p1, p2);
 
 	float Total_Area = A1 + A2 + A3;
 
@@ -865,6 +870,8 @@ float Renderer::zCalculation(int _x, int  _y, glm::vec3 p1, glm::vec3 p2, glm::v
 //z buffer setter
 void Renderer::Set_z(int i, int j, float z)
 {
+	//z = z / (min(viewport_height, viewport_width));
+	//z = z - 1;
 	z_buffer[Z_INDEX(viewport_width, i, j)] = z;
 }
 
