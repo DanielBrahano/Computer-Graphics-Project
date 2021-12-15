@@ -35,6 +35,7 @@ public:
 	bool bounding_rectangles;
 	bool paint_triangles;
 	bool gray_scale;
+	bool color_with_buffer;
 	
 
 
