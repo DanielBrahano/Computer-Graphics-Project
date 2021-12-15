@@ -14,13 +14,7 @@
 #include "Utils.h"
 #include <iostream>
 
-//control lookAt
-static glm::vec3 eye = { 0,0,2 };
-static glm::vec3 at = { 0,0,0 };
-static glm::vec3 up = { 0,1,0 };
 
-bool world_axes = false;
-bool model_axes = false;
 
 bool Ortho = false;
 bool BoundingBox = false;
@@ -192,11 +186,11 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		}
 
 		//scale transformation
-		else if (io.KeysDown['T']) //T key is down - make it bigger
+		else if (io.KeysDown['+']) //T key is down - make it bigger
 		{
 			scene.GetModel(0).ObjectScaleModel(1.1, 1.1, 1.1);
 		}
-		else if (io.KeysDown['Y']) //Y key is down - make it smaller 
+		else if (io.KeysDown['-']) //Y key is down - make it smaller 
 		{
 			scene.GetModel(0).ObjectScaleModel(0.9, 0.9, 0.9);
 		}
@@ -325,7 +319,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		//make sliders for the transformations
 		ImGui::SliderFloat3("Translation", &local_translation.x, -1.5f, 1.5f);
 		ImGui::SliderFloat3("Rotation", &local_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("Scale", &local_scale, 0.5f, 1.5f);
+		ImGui::SliderFloat("Scale", &local_scale, 0.5f, 3.5f);
 
 		ImGui::Text("        ");
 		ImGui::Text("       World Transformations  ");
@@ -441,7 +435,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 
 	ImGui::SliderFloat("near", &camera.zNear, -1.00f, 1.0f);
-	ImGui::SliderFloat("far", &camera.zFar, 0.0f, 10000.0f);
+	ImGui::SliderFloat("far", &camera.zFar, 0.0f, 10.0f);
 
 	if ((projection == 1) && (scene.GetModelCount()))
 	{
@@ -456,77 +450,49 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		scene.GetActiveCamera().SetPerspectiveProjection(glm::radians(camera.fovy), camera.aspectRatio, camera.zNear, camera.zFar);
 	}
 
-	ImGui::Checkbox("Draw Normals", &DrawNormals);
-	scene.draw_normals = DrawNormals;
-
+	ImGui::Checkbox("Draw Normals", &scene.draw_normals);
 	ImGui::SameLine();
-
-	static bool DrawFaceNormals = false;
-	ImGui::Checkbox("Draw Face Normals", &DrawFaceNormals);
-	scene.draw_face_normals = DrawFaceNormals;
-
-	ImGui::Checkbox("Bounding Box", &BoundingBox);
-	scene.draw_box = BoundingBox;
-
+	ImGui::Checkbox("Draw Face Normals", &scene.draw_face_normals);
+	ImGui::Checkbox("Bounding Box", &scene.draw_box);
 	ImGui::SameLine();
+	ImGui::Checkbox("Draw Rectangles", &scene.bounding_rectangles);
 
-	static bool DrawRectangles = false;
-	ImGui::Checkbox("Draw Rectangles", &DrawRectangles);
-	scene.bounding_rectangles = DrawRectangles;
 
-	//option to draw axis for model and world
-	ImGui::Checkbox("World axes  ", &world_axes);	ImGui::SameLine();
-	ImGui::Checkbox("Model axes", &model_axes);
 	if (scene.GetModelCount()) {
-		scene.GetModel(0).DrawWorldAxes = world_axes;
-		scene.GetModel(0).DrawModelAxes = model_axes;
+		MeshModel& model = scene.GetModel(0);
+		//option to draw axis for model and world
+		ImGui::Checkbox("World axes  ", &model.DrawWorldAxes);	ImGui::SameLine();
+		ImGui::Checkbox("Model axes", &model.DrawModelAxes);
 	}
-
+		
 	ImGui::Checkbox("Paint Triangles", &scene.paint_triangles);
 	ImGui::Checkbox("Gray Scale", &scene.gray_scale);
+	ImGui::Checkbox("Color With Buffer", &scene.color_with_buffer);
+
+	if (scene.paint_triangles) { scene.gray_scale = false; scene.color_with_buffer = false; }
+	if (scene.gray_scale) { scene.paint_triangles; scene.color_with_buffer = false; }
+	if (scene.color_with_buffer) { scene.gray_scale = false; scene.paint_triangles = false; }
+
+	
 
 	ImGui::Text("           ");
 	ImGui::Text("           LookAt Control");
-	
 
 	if (ImGui::Button("Camera Reset"))
 	{
-		eye = { 0,0,2 };
-		at = { 0,0,0 };
-		up = { 0,1,0 };
+		camera.eye = { 0,0,2 };
+		camera.at = { 0,0,0 };
+		camera.up = { 0,1,0 };
 	}
-	ImGui::SliderFloat("x-Eye", &eye.x, -10, 10);
-	ImGui::SliderFloat("y-Eye", &eye.y, -10, 10);
-	ImGui::SliderFloat("z-Eye", &eye.z, -10, 10);
-	ImGui::SliderFloat("x-At", &at.x, -10, 10);
-	ImGui::SliderFloat("y-At", &at.y, -10, 10);
-	ImGui::SliderFloat("z-At", &at.z, -10, 10);
-	ImGui::InputFloat3("Up", &up.x);
-	scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
+	ImGui::SliderFloat("x-Eye", &camera.eye.x, -10, 10);
+	ImGui::SliderFloat("y-Eye", &camera.eye.y, -10, 10);
+	ImGui::SliderFloat("z-Eye", &camera.eye.z, -10, 10);
+	ImGui::SliderFloat("x-At", &camera.at.x, -10, 10);
+	ImGui::SliderFloat("y-At", &camera.at.y, -10, 10);
+	ImGui::SliderFloat("z-At", &camera.at.z, -10, 10);
+	ImGui::InputFloat3("Up", &camera.up.x);
+	scene.GetActiveCamera().SetCameraLookAt(camera.eye, camera.at, camera.up);
 
-	static int zbuffer = 1;
-	ImGui::RadioButton("No Color", &zbuffer, 1); ImGui::SameLine();
-	ImGui::RadioButton("Color", &zbuffer, 2); ImGui::SameLine();
-	ImGui::RadioButton("Gray Scale", &zbuffer, 3);
 
-	//if (zbuffer==1)
-	//	{
-	//	scene.gray_scale = false;
-	//	scene.paint_triangles = false;
-	//}
-
-	//if (zbuffer == 2)
-	//{
-	//	scene.gray_scale = false;
-	//	scene.paint_triangles = true;
-
-	//}
-
-	//if (zbuffer == 3)
-	//{
-	//	scene.gray_scale = true;
-	//	scene.paint_triangles = false;
-
-	//}
 	ImGui::End();
 }
