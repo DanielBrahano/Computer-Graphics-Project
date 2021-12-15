@@ -449,13 +449,11 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 				{
 					bool_array[i][j] = false;
 					float z = Find_z(i, j, p1, p2, p3);
-					if (z < Get_z(i, j))
+					if (z <= Get_z(i, j))
 					{
 						Set_z(i, j, z);
 						bool_array[i][j] = true;
-	
 					}
-
 				}
 			}
 						
@@ -785,7 +783,6 @@ glm::vec3 Renderer::HomToCartesian(glm::vec4 vec)
 
 	if (vec[3] == 0) {
 		return glm::vec3(vec[0], vec[1], vec[2]);
-
 	}
 	return glm::vec3(vec[0] / vec[3], vec[1] / vec[3], vec[2] / vec[3]);
 }
@@ -797,7 +794,6 @@ void Renderer::TransformationMultiplications(Scene scene, MeshModel model, glm::
 
 int* Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles)
 {
-
 	//find the extreme vertices in model, start with face vertex 1 and find with a  loop
 	float max_x = max(p1.x, p2.x);
 	max_x = max(max_x, p3.x);
@@ -812,26 +808,15 @@ int* Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm
 	float min_z = min(p1.z, p2.z);
 	min_z = min(min_z, p3.z);
 
-	////rectangle coordinates
-	//glm::vec4 a1{ min_x, min_y, min_z, 1.0f };
-	//glm::vec4 a2{ min_x, min_y, max_z, 1.0f };
-	//glm::vec4 a3{ min_x, max_y, min_z, 1.0f };
-	//glm::vec4 a4{ min_x, max_y, max_z, 1.0f };
-	//glm::vec4 a5{ max_x, min_y, min_z, 1.0f };
-	//glm::vec4 a6{ max_x, min_y, max_z, 1.0f };
-	//glm::vec4 a7{ max_x, max_y, min_z, 1.0f };
-	//glm::vec4 a8{ max_x, max_y, max_z, 1.0f };
-
 	//rectangle coordinates
-	glm::vec3 a1{ min_x, min_y,  1.0f };
-	glm::vec3 a2{ min_x, min_y,  1.0f };
-	glm::vec3 a3{ min_x, max_y,  1.0f };
-	glm::vec3 a4{ min_x, max_y,  1.0f };
-	glm::vec3 a5{ max_x, min_y,  1.0f };
-	glm::vec3 a6{ max_x, min_y,  1.0f };
-	glm::vec3 a7{ max_x, max_y,  1.0f };
-	glm::vec3 a8{ max_x, max_y,  1.0f };
-
+	glm::vec4 a1{ min_x, min_y,min_z,  1.0f };
+	glm::vec4 a2{ min_x, min_y,max_z,  1.0f };
+	glm::vec4 a3{ min_x, max_y,min_z,  1.0f };
+	glm::vec4 a4{ min_x, max_y,max_z,  1.0f };
+	glm::vec4 a5{ max_x, min_y,min_z,  1.0f };
+	glm::vec4 a6{ max_x, min_y,max_z,  1.0f };
+	glm::vec4 a7{ max_x, max_y,min_z,  1.0f };
+	glm::vec4 a8{ max_x, max_y,max_z,  1.0f };
 
 	//if needed to draw bounding rectangles for each triangle
 	if (bounding_rectangles) {
@@ -850,7 +835,6 @@ int* Renderer::DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm
 		DrawLine(a7, a8, color);
 
 	}
-
 
 	int dx = max_x - min_x;
 	int dy = max_y - min_y;
@@ -876,22 +860,13 @@ float Renderer::CalculateArea(glm::vec3& q1, glm::vec3& q2, glm::vec3& q3)
 	float x3 = q3.x;
 	float y3 = q3.y;
 
-	//triangle ara formula
+	//triangle area formula
 	return abs(((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)) / 2.0f);
-	//return abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
-	
 }
 
-//calculating z coordinate of a point inside triangle using :Linear interpolation - Barycentric method
+//finding z coordinate of a point inside triangle using :Linear interpolation - Barycentric method
 float Renderer::Find_z(int _x, int  _y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
-
-
-	if (_x == p1.x & p1.y == p1.y) return p1.z;
-	if (_x == p2.x & p2.y == p2.y) return p2.z;
-	if (_x == p3.x & p3.y == p3.y) return p3.z;
-
-
 	float A1 = CalculateArea(glm::vec3(_x, _y, 1), p2, p3);
 	float A2 = CalculateArea(glm::vec3(_x, _y, 1), p1, p3);
 	float A3 = CalculateArea(glm::vec3(_x, _y, 1), p1, p2);
@@ -901,20 +876,11 @@ float Renderer::Find_z(int _x, int  _y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3
 	return ((A1 / Total_Area * p1.z) + (A2 / Total_Area * p2.z) + (A3 / Total_Area * p3.z));
 }
 
-////z buffer setter
-//void Renderer::Set_z(int i, int j, float z)
-//{
-//	if (i < 0) return; if (i > viewport_width) return;
-//	if (j < 0) return; if (j > viewport_height) return;
-//	z_buffer[Z_INDEX(viewport_width, i, j)] = z;
-//}
 
 //z buffer getter
 float Renderer::Get_z(int i, int j) 
 {
-	if (i >= 0 && j >= 0 && i < viewport_width && j < viewport_height)
 		return z_buffer[Z_INDEX(viewport_width, i, j)];
-	return INFINITY;
 }
 
 //z buffer setter
