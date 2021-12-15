@@ -43,6 +43,8 @@ private:
 	bool paintFlag;
 	bool paint_triangle;
 	bool gray_scale;
+	bool color_with_buffer;
+	
 
 
 	//drawing triangles
@@ -65,17 +67,21 @@ private:
 
 	int* DrawBoundingRectangleForTriangles(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles);
 
-	void PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_triangle, bool gray_scale, float zFar);
+	void PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_triangle, bool gray_scale, bool color_with_buffer, float zFar);
 
 	void CreateBoolArray(bool** bool_array);
 
 	float CalculateArea(glm::vec3& q1, glm::vec3& q2, glm::vec3& q3);
 
-	float zCalculation(int _x, int  point_y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+	float Find_z(int _x, int  point_y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
 
 	void Set_z(int i, int j, float z);
 
 	float Get_z(int i, int j);
+
+	void Set_ColorBuffer(int i, int j, glm::vec3 v);
+
+	glm::vec3 Get_ColorBuffer(int i, int j);
 
 
 };
