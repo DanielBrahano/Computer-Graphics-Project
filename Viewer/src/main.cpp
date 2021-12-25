@@ -505,27 +505,49 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::SetNextWindowSize(ImVec2(390, 430));
 
 	ImGui::Begin("Lights");
-	static int LightCount=0;
+	static int LightCount = 0;
 	static char* lights[5] = { "1","2","3","4","5" };
-	if (ImGui::Button("Add point light") )                        
+	ImGui::Text("LightCount = %d", LightCount);
+	if (ImGui::Button("Add point light") && (LightCount < 3))
 	{
 		Light* hola = new Light();
 		LightCount++;
 		scene.AddLight(hola);
-		scene.SetActiveLightIndex(0);
+		scene.SetActiveLightIndex(LightCount-1);
 		
 	}
-	if (LightCount)
-	{
+
+	if (LightCount == 1) {
 		ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
 		ImGui::Text("Light RGB");
-		ImGui::ColorEdit3("Ambient", (float*)&scene.AmbientColor);
-		ImGui::ColorEdit3("Diffuse", (float*)&scene.DiffuseColor);
-		ImGui::ColorEdit3("Specular", (float*)&scene.SpecularColor);
-
+		ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
+		ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
+		ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
 	}
 
-	ImGui::Text("LightCount = %d", LightCount);
+	if (LightCount == 2) {
+		static int light_num = 1;
+		ImGui::RadioButton("Light 1", &light_num, 1); ImGui::SameLine();
+		ImGui::RadioButton("Light 2", &light_num, 2);
+
+		scene.SetActiveLightIndex(light_num - 1);
+		if (light_num == 1) {
+			ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
+			ImGui::Text("Light RGB");
+			ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
+			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
+			ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
+		}
+		else {
+			ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
+			ImGui::Text("Light RGB");
+			ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
+			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
+			ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
+		}
+	}
+
+
 	
 
 

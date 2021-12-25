@@ -36,6 +36,8 @@ public:
 	void SetActiveLightIndex(int index);
 	int GetActiveLightIndex() const;
 
+	Light& GetActiveLight();
+
 	bool draw_box;
 	bool draw_normals;
 	bool draw_face_normals;
@@ -45,10 +47,8 @@ public:
 	bool color_with_buffer;
 
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
-	glm::vec3 AmbientColor;
-	glm::vec3 DiffuseColor;
-	glm::vec3 SpecularColor;
 	bool ambient_shading;
+	bool flat_shading;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 	
 

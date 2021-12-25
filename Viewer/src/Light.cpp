@@ -1,7 +1,40 @@
 #include "Light.h"
+void Light::Translate(float x, float y, float z)
+{
+	Translation = glm::translate(Translation, { x,y,z });
+		
+}
 Light::Light()
 {
-	AmbientColor = glm::vec3(0, 0, 0);
-	DiffuseColor = glm::vec3(0, 0, 0);
-	SpecularColor = glm::vec3(0, 0, 0);
+
+	AmbientColor = glm::vec3(1, 0, 0);//La
+	DiffuseColor = glm::vec3(1, 0, 0);//Ld
+	SpecularColor = glm::vec3(1, 0, 0);//Ls
+
+	glm::vec3 Ia;
+	glm::vec3 Id;
+	glm::vec3 Is;
+
+}
+
+glm::vec3 Light::Compute_Ia(glm::vec3 Ka)
+{
+	//Ia = La * K*a
+	Ia = glm::vec3(Ka.x * AmbientColor.x, Ka.y * AmbientColor.y, Ka.z * AmbientColor.z);
+	return Ia;
+}
+
+glm::vec3 Light::Compute_Id(glm::vec3 Kd)
+{
+	//Id=Kd*(I*n)Ld
+	Id = glm::vec3(Kd.x * DiffuseColor.x, Kd.y * DiffuseColor.y, Kd.z * DiffuseColor.z);
+	Id = glm::normalize(Id);
+	float theta  = glm::dot(N,I);
+	return glm::vec3(theta * Id.x, theta * Id.y, theta * Id.z);
+}
+
+glm::vec3 Light::GetPosition()
+{
+	glm::vec3 position = { Translation[3].x,Translation[3].y ,Translation[3].z };
+	return position;
 }

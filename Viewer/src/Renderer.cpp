@@ -895,17 +895,18 @@ void Renderer::Set_z(int i, int j, float z)
 	z_buffer[Z_INDEX(viewport_width, i, j)] = z;
 }
 
-glm::vec3 Renderer::Get_Ia(glm::vec3 MaterialColor, glm::vec3 LightColor)
-{
-	glm::vec3 I_a(MaterialColor.x * LightColor.x, MaterialColor.y * LightColor.y, MaterialColor.z * LightColor.z);
-	return I_a;
-}
+
 void Renderer::DrawLight(Scene scene)
 {
+	/////////	-----need this
+	
+	Light light = scene.GetActiveLight();
+	glm::vec3 LightPosition = light.GetPosition();
 	MeshModel model = scene.GetModel(0);
+	int FaceCount = model.GetFacesCount();
 	if (scene.ambient_shading)
 	{
-		glm::vec3 Ia = Get_Ia(model.Ka, scene.AmbientColor);
+		glm::vec3 Ia = light.Compute_Ia(model.Ka);
 		for (int i = 0; i < viewport_width; i++) {
 			for (int j = 0; j < viewport_height; j++) {
 				float z = Get_z(i, j);
@@ -917,7 +918,17 @@ void Renderer::DrawLight(Scene scene)
 
 		}
 	}
+
+	if (scene.flat_shading)
+	{
+		for (int i = 0; i < FaceCount; i++)
+		{
+	
+		}
+	}
 }
+
+
 
 
 

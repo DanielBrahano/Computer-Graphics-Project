@@ -16,9 +16,7 @@ Scene::Scene() :
 	
 {
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
-	AmbientColor = { 1,0,0 };
-	DiffuseColor = { 1,0,0 };
-	SpecularColor = { 1,0,0 };
+
 	ambient_shading = false;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 }
@@ -103,4 +101,7 @@ int Scene::GetActiveLightIndex() const
 	return active_light_index;
 }
 
-
+Light& Scene::GetActiveLight()
+{
+	return *lights[active_light_index];
+}
