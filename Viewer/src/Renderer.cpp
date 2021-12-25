@@ -28,6 +28,7 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	bool_array = new bool* [(viewport_width + 1)];
 	for (int i = 0; i < viewport_width + 1; i++)
 		bool_array[i] = new bool[(viewport_height + 1)];
+
 }
 
 Renderer::~Renderer()
@@ -103,7 +104,8 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				mirrorFlag ? y-- : y++;
 				e = e - 2 * dx;
 			}
-			if ((paint_triangle || gray_scale || color_with_buffer) && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
+			//if ((paint_triangle || gray_scale || color_with_buffer) && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
+			if ( (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
 				bool_array[x][y] = true;
 			if(!paintFlag)
 				PutPixel(x, y, color);
@@ -144,7 +146,8 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				mirrorFlag ? x-- : x++;
 				e = e - 2 * dy;
 			}
-			if ((paint_triangle || gray_scale || color_with_buffer) && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
+			//if ((paint_triangle || gray_scale || color_with_buffer) && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
+			if ( (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
 				bool_array[x][y] = true;
 			if(!paintFlag)
 				PutPixel(x, y, color);
@@ -324,6 +327,9 @@ void Renderer::Render(Scene& scene)
 		//check if draw normals
 		if (scene.draw_face_normals)
 			DrawFaceNormal(scene, scene.GetModel(j));
+
+		if (scene.ambient_shading)
+			DrawLight(scene);
 	}
 
 }
@@ -394,6 +400,7 @@ int Renderer::GetViewportHeight() const
 	return viewport_height;
 }
 
+
 void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 color, bool bounding_rectangles, glm::vec3 rectangle_color, Scene scene)
 {
 
@@ -401,22 +408,18 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 	int* dims = DrawBoundingRectangleForTriangles(p1, p2, p3, rectangle_color, bounding_rectangles);
 
 	if (paint_triangle || gray_scale || color_with_buffer)
-	{
 		paintFlag = true;
-	
 		//initialize to false
 		for (int i = offset_x-1; i < dims[0] + offset_x+1; i++)
 			for (int j = offset_y-1; j < dims[1] + offset_y+1; j++)
 				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
 					bool_array[i][j] = false;
-	}
+	
 	//draw triangles
 	DrawLine(p1, p2, color);
 	DrawLine(p1, p3, color);
 	DrawLine(p2, p3, color);
 
-	if (paint_triangle || gray_scale || color_with_buffer)
-	{
 		//run through the bool array and if we need to paint the pixel accourding to scanline, change value to true
 
 		for (int i = offset_x; i <= dims[0] + offset_x; i++)
@@ -439,13 +442,14 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 			}
 
 			for (int j = begin; j <= end; j++) {
-				//if (paint_triangle && (i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0)
+
 				if ( (i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
 				{
 					bool_array[i][j] = true;
 				}
 				
-				if ((color_with_buffer || gray_scale) && (i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
+				//if ((color_with_buffer || gray_scale) && (i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
+				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
 				{
 					bool_array[i][j] = false;
 					float z = Find_z(i, j, p1, p2, p3);
@@ -457,14 +461,18 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 				}
 			}
 						
-			paintFlag = false;
 		
 		}
 
+		
+	
+	if (paint_triangle || gray_scale || color_with_buffer)
+	{
+		paintFlag = false;
 		PaintTriangle(dims[0], dims[1], rectangle_color, paint_triangle, gray_scale, color_with_buffer, scene.GetActiveCamera().zFar);
-
-		delete[] dims;
 	}
+
+	delete[] dims;
 }
 
 void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_triangle, bool gray_scale, bool color_with_buffer, float zFar)
@@ -886,6 +894,31 @@ void Renderer::Set_z(int i, int j, float z)
 {
 	z_buffer[Z_INDEX(viewport_width, i, j)] = z;
 }
+
+glm::vec3 Renderer::Get_Ia(glm::vec3 MaterialColor, glm::vec3 LightColor)
+{
+	glm::vec3 I_a(MaterialColor.x * LightColor.x, MaterialColor.y * LightColor.y, MaterialColor.z * LightColor.z);
+	return I_a;
+}
+void Renderer::DrawLight(Scene scene)
+{
+	MeshModel model = scene.GetModel(0);
+	if (scene.ambient_shading)
+	{
+		glm::vec3 Ia = Get_Ia(model.Ka, scene.AmbientColor);
+		for (int i = 0; i < viewport_width; i++) {
+			for (int j = 0; j < viewport_height; j++) {
+				float z = Get_z(i, j);
+					if (z != INFINITY)
+					{
+						PutPixel(i, j, Ia);
+					}
+			}
+
+		}
+	}
+}
+
 
 
 

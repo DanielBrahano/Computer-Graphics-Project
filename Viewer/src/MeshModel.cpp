@@ -17,6 +17,10 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	
 	 DrawWorldAxes = false;
 	 DrawModelAxes = false;
+
+	 Ka = glm::vec3(1, 0, 0);
+	 Kd = glm::vec3(1, 0, 0);
+	 Ks = glm::vec3(1, 0, 0);
 }
 
 MeshModel::~MeshModel()

@@ -28,8 +28,8 @@ int Orthographic = 0;
  */
 bool show_demo_window = false;
 bool show_another_window = false;
-//glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
-glm::vec4 clear_color = glm::vec4(0, 0., 0, 1.00f);
+glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
+//glm::vec4 clear_color = glm::vec4(0, 0, 0, 1.00f);
 
 /**
  * Function declarations
@@ -467,7 +467,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 		
 	ImGui::Checkbox("Paint Triangles", &scene.paint_triangles);
-	ImGui::Checkbox("Gray Scale", &scene.gray_scale);
+	ImGui::Checkbox("Gray Scale", &scene.gray_scale); ImGui::SameLine();
 	ImGui::Checkbox("Color With Buffer", &scene.color_with_buffer);
 
 	if (scene.paint_triangles) { scene.gray_scale = false; scene.color_with_buffer = false; }
@@ -485,15 +485,59 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		camera.at = { 0,0,0 };
 		camera.up = { 0,1,0 };
 	}
-	ImGui::SliderFloat("x-Eye", &camera.eye.x, -10, 10);
-	ImGui::SliderFloat("y-Eye", &camera.eye.y, -10, 10);
-	ImGui::SliderFloat("z-Eye", &camera.eye.z, -10, 10);
-	ImGui::SliderFloat("x-At", &camera.at.x, -10, 10);
-	ImGui::SliderFloat("y-At", &camera.at.y, -10, 10);
-	ImGui::SliderFloat("z-At", &camera.at.z, -10, 10);
+	ImGui::Text("      X           Y           Z  ");
+	ImGui::SliderFloat3("Eye", &camera.eye.x, -10, 10);
+	//ImGui::SliderFloat3("x-Eye", &camera.eye.x, -10, 10);
+	//ImGui::SliderFloat("y-Eye", &camera.eye.y, -10, 10);
+	//ImGui::SliderFloat("z-Eye", &camera.eye.z, -10, 10);
+	ImGui::SliderFloat3("At", &camera.at.x, -10, 10);
+	//ImGui::SliderFloat("x-At", &camera.at.x, -10, 10);
+	//ImGui::SliderFloat("y-At", &camera.at.y, -10, 10);
+	//ImGui::SliderFloat("z-At", &camera.at.z, -10, 10);
 	ImGui::InputFloat3("Up", &camera.up.x);
 	scene.GetActiveCamera().SetCameraLookAt(camera.eye, camera.at, camera.up);
 
+
+	ImGui::End();
+
+
+	//before we open the imgui window, let's resize it
+	ImGui::SetNextWindowSize(ImVec2(390, 430));
+
+	ImGui::Begin("Lights");
+	static int LightCount=0;
+	static char* lights[5] = { "1","2","3","4","5" };
+	if (ImGui::Button("Add point light") )                        
+	{
+		Light* hola = new Light();
+		LightCount++;
+		scene.AddLight(hola);
+		scene.SetActiveLightIndex(0);
+		
+	}
+	if (LightCount)
+	{
+		ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
+		ImGui::Text("Light RGB");
+		ImGui::ColorEdit3("Ambient", (float*)&scene.AmbientColor);
+		ImGui::ColorEdit3("Diffuse", (float*)&scene.DiffuseColor);
+		ImGui::ColorEdit3("Specular", (float*)&scene.SpecularColor);
+
+	}
+
+	ImGui::Text("LightCount = %d", LightCount);
+	
+
+
+	if (scene.GetModelCount())
+	{
+		ImGui::Text("Model RGB");
+		ImGui::ColorEdit3("Model Ambient", (float*)&scene.GetModel(0).Ka);
+		ImGui::ColorEdit3("Model Diffuse", (float*)&scene.GetModel(0).Kd);
+		ImGui::ColorEdit3("Model Specular", (float*)&scene.GetModel(0).Ks);
+	}
+
+	ImGui::Checkbox("Ambient Shading", &scene.ambient_shading);
 
 	ImGui::End();
 }

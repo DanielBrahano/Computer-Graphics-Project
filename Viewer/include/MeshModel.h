@@ -53,11 +53,17 @@ public:
 	bool DrawWorldAxes;
 	bool DrawModelAxes;
 
+	glm::vec3 Ka;
+	glm::vec3 Kd;
+	glm::vec3 Ks;
+
 private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 	std::string model_name;
+
+
 
 
 };

@@ -17,6 +17,10 @@ public:
 	int GetViewportHeight() const;
 	void SetSize(int width, int height);
 
+	glm::vec3 AmbientColor;
+	glm::vec3 DiffuseColor;
+	glm::vec3 SpecularColor;
+
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);
 
@@ -44,6 +48,8 @@ private:
 	bool paint_triangle;
 	bool gray_scale;
 	bool color_with_buffer;
+
+
 	
 
 
@@ -82,6 +88,10 @@ private:
 	void Set_ColorBuffer(int i, int j, glm::vec3 v);
 
 	glm::vec3 Get_ColorBuffer(int i, int j);
+
+	void Renderer::DrawLight(Scene scene);
+
+	glm::vec3 Renderer::Get_Ia(glm::vec3 MaterialColor, glm::vec3 LightColor);
 
 
 };

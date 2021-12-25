@@ -5,6 +5,7 @@
 
 #include "Camera.h"
 #include "MeshModel.h"
+#include "Light.h"
 
 
 using namespace std;
@@ -29,6 +30,12 @@ public:
 	void SetActiveModelIndex(int index);
 	int GetActiveModelIndex() const;
 
+	void Scene::AddLight(Light* light);
+	Light& Scene::GetLight(int index);
+
+	void SetActiveLightIndex(int index);
+	int GetActiveLightIndex() const;
+
 	bool draw_box;
 	bool draw_normals;
 	bool draw_face_normals;
@@ -36,13 +43,23 @@ public:
 	bool paint_triangles;
 	bool gray_scale;
 	bool color_with_buffer;
+
+	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
+	glm::vec3 AmbientColor;
+	glm::vec3 DiffuseColor;
+	glm::vec3 SpecularColor;
+	bool ambient_shading;
+	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 	
 
 
 private:
 	vector<shared_ptr<MeshModel>> mesh_models;
 	vector<shared_ptr<Camera>> cameras;
+	vector<Light*> lights;
+
 
 	int active_camera_index;
 	int active_model_index;
+	int active_light_index;
 };
