@@ -407,7 +407,7 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 		//initialize to false
 		for (int i = offset_x-1; i < dims[0] + offset_x+1; i++)
 			for (int j = offset_y-1; j < dims[1] + offset_y+1; j++)
-				if ((i <= viewport_width) && (j <= viewport_height) && i >= 0 && j >= 0)
+				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
 					bool_array[i][j] = false;
 	}
 	//draw triangles
@@ -422,17 +422,17 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 		for (int i = offset_x; i <= dims[0] + offset_x; i++)
 		{
 			bool beginFlag = false;
-			int begin = 1;
-			int end = 1;
+			int begin = 0;
+			int end = 0;
 			for (int j = offset_y; j <= dims[1] + offset_y; j++)
 			{
-				if ((i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0 && bool_array[i][j] == true && !beginFlag)//if we reached an egdle
+				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0 && bool_array[i][j] == true && !beginFlag)//if we reached an egdle
 				{
 					begin = j;
 					end = j;
 					beginFlag = true;
 				}
-				if ((i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0 && bool_array[i][j] == true && beginFlag)
+				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0 && bool_array[i][j] == true && beginFlag)
 				{
 					end = j;
 				}
@@ -440,12 +440,12 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 
 			for (int j = begin; j <= end; j++) {
 				//if (paint_triangle && (i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0)
-				if ( (i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0)
+				if ( (i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
 				{
 					bool_array[i][j] = true;
 				}
 				
-				if ((color_with_buffer || gray_scale) && (i <= viewport_width) && (j <= viewport_height) && i > 0 && j > 0)
+				if ((color_with_buffer || gray_scale) && (i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
 				{
 					bool_array[i][j] = false;
 					float z = Find_z(i, j, p1, p2, p3);
@@ -475,11 +475,11 @@ void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_tri
 		for (int j = offset_y; j < cols + offset_y+1; j++)
 		{
 			//if we want to fill the triangles with colors
-			if (paint_triangle && (i <= viewport_width) && i > 0 && j > 0 && (j <= viewport_height) && bool_array[i][j])
+			if (paint_triangle && (i < viewport_width) && i >= 0 && j >= 0 && (j < viewport_height) && bool_array[i][j])
 				PutPixel(i, j, color);
 
 			//if gray scale
-			if (gray_scale && (i <= viewport_width) && i > 0 && j > 0 && (j <= viewport_height) && bool_array[i][j])
+			if (gray_scale && (i < viewport_width) && i >= 0 && j >= 0 && (j < viewport_height) && bool_array[i][j])
 			{
 				float z = Get_z(i, j);
 				color = glm::vec3((1 - z / zFar), (1 - z / zFar), (1 - z / zFar));
@@ -487,12 +487,10 @@ void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_tri
 			}
 
 			//if color with depth
-			if (color_with_buffer && (i <= viewport_width) && i > 0 && j > 0 && (j <= viewport_height) && bool_array[i][j])
+			if (color_with_buffer && (i < viewport_width) && i >= 0 && j >= 0 && (j < viewport_height) && bool_array[i][j])
 			{
 				PutPixel(i, j, color);
 			}
-
-
 		}
 }
 
@@ -575,8 +573,8 @@ void Renderer::DrawLocalCoordinates(Scene scene, int j)
 	viewport(p1, p2, p3, min(viewport_height, viewport_width));
 
 	DrawLine(p1, q1, { 0,1,0 });
-	DrawLine(p2, q2, { 1,1,0 });
-	DrawLine(p3, q3, { 0,1,1 });
+	DrawLine(p2, q2, { 1,0,0 });
+	DrawLine(p3, q3, { 0,0,1 });
 }
 
 void Renderer::DrawBoundingBox(Scene scene, MeshModel model)

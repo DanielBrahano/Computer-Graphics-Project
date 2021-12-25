@@ -28,7 +28,8 @@ int Orthographic = 0;
  */
 bool show_demo_window = false;
 bool show_another_window = false;
-glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
+//glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
+glm::vec4 clear_color = glm::vec4(0, 0., 0, 1.00f);
 
 /**
  * Function declarations
@@ -435,7 +436,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 
 	ImGui::SliderFloat("near", &camera.zNear, -1.00f, 1.0f);
-	ImGui::SliderFloat("far", &camera.zFar, 0.0f, 10.0f);
+	ImGui::SliderFloat("far", &camera.zFar, 0.0f, 5.0f);
 
 	if ((projection == 1) && (scene.GetModelCount()))
 	{
