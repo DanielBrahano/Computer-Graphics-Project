@@ -69,6 +69,7 @@ int main(int argc, char** argv)
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 
+
 	Camera camera;
 	scene.AddCamera(std::make_shared<Camera>(camera));
 	scene.SetActiveCameraIndex(0);
@@ -320,7 +321,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		//make sliders for the transformations
 		ImGui::SliderFloat3("Translation", &local_translation.x, -1.5f, 1.5f);
 		ImGui::SliderFloat3("Rotation", &local_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("Scale", &local_scale, 0.5f, 3.5f);
+		ImGui::SliderFloat("Scale", &local_scale, 0.2f, 1.5f);
 
 		ImGui::Text("        ");
 		ImGui::Text("       World Transformations  ");
@@ -328,7 +329,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		//make sliders for the transformations
 		ImGui::SliderFloat3("_Translation", &world_translation.x, -1.5f, 1.5f);
 		ImGui::SliderFloat3("_Rotation", &world_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("_Scale", &world_scale, 0.5f, 1.5f);
+		ImGui::SliderFloat("_Scale", &world_scale, 0.2f, 3.5f);
 
 		/*I am handling transformations by saving each in a vector and comparing to the last on and apply transformation only if something has changed*/
 
@@ -514,8 +515,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		LightCount++;
 		scene.AddLight(hola);
 		scene.SetActiveLightIndex(LightCount-1);
-		
+				
 	}
+	if (LightCount)
+		scene.lighting = true;
 
 	if (LightCount == 1) {
 		ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
@@ -523,13 +526,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
 		ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
 		ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
+		ImGui::SliderFloat3("Light1 Translation", &scene.GetActiveLight().Translation[3].x, -12.0f, 12.0f);
 	}
 
 	if (LightCount == 2) {
 		static int light_num = 1;
 		ImGui::RadioButton("Light 1", &light_num, 1); ImGui::SameLine();
 		ImGui::RadioButton("Light 2", &light_num, 2);
-
+		
 		scene.SetActiveLightIndex(light_num - 1);
 		if (light_num == 1) {
 			ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
@@ -537,7 +541,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
 			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
 			ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
-			ImGui::SliderFloat3("Translation", &scene.GetActiveLight().Translation[3].x, -2.0f, 2.0f);
+			ImGui::SliderFloat3("Light1 Translation", &scene.GetActiveLight().Translation[3].x, -12.0f, 12.0f);
 		}
 		else {
 			ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
@@ -545,8 +549,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
 			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
 			ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
-			ImGui::SliderFloat3("Translation", &scene.GetActiveLight().Translation[3].x, -2.0f, 2.0f);
+			ImGui::SliderFloat3("Light2 Translation", &scene.GetActiveLight().Translation[3].x, -12.0f, 12.0f);
 		}
+		
+
 	}
 
 
@@ -561,7 +567,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::ColorEdit3("Model Specular", (float*)&scene.GetModel(0).Ks);
 	}
 
-	ImGui::Checkbox("Ambient Shading", &scene.ambient_shading);
+	ImGui::Checkbox("Ambient Shading", &scene.ambient_shading); ImGui::SameLine();
+	ImGui::Checkbox("Flat Shading", &scene.flat_shading);
 
 	ImGui::End();
 }
