@@ -35,7 +35,7 @@ public:
 
 	glm::vec3 GetPosition();
 
-	glm::vec3 GetFinalLight();
+	glm::vec3 GetLight();
 };
 
 
