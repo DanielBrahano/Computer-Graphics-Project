@@ -28,9 +28,14 @@ public:
 
 	Light();
 	glm::vec3 Compute_Ia(glm::vec3 Ka);
+
 	glm::vec3 Compute_Id(glm::vec3 Kd);
+
 	glm::vec3 Compute_Is(glm::vec3 Ks);
+
 	glm::vec3 GetPosition();
+
+	glm::vec3 GetFinalLight();
 };
 
 

@@ -58,6 +58,8 @@ private:
 	//canonical view volume to screen coordinates
 	void viewport(glm::vec3& p1, glm::vec3& p2, glm::vec3& p3, float height);
 
+	void viewport(glm::vec3& p1, float height);
+
 	void DrawBoundingBox(Scene scene, MeshModel model);
 
 	void DrawNormal(Scene scene, MeshModel model);
@@ -86,6 +88,8 @@ private:
 
 	glm::vec3 Get_ColorBuffer(int i, int j);
 
-	void Renderer::DrawLight(Scene scene);
+	void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+
+	glm::vec3 compute_normal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
 
 };

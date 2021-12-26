@@ -11,9 +11,9 @@ Light::Light()
 	DiffuseColor = glm::vec3(1, 0, 0);//Ld
 	SpecularColor = glm::vec3(1, 0, 0);//Ls
 
-	glm::vec3 Ia;
-	glm::vec3 Id;
-	glm::vec3 Is;
+	glm::vec3 Ia = glm::vec3(0.f, 0.f, 0.f);
+	glm::vec3 Id = glm::vec3(0.f, 0.f, 0.f);
+	glm::vec3 Is = glm::vec3(0.f, 0.f, 0.f);
 
 }
 
@@ -37,4 +37,9 @@ glm::vec3 Light::GetPosition()
 {
 	glm::vec3 position = { Translation[3].x,Translation[3].y ,Translation[3].z };
 	return position;
+}
+
+glm::vec3 Light::GetFinalLight()
+{
+	return (Ia + Id + Is);
 }

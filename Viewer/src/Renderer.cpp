@@ -328,8 +328,7 @@ void Renderer::Render(Scene& scene)
 		if (scene.draw_face_normals)
 			DrawFaceNormal(scene, scene.GetModel(j));
 
-		if (scene.ambient_shading)
-			DrawLight(scene);
+
 	}
 
 }
@@ -379,6 +378,9 @@ void Renderer::DrawMesh(Scene scene, int j)
 
 		glm::vec3 rectangle_color = colors[i % number_of_colors];
 		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, rectangle_color, scene);
+
+		if (scene.ambient_shading)
+			DrawLight(scene);
 	}
 	
 
@@ -745,6 +747,18 @@ void Renderer::viewport(glm::vec3& p1, glm::vec3& p2, glm::vec3& p3, float heigh
 
 }
 
+void Renderer::viewport(glm::vec3& p1, float height)
+{
+	//add 1 to fit to screen coordinates
+	p1.x += 1;
+	p1.y += 1;
+	p1.z += 1;
+
+	//scale by window size
+	p1 = (float)height / 2 * p1;
+	
+}
+
 void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
 
 	for (int i = 0; i < model.GetFacesCount(); i++) {
@@ -896,17 +910,63 @@ void Renderer::Set_z(int i, int j, float z)
 }
 
 
-void Renderer::DrawLight(Scene scene)
+void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
-	/////////	-----need this
 	
-	Light light = scene.GetActiveLight();
-	glm::vec3 LightPosition = light.GetPosition();
+	Camera camera = scene.GetCamera(0);
+	glm::vec3 cameraPosition = camera.eye;
+
+	Light light = scene.GetLight(0);
+	glm::vec3 LightPosition = light.GetPosition(); // light position
+	viewport(LightPosition, min(viewport_height, viewport_width));
+	viewport(cameraPosition, min(viewport_height, viewport_width));
+
+	glm::vec3 average;
+	average += glm::vec3((p1 + p2 + p3) / 3.f);
+
+
 	MeshModel model = scene.GetModel(0);
+
+	glm::vec3 Ia = light.Compute_Ia(model.Ka);
+	//normal face
+	light.N = compute_normal(p1, p2, p3);
+	//compute I
+	light.I = glm::normalize(glm::vec3(LightPosition.x - average.x, LightPosition.y - average.y, LightPosition.z - average.z));
+	light.V= glm::normalize(glm::vec3(cameraPosition.x - average.x, cameraPosition.y - average.y, cameraPosition.y - average.z));
 	int FaceCount = model.GetFacesCount();
+
+
+
+	//find the extreme vertices in model, start with face vertex 1 and find with a  loop
+	float max_x = max(p1.x, p2.x);
+	max_x = max(max_x, p3.x);
+	float max_y = max(p1.y, p2.y);
+	max_y = max(max_y, p3.y);
+
+	float min_x = min(p1.x, p2.x);
+	min_x = min(min_x, p3.x);
+	float min_y = min(p1.y, p2.y);
+	min_y = min(min_y, p3.y);
+
+	
+	for (int y = min_x; y <= max_y; y++)
+	{
+		for (int x = min_y; x <= max_x; x++)
+		{
+			float z = Get_z(x, y);
+			if (z != INFINITY)
+			{
+				if (scene.ambient_shading)
+
+					if (scene.flat_shading)
+
+			}
+		}
+	}
+
 	if (scene.ambient_shading)
 	{
-		glm::vec3 Ia = light.Compute_Ia(model.Ka);
+		
 		for (int i = 0; i < viewport_width; i++) {
 			for (int j = 0; j < viewport_height; j++) {
 				float z = Get_z(i, j);
@@ -927,6 +987,20 @@ void Renderer::DrawLight(Scene scene)
 		}
 	}
 }
+
+
+
+//compute nurmal faces
+glm::vec3 Renderer::compute_normal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3)
+{
+	glm::vec3 normal = glm::normalize(glm::cross(vertex1 - vertex2, vertex1 - vertex3));
+	glm::vec3 p1 = normal, p2 = normal;
+
+	return normal;
+
+}
+
+
 
 
 
