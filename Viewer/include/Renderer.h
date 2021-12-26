@@ -92,4 +92,8 @@ private:
 
 	glm::vec3 compute_normal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
 
+	bool Renderer::In_Triangle(glm::vec2 x, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+
+	float Renderer::PosOrNeg(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3);
+
 };

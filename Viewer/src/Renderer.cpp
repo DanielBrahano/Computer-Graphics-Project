@@ -379,10 +379,11 @@ void Renderer::DrawMesh(Scene scene, int j)
 		glm::vec3 rectangle_color = colors[i % number_of_colors];
 		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, rectangle_color, scene);
 
-		if (scene.ambient_shading)
-			DrawLight(scene);
+		if (scene.lighting)
+			DrawLight(scene, q1, q2, q3);
+
+
 	}
-	
 
 }
 
@@ -455,7 +456,7 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 				{
 					bool_array[i][j] = false;
 					float z = Find_z(i, j, p1, p2, p3);
-					if (z <= Get_z(i, j))
+					if (z = Get_z(i, j))
 					{
 						Set_z(i, j, z);
 						bool_array[i][j] = true;
@@ -796,6 +797,7 @@ void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
 	}
 
 
+
 }
 
 glm::vec3 Renderer::HomToCartesian(glm::vec4 vec)
@@ -900,6 +902,8 @@ float Renderer::Find_z(int _x, int  _y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3
 //z buffer getter
 float Renderer::Get_z(int i, int j) 
 {
+	if (i < 0) return INFINITY; if (i >= viewport_width) return INFINITY;
+	if (j < 0) return INFINITY; if (j >= viewport_height) return INFINITY;
 		return z_buffer[Z_INDEX(viewport_width, i, j)];
 }
 
@@ -938,6 +942,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 
 
 	//find the extreme vertices in model, start with face vertex 1 and find with a  loop
+
 	float max_x = max(p1.x, p2.x);
 	max_x = max(max_x, p3.x);
 	float max_y = max(p1.y, p2.y);
@@ -948,8 +953,10 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 	float min_y = min(p1.y, p2.y);
 	min_y = min(min_y, p3.y);
 
+	glm::vec3 color;
+
 	
-	for (int y = min_x; y <= max_y; y++)
+	/*for (int y = min_x; y <= max_y; y++)
 	{
 		for (int x = min_y; x <= max_x; x++)
 		{
@@ -957,35 +964,56 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 			if (z != INFINITY)
 			{
 				if (scene.ambient_shading)
+				{
+					light.Ia=light.Compute_Ia(model.Ka);
+					glm::vec3 color = light.GetLight();
+					PutPixel(x, y, color);
+					
+				}
+
+				if (scene.flat_shading)
+				{
+					light.Ia = light.Compute_Ia(model.Ka);
+					light.Id = light.Compute_Id(model.Kd);
+					glm::vec3 color = light.GetLight();
+					PutPixel(x, y, color);
+				}
+
+			}
+		}
+	}*/
+
+	for (int y = min_y; y <= max_y; y++)
+	{
+		for (int x = min_x; x <= max_x; x++)
+		{
+			if (bool_array[x][y] == true)
+			{
+				float z = Find_z(x, y, p1, p2, p3);
+				if (z <= Get_z(x, y))
+				{
+
+					if (scene.ambient_shading)
+					{
+						light.Ia = light.Compute_Ia(model.Ka);
+						glm::vec3 color = light.GetLight();
+						PutPixel(x, y, color);
+
+					}
 
 					if (scene.flat_shading)
-
-			}
-		}
-	}
-
-	if (scene.ambient_shading)
-	{
-		
-		for (int i = 0; i < viewport_width; i++) {
-			for (int j = 0; j < viewport_height; j++) {
-				float z = Get_z(i, j);
-					if (z != INFINITY)
 					{
-						PutPixel(i, j, Ia);
+						light.Ia = light.Compute_Ia(model.Ka);
+						light.Id = light.Compute_Id(model.Kd);
+						glm::vec3 color = light.GetLight();
+						PutPixel(x, y, color);
 					}
+				}
 			}
-
+				
 		}
 	}
 
-	if (scene.flat_shading)
-	{
-		for (int i = 0; i < FaceCount; i++)
-		{
-	
-		}
-	}
 }
 
 
@@ -998,6 +1026,27 @@ glm::vec3 Renderer::compute_normal(glm::vec3 vertex1, glm::vec3 vertex2, glm::ve
 
 	return normal;
 
+}
+
+bool Renderer::In_Triangle(glm::vec2 x, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
+{
+	float a, b, c;
+	bool has_neg, has_pos;
+
+	a = PosOrNeg(x, p1, p2);
+	b = PosOrNeg(x, p2, p3);
+	c = PosOrNeg(x, p3, p1);
+
+	has_neg = (a < 0) || (b < 0) || (c < 0);
+	has_pos = (a > 0) || (b > 0) || (c > 0);
+
+	return !(has_neg && has_pos);
+}
+
+float Renderer::PosOrNeg(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3)
+{
+	float a = (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+	return a;
 }
 
 
