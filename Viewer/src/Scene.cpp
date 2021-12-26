@@ -18,6 +18,8 @@ Scene::Scene() :
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 
 	ambient_shading = false;
+	lighting = false;
+	flat_shading = false;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 }
 

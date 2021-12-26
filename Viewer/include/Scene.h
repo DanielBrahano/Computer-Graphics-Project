@@ -47,6 +47,7 @@ public:
 	bool color_with_buffer;
 
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
+	bool lighting;
 	bool ambient_shading;
 	bool flat_shading;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
