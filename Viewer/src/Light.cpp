@@ -4,9 +4,9 @@
 Light::Light()
 {
 
-	AmbientColor = glm::vec3(1, 0, 0);//La
-	DiffuseColor = glm::vec3(1, 0, 0);//Ld
-	SpecularColor = glm::vec3(1, 0, 0);//Ls
+	AmbientColor = glm::vec3(1, 1, 1);//La
+	DiffuseColor = glm::vec3(1, 1, 1);//Ld
+	SpecularColor = glm::vec3(1, 1, 1);//Ls
 
 	Ia = glm::vec3(0.f, 0.f, 0.f);
 	Id = glm::vec3(0.f, 0.f, 0.f);
