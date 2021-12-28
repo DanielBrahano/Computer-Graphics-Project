@@ -983,9 +983,9 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 		}
 	}*/
 
-	for (int y = min_y; y <= max_y; y++)
+	for (int y = min_y; (y <= max_y && y < viewport_height); y++)
 	{
-		for (int x = min_x; x <= max_x; x++)
+		for (int x = min_x; (x <= max_x && x < viewport_width); x++)
 		{
 			if (bool_array[x][y] == true)
 			{

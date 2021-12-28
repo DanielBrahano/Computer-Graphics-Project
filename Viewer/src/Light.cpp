@@ -42,7 +42,6 @@ glm::vec3 Light::Compute_Id(glm::vec3 Kd)
 glm::vec3 Light::GetPosition()
 {
 	glm::vec3 position = { Translation[3].x,Translation[3].y ,Translation[3].z };
-	std::cout << Translation[3].x << " " << Translation[3].y << " " << Translation[3].z << " ";
 	return position;
 }
 
