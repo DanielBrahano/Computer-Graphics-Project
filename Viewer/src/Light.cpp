@@ -13,7 +13,7 @@ Light::Light()
 	Is = glm::vec3(0.f, 0.f, 0.f);
 	Translation = glm::mat4(1.0f);
 
-	Translation = glm::translate(Translation, { 1,1,1 });
+	Translation = glm::translate(Translation, { -10,-10,1 });
 
 }
 
@@ -42,11 +42,15 @@ glm::vec3 Light::Compute_Id(glm::vec3 Kd)
 glm::vec3 Light::GetPosition()
 {
 	glm::vec3 position = { Translation[3].x,Translation[3].y ,Translation[3].z };
+
 	return position;
 }
 
 glm::vec3 Light::GetLight()
 {
 	glm::vec3 color=glm::vec3(Ia.x + Id.x + Is.x, Ia.y + Id.y + Is.y, Ia.z + Id.z + Is.z);
+	if (color.x > 1) color.x = 1; if (color.x < 0) color.x = 0;
+	if (color.y > 1) color.x = 1; if (color.y < 0) color.x = 0;
+	if (color.z > 1) color.x = 1; if (color.z < 0) color.x = 0;
 	return color;
 }
