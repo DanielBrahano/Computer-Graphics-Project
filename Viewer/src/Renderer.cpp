@@ -917,9 +917,9 @@ void Renderer::Set_z(int i, int j, float z)
 
 void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
-	
+	MeshModel model = scene.GetModel(0);
 	Camera camera = scene.GetCamera(0);
-	glm::vec3 cameraPosition = camera.eye;
+	glm::vec3 cameraPosition = camera.eye; // camera position
 
 	Light light = scene.GetLight(0);
 	glm::vec3 LightPosition = light.GetPosition(); // light position
@@ -927,25 +927,31 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 	viewport(LightPosition, min(viewport_height, viewport_width));
 	viewport(cameraPosition, min(viewport_height, viewport_width));
 
-	cout <<"light position" << LightPosition.x << " " << LightPosition.y << " " << LightPosition.z << " " << endl;
+	//cout <<"cameraPosition" << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << " " << endl;
 
-	glm::vec3 average = glm::vec3(0, 0, 0);
-	average += glm::vec3((p1 + p2 + p3) / 3.f);
-	cout << "average position" << average.x << " " << average.y << " " << average.z << " " << endl;
+	glm::vec3 facePosition = glm::vec3(0, 0, 0); //face position
+	facePosition += glm::vec3((p1 + p2 + p3) / 3.f);
+	//cout << "average position" << facePosition.x << " " << facePosition.y << " " << facePosition.z << " " << endl;
 
-	MeshModel model = scene.GetModel(0);
-	//glm::vec3 ModelPosition = model.GetPosition();
-	//viewport(ModelPosition, min(viewport_height, viewport_width));
-	//cout << ModelPosition.x << " " << ModelPosition.y << " " << ModelPosition.z << " " << endl;
+
+
 
 	glm::vec3 Ia = light.Compute_Ia(model.Ka);
 	//normal face
 	light.N = compute_normal(p1, p2, p3);
 	//compute I
-	light.I = glm::normalize(glm::vec3(LightPosition.x - average.x, LightPosition.y - average.y, LightPosition.z - average.z));
-	cout << "I = " << light.I.x<<" " << light.I.y <<" " << light.I.z << endl;
-	light.V= glm::normalize(glm::vec3(cameraPosition.x - average.x, cameraPosition.y - average.y, cameraPosition.y - average.z));
+	light.I = glm::normalize(glm::vec3(LightPosition.x - facePosition.x, LightPosition.y - facePosition.y, LightPosition.z - facePosition.z));
+	//cout << "I = " << light.I.x<<" " << light.I.y <<" " << light.I.z << endl;
+	light.V= glm::normalize(glm::vec3(cameraPosition.x - facePosition.x, cameraPosition.y - facePosition.y, cameraPosition.y - facePosition.z));
 	int FaceCount = model.GetFacesCount();
+
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition - facePosition);
+	glm::vec3 reflectionDirection = glm::reflect(-light.I, light.N);
+
+	//reflectionDirection = facePosition +  40.f*reflectionDirection;
+	DrawLine(facePosition + 40.f * reflectionDirection, facePosition, glm::vec3(1, 0, 1));
+	DrawLine(facePosition + 40.f * reflectionDirection, facePosition + 80.f * reflectionDirection, glm::vec3(0, 0, 1));
+
 
 
 
@@ -984,7 +990,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 	{
 		for (int x = min_x; (x <= max_x && x < viewport_width); x++)
 		{
-			if (bool_array[x][y] == true)
+			if (bool_array[x][y] == true && (scene.flat_shading || scene.ambient_shading))
 			{
 				float z = Find_z(x, y, p1, p2, p3);
 				if (z <= Get_z(x, y))

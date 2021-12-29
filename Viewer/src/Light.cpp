@@ -13,7 +13,7 @@ Light::Light()
 	Is = glm::vec3(0.f, 0.f, 0.f);
 	Translation = glm::mat4(1.0f);
 
-	Translation = glm::translate(Translation, { -10,-10,1 });
+	Translation = glm::translate(Translation, { 1,1,1 });
 
 }
 
