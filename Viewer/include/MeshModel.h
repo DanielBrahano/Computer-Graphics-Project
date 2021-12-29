@@ -40,6 +40,8 @@ public:
 
 	void ResetTransformations();
 
+	glm::vec3 MeshModel::GetPosition();
+
 	//each model contains its own transformations
 	glm::mat4 objectTransform;
 	glm::mat4 worldTransform;

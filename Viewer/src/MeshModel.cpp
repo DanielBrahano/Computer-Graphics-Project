@@ -18,9 +18,9 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	 DrawWorldAxes = false;
 	 DrawModelAxes = false;
 
-	 Ka = glm::vec3(1, 0, 0);
-	 Kd = glm::vec3(1, 0, 0);
-	 Ks = glm::vec3(1, 0, 0);
+	 Ka = glm::vec3(0, 1, 0);
+	 Kd = glm::vec3(0, 1, 0);
+	 Ks = glm::vec3(0, 1, 0);
 }
 
 MeshModel::~MeshModel()
@@ -169,6 +169,14 @@ void MeshModel::ResetTransformations()
 	worldTranslate = glm::mat4(1.0f);
 	worldRotate = glm::mat4(1.0f);
 	worldScale = glm::mat4(1.0f);
+}
+
+glm::vec3 MeshModel::GetPosition()
+{
+	glm::mat4 hi = GetTransform();
+	glm::vec3 position = { GetTransform()[3].x,GetTransform()[3].y ,GetTransform()[3].z };
+
+	return position;
 }
 
 
