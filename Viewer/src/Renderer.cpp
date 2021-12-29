@@ -410,7 +410,7 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 	//the function drawing the rectangles if needed and returns 2d array
 	int* dims = DrawBoundingRectangleForTriangles(p1, p2, p3, rectangle_color, bounding_rectangles);
 
-	if (paint_triangle || gray_scale || color_with_buffer)
+	if (paint_triangle || gray_scale || color_with_buffer || scene.lighting)
 		paintFlag = true;
 		//initialize to false
 		for (int i = offset_x-1; i < dims[0] + offset_x+1; i++)
@@ -456,7 +456,7 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 				{
 					bool_array[i][j] = false;
 					float z = Find_z(i, j, p1, p2, p3);
-					if (z = Get_z(i, j))
+					if (z <= Get_z(i, j))
 					{
 						Set_z(i, j, z);
 						bool_array[i][j] = true;
@@ -469,10 +469,11 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 
 		
 	
-	if (paint_triangle || gray_scale || color_with_buffer)
+	if (paint_triangle || gray_scale || color_with_buffer || scene.lighting)
 	{
 		paintFlag = false;
-		PaintTriangle(dims[0], dims[1], rectangle_color, paint_triangle, gray_scale, color_with_buffer, scene.GetActiveCamera().zFar);
+		if (paint_triangle || gray_scale || color_with_buffer)
+			PaintTriangle(dims[0], dims[1], rectangle_color, paint_triangle, gray_scale, color_with_buffer, scene.GetActiveCamera().zFar);
 	}
 
 	delete[] dims;
@@ -922,20 +923,27 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 
 	Light light = scene.GetLight(0);
 	glm::vec3 LightPosition = light.GetPosition(); // light position
+
 	viewport(LightPosition, min(viewport_height, viewport_width));
 	viewport(cameraPosition, min(viewport_height, viewport_width));
 
-	glm::vec3 average;
-	average += glm::vec3((p1 + p2 + p3) / 3.f);
+	cout <<"light position" << LightPosition.x << " " << LightPosition.y << " " << LightPosition.z << " " << endl;
 
+	glm::vec3 average = glm::vec3(0, 0, 0);
+	average += glm::vec3((p1 + p2 + p3) / 3.f);
+	cout << "average position" << average.x << " " << average.y << " " << average.z << " " << endl;
 
 	MeshModel model = scene.GetModel(0);
+	//glm::vec3 ModelPosition = model.GetPosition();
+	//viewport(ModelPosition, min(viewport_height, viewport_width));
+	//cout << ModelPosition.x << " " << ModelPosition.y << " " << ModelPosition.z << " " << endl;
 
 	glm::vec3 Ia = light.Compute_Ia(model.Ka);
 	//normal face
 	light.N = compute_normal(p1, p2, p3);
 	//compute I
 	light.I = glm::normalize(glm::vec3(LightPosition.x - average.x, LightPosition.y - average.y, LightPosition.z - average.z));
+	cout << "I = " << light.I.x<<" " << light.I.y <<" " << light.I.z << endl;
 	light.V= glm::normalize(glm::vec3(cameraPosition.x - average.x, cameraPosition.y - average.y, cameraPosition.y - average.z));
 	int FaceCount = model.GetFacesCount();
 
@@ -955,33 +963,22 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 
 	glm::vec3 color;
 
-	
-	/*for (int y = min_x; y <= max_y; y++)
+	light.Ia = glm::vec3(0, 0, 0);
+	light.Id = glm::vec3(0, 0, 0);
+	light.Is = glm::vec3(0, 0, 0);
+	if (scene.ambient_shading)
 	{
-		for (int x = min_y; x <= max_x; x++)
-		{
-			float z = Get_z(x, y);
-			if (z != INFINITY)
-			{
-				if (scene.ambient_shading)
-				{
-					light.Ia=light.Compute_Ia(model.Ka);
-					glm::vec3 color = light.GetLight();
-					PutPixel(x, y, color);
-					
-				}
+		light.Ia = light.Compute_Ia(model.Ka);
+		color = light.GetLight();
+	}
 
-				if (scene.flat_shading)
-				{
-					light.Ia = light.Compute_Ia(model.Ka);
-					light.Id = light.Compute_Id(model.Kd);
-					glm::vec3 color = light.GetLight();
-					PutPixel(x, y, color);
-				}
+	if (scene.flat_shading)
+	{
+		light.Ia = light.Compute_Ia(model.Ka);
+		light.Id = light.Compute_Id(model.Kd);
+		color = light.GetLight();
+	}
 
-			}
-		}
-	}*/
 
 	for (int y = min_y; (y <= max_y && y < viewport_height); y++)
 	{
@@ -992,22 +989,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 				float z = Find_z(x, y, p1, p2, p3);
 				if (z <= Get_z(x, y))
 				{
-
-					if (scene.ambient_shading)
-					{
-						light.Ia = light.Compute_Ia(model.Ka);
-						glm::vec3 color = light.GetLight();
-						PutPixel(x, y, color);
-
-					}
-
-					if (scene.flat_shading)
-					{
-						light.Ia = light.Compute_Ia(model.Ka);
-						light.Id = light.Compute_Id(model.Kd);
-						glm::vec3 color = light.GetLight();
-						PutPixel(x, y, color);
-					}
+					PutPixel(x, y, color);
 				}
 			}
 				
@@ -1022,7 +1004,6 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 glm::vec3 Renderer::compute_normal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3)
 {
 	glm::vec3 normal = glm::normalize(glm::cross(vertex1 - vertex2, vertex1 - vertex3));
-	glm::vec3 p1 = normal, p2 = normal;
 
 	return normal;
 
