@@ -1,19 +1,22 @@
 #include "Light.h"
 #include <iostream>
+#include <algorithm>
+
+
 
 Light::Light()
 {
 
-	AmbientColor = glm::vec3(1, 1, 1);//La
+	AmbientColor = glm::vec3(0.5f, 0.5f, 0.5f);//La
 	DiffuseColor = glm::vec3(1, 1, 1);//Ld
-	SpecularColor = glm::vec3(1, 1, 1);//Ls
+	SpecularColor = glm::vec3(0.5f, 0.5f, 0.5f);//Ls
 
 	Ia = glm::vec3(0.f, 0.f, 0.f);
 	Id = glm::vec3(0.f, 0.f, 0.f);
 	Is = glm::vec3(0.f, 0.f, 0.f);
 	Translation = glm::mat4(1.0f);
 
-	Translation = glm::translate(Translation, { 1,1,1 });
+	Translation = glm::translate(Translation, { 0,10,-1 });
 
 }
 
@@ -32,11 +35,22 @@ glm::vec3 Light::Compute_Ia(glm::vec3 Ka)
 
 glm::vec3 Light::Compute_Id(glm::vec3 Kd)
 {
-	//Id=Kd*(I*n)Ld
-	Id = glm::vec3(Kd.x * DiffuseColor.x, Kd.y * DiffuseColor.y, Kd.z * DiffuseColor.z);
-	Id = glm::normalize(Id);
-	float theta  = glm::dot(N,I);
-	return glm::vec3(theta * Id.x, theta * Id.y, theta * Id.z);
+	
+	Id = glm::vec3(Kd.x * DiffuseColor.x, Kd.y * DiffuseColor.y, Kd.z * DiffuseColor.z); //Id = Kd*(I*n)Ld
+	//Id = glm::normalize(Id);
+	float theta  = glm::dot(-N,I);
+	Id = glm::vec3(theta * Id.x, theta * Id.y, theta * Id.z);
+	 return Id;
+}
+
+glm::vec3 Light::Compute_Is(glm::vec3 Ks)
+{
+	float spec = pow(std::max(dot(I, R), 0.0f), 2);
+
+	Is = SpecularColor * spec; 	//Is = Ls (r * v)^(alpha)*Ks
+	Is = glm::vec3(SpecularColor.x * spec * Ks.x, SpecularColor.y * spec * Ks.y, SpecularColor.z * spec * Ks.z);
+	return Is;
+	
 }
 
 glm::vec3 Light::GetPosition()
@@ -50,7 +64,7 @@ glm::vec3 Light::GetLight()
 {
 	glm::vec3 color=glm::vec3(Ia.x + Id.x + Is.x, Ia.y + Id.y + Is.y, Ia.z + Id.z + Is.z);
 	if (color.x > 1) color.x = 1; if (color.x < 0) color.x = 0;
-	if (color.y > 1) color.x = 1; if (color.y < 0) color.x = 0;
-	if (color.z > 1) color.x = 1; if (color.z < 0) color.x = 0;
+	if (color.y > 1) color.y = 1; if (color.y < 0) color.y = 0;
+	if (color.z > 1) color.z = 1; if (color.z < 0) color.z = 0;
 	return color;
 }
