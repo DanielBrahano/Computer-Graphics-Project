@@ -14,12 +14,17 @@ Scene::Scene() :
 	gray_scale(false),
 	color_with_buffer(false)
 	
+	
 {
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 
-	ambient_shading = false;
+	ambient_light = false;
 	lighting = false;
+	diffuse_light = false;
+	reflection_vector = false;
+	specular_light = false;
 	flat_shading = false;
+	phong = false;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 }
 
