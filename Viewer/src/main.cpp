@@ -567,8 +567,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::ColorEdit3("Model Specular", (float*)&scene.GetModel(0).Ks);
 	}
 
-	ImGui::Checkbox("Ambient Shading", &scene.ambient_shading); ImGui::SameLine();
-	ImGui::Checkbox("Flat Shading", &scene.flat_shading);
+	ImGui::Checkbox("Ambient Shading", &scene.ambient_light); ImGui::SameLine();
+	ImGui::Checkbox("Diffuse Lighting", &scene.diffuse_light); ImGui::SameLine();	
+	ImGui::Checkbox("Specular Light", &scene.specular_light);
+
+	ImGui::Checkbox("Reclection Vectors", &scene.reflection_vector);
+
+	static int shading = 1;
+	ImGui::RadioButton("Flat Shading", &shading, 1); ImGui::SameLine();
+	ImGui::RadioButton("Phong", &shading, 2);
+
+	if (shading == 1) scene.flat_shading = true; scene.phong = false;
+	if (shading == 2) scene.flat_shading = false; scene.phong = true;
+	
 
 	ImGui::End();
 }
