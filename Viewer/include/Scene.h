@@ -48,8 +48,12 @@ public:
 
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 	bool lighting;
-	bool ambient_shading;
+	bool ambient_light;
+	bool diffuse_light;
+	bool reflection_vector;
+	bool specular_light;
 	bool flat_shading;
+	bool phong;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 	
 
