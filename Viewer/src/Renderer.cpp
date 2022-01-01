@@ -380,7 +380,7 @@ void Renderer::DrawMesh(Scene scene, int j)
 		DrawTriangle(q1, q2, q3, black, scene.bounding_rectangles, rectangle_color, scene);
 
 		if (scene.lighting)
-			DrawLight(scene, q1, q2, q3);
+			DrawLight(scene, q1, q2, q3, i);
 
 
 	}
@@ -749,6 +749,39 @@ void Renderer::viewport(glm::vec3& p1, glm::vec3& p2, glm::vec3& p3, float heigh
 
 }
 
+void Renderer::undo_viewport(glm::vec3& p1, glm::vec3& p2, glm::vec3& p3, float height)
+{
+
+	p1 = p1 / ((float)height / 2);
+	p2 = p2 / ((float)height / 2);
+	p3 = p3 / ((float)height / 2);
+
+	//sub 1 to fit to screen coordinates
+	p1.x -= 1;
+	p1.y -= 1;
+	p1.z -= 1;
+	p2.x -= 1;
+	p2.y -= 1;
+	p2.z -= 1;
+	p3.x -= 1;
+	p3.y -= 1;
+	p3.z -= 1;
+
+}
+
+void Renderer::undo_viewport(glm::vec3& p1, float height)
+{
+
+	p1 = p1 / ((float)height / 2);
+
+
+	//sub 1 to fit to screen coordinates
+	p1.x -= 1;
+	p1.y -= 1;
+	p1.z -= 1;
+
+}
+
 void Renderer::viewport(glm::vec3& p1, float height)
 {
 	//add 1 to fit to screen coordinates
@@ -884,7 +917,7 @@ float Renderer::CalculateArea(glm::vec3& q1, glm::vec3& q2, glm::vec3& q3)
 	float y3 = q3.y;
 
 	//triangle area formula
-	return abs(((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)) / 2.0f);
+	return abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
 }
 
 //finding z coordinate of a point inside triangle using :Linear interpolation - Barycentric method
@@ -915,7 +948,7 @@ void Renderer::Set_z(int i, int j, float z)
 }
 
 
-void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
+void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, int faceNumber)
 {
 	MeshModel model = scene.GetModel(0);
 	Camera camera = scene.GetCamera(0);
@@ -943,14 +976,49 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 	light.I = glm::normalize(glm::vec3(LightPosition.x - facePosition.x, LightPosition.y - facePosition.y, LightPosition.z - facePosition.z));
 	//cout << "I = " << light.I.x<<" " << light.I.y <<" " << light.I.z << endl;
 	light.V= glm::normalize(glm::vec3(cameraPosition.x - facePosition.x, cameraPosition.y - facePosition.y, cameraPosition.y - facePosition.z));
-	int FaceCount = model.GetFacesCount();
+	
+	//get face info for normals
+	Face face = model.GetFace(faceNumber);
+
+	//get normal index
+	int vn_index1 = face.GetNormalIndex(0) - 1;
+	int vn_index2 = face.GetNormalIndex(1) - 1;
+	int vn_index3 = face.GetNormalIndex(2) - 1;
+
+	//get normals
+	glm::vec4 q1 = { model.GetNormal(vn_index1,0),model.GetNormal(vn_index1,1) ,model.GetNormal(vn_index1,2),1.0f };
+	glm::vec4 q2 = { model.GetNormal(vn_index2,0),model.GetNormal(vn_index2,1) ,model.GetNormal(vn_index2,2),1.0f };
+	glm::vec4 q3 = { model.GetNormal(vn_index3,0),model.GetNormal(vn_index3,1) ,model.GetNormal(vn_index3,2),1.0f };
+
+	//apply transformations
+	q1 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * q1;
+	q2 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * q2;
+	q3 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * model.GetTransform() * q3;
+
+	//go to cartesian coordinates
+	glm::vec3 normal1 = HomToCartesian(q1);
+	glm::vec3 normal2 = HomToCartesian(q2);
+	glm::vec3 normal3 = HomToCartesian(q3);
+
+	//screen coordinates
+	//viewport(normal1, normal2, normal3, min(viewport_height, viewport_width));
+
+	////normilize
+	/*normal1 = glm::normalize(normal1);
+	normal2 = glm::normalize(normal2);
+	normal3 = glm::normalize(normal3);*/
+
 
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition - facePosition);
 	glm::vec3 reflectionDirection = glm::reflect(-light.I, light.N);
 
-	//reflectionDirection = facePosition +  40.f*reflectionDirection;
-	DrawLine(facePosition + 40.f * reflectionDirection, facePosition, glm::vec3(1, 0, 1));
-	DrawLine(facePosition + 40.f * reflectionDirection, facePosition + 80.f * reflectionDirection, glm::vec3(0, 0, 1));
+	if (scene.reflection_vector)
+	{
+		//reflectionDirection = facePosition +  40.f*reflectionDirection;
+		DrawLine(facePosition + 70.f * reflectionDirection, facePosition, glm::vec3(1, 0, 1));
+		DrawLine(facePosition + 70.f * reflectionDirection, facePosition + 90.f * reflectionDirection, glm::vec3(0, 0, 1));
+	}
+
 
 
 
@@ -968,39 +1036,81 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 	min_y = min(min_y, p3.y);
 
 	glm::vec3 color;
+	glm::vec3 test1;
+	glm::vec3 test2;
 
 	light.Ia = glm::vec3(0, 0, 0);
 	light.Id = glm::vec3(0, 0, 0);
 	light.Is = glm::vec3(0, 0, 0);
-	if (scene.ambient_shading)
+	if (scene.ambient_light)
 	{
 		light.Ia = light.Compute_Ia(model.Ka);
 		color = light.GetLight();
 	}
 
-	if (scene.flat_shading)
+	if (scene.diffuse_light)
 	{
-		light.Ia = light.Compute_Ia(model.Ka);
 		light.Id = light.Compute_Id(model.Kd);
 		color = light.GetLight();
 	}
 
+	if (scene.specular_light)
+	{
+		light.Is = light.Compute_Is(model.Ks);
+		color = light.GetLight();
+	}
+
+
+
+	glm::vec3 a1 = p1;
+	glm::vec3 a2 = p2;
+	glm::vec3 a3 = p3;
+
+
+	//undo_viewport(a1, a2, a3, min(viewport_height, viewport_width));
 
 	for (int y = min_y; (y <= max_y && y < viewport_height); y++)
 	{
 		for (int x = min_x; (x <= max_x && x < viewport_width); x++)
 		{
-			if (bool_array[x][y] == true && (scene.flat_shading || scene.ambient_shading))
+			if (bool_array[x][y] == true && (scene.diffuse_light || scene.ambient_light))
 			{
 				float z = Find_z(x, y, p1, p2, p3);
 				if (z <= Get_z(x, y))
 				{
-					PutPixel(x, y, color);
+					if(scene.flat_shading)
+						PutPixel(x, y, color);
+					else if (scene.phong)
+					{
+						glm::vec3 N;
+						glm::vec3 position = glm::vec3{ x, y, z };
+
+						N = InterpolatedVec(a1, a2, a3, position, normal1, normal2, normal3);
+						
+						light.N = glm::normalize(N);
+						//compute I
+						light.I = glm::normalize(glm::vec3(LightPosition.x - x, LightPosition.y - y, LightPosition.z - z));
+						//compute V
+						light.V = glm::normalize(glm::vec3(cameraPosition.x - x, cameraPosition.y - y, cameraPosition.z - z));
+						//compute R
+						light.R = glm::normalize(glm::reflect(-light.I, light.N));
+
+						 glm::vec3 Id = light.Compute_Id(model.Kd);
+						 glm::vec3 Is = light.Compute_Is(model.Ks);
+						 color = Id + Is;
+
+						PutPixel(x, y, color);	
+
+
+				
+
+					}
 				}
 			}
 				
 		}
 	}
+
 
 }
 
@@ -1015,26 +1125,20 @@ glm::vec3 Renderer::compute_normal(glm::vec3 vertex1, glm::vec3 vertex2, glm::ve
 
 }
 
-bool Renderer::In_Triangle(glm::vec2 x, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
-{
-	float a, b, c;
-	bool has_neg, has_pos;
 
-	a = PosOrNeg(x, p1, p2);
-	b = PosOrNeg(x, p2, p3);
-	c = PosOrNeg(x, p3, p1);
 
-	has_neg = (a < 0) || (b < 0) || (c < 0);
-	has_pos = (a > 0) || (b > 0) || (c > 0);
 
-	return !(has_neg && has_pos);
+glm::vec3 Renderer::InterpolatedVec(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 position, glm::vec3 normal1, glm::vec3 normal2, glm::vec3 normal3) {
+	float A1 = CalculateArea(glm::vec3(position.x, position.y, 1), p2, p3);
+	float A2 = CalculateArea(glm::vec3(position.x, position.y, 1), p1, p3);
+	float A3 = CalculateArea(glm::vec3(position.x, position.y, 1), p2, p1);
+	float A = A1 + A2 + A3;
+	return glm::vec3((A1 / A) * normal1.x + (A2 / A) * normal2.x + (A3 / A) * normal3.x, (A1 / A) * normal1.y + (A2 / A) * normal2.y + (A3 / A) * normal3.y, (A1 / A) * normal1.z + (A2 / A) * normal2.z + (A3 / A) * normal3.z);
+
 }
 
-float Renderer::PosOrNeg(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3)
-{
-	float a = (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
-	return a;
-}
+
+
 
 
 
