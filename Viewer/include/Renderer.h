@@ -60,6 +60,9 @@ private:
 
 	void viewport(glm::vec3& p1, float height);
 
+	void undo_viewport(glm::vec3& p1, glm::vec3& p2, glm::vec3& p3, float height);
+	void undo_viewport(glm::vec3& p1, float height);
+
 	void DrawBoundingBox(Scene scene, MeshModel model);
 
 	void DrawNormal(Scene scene, MeshModel model);
@@ -88,12 +91,10 @@ private:
 
 	glm::vec3 Get_ColorBuffer(int i, int j);
 
-	void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+	void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, int faceNumber);
 
 	glm::vec3 compute_normal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
 
-	bool Renderer::In_Triangle(glm::vec2 x, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
-
-	float Renderer::PosOrNeg(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3);
+	glm::vec3 Renderer::InterpolatedVec(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 position, glm::vec3 normal1, glm::vec3 normal2, glm::vec3 normal3);
 
 };
