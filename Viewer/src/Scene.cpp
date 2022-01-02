@@ -27,6 +27,7 @@ Scene::Scene() :
 	phong = false;
 	fog = false;
 	more_than_1_light = false;
+	blur = false;
 
 	lights[0] = new Light();
 	lights[1] = new Light();

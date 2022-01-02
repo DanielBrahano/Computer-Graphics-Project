@@ -47,7 +47,7 @@ private:
 	bool color_with_buffer;
 
 
-	
+
 
 
 	//drawing triangles

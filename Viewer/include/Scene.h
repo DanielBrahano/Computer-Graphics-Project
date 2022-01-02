@@ -56,6 +56,7 @@ public:
 	bool phong;
 	bool fog;
 	bool more_than_1_light;
+	bool blur;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 	
 

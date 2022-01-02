@@ -573,6 +573,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	ImGui::Checkbox("Reclection Vectors", &scene.reflection_vector);
 	ImGui::Checkbox("Fog", &scene.fog);
+	ImGui::Checkbox("Blur", &scene.blur);
 
 	static int shading = 0;
 	ImGui::RadioButton("Flat Shading", &shading, 1); ImGui::SameLine();

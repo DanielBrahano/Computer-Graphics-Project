@@ -8,7 +8,7 @@ Light::Light()
 {
 
 	AmbientColor = glm::vec3(0.5f, 0.5f, 0.5f);//La
-	DiffuseColor = glm::vec3(0.5f, 0.5f, 0.5f);//Ld
+	DiffuseColor = glm::vec3(1, 1, 1);//Ld
 	SpecularColor = glm::vec3(0.5f, 0.5f, 0.5f);//Ls
 
 	Ia = glm::vec3(0.f, 0.f, 0.f);
@@ -16,7 +16,7 @@ Light::Light()
 	Is = glm::vec3(0.f, 0.f, 0.f);
 	Translation = glm::mat4(1.0f);
 
-	Translation = glm::translate(Translation, { -10,-10,5 });
+	Translation = glm::translate(Translation, { 0,2,-20 });
 
 }
 
@@ -67,8 +67,5 @@ glm::vec3 Light::GetPosition()
 glm::vec3 Light::GetLight()
 {
 	glm::vec3 color=glm::vec3(Ia.x + Id.x + Is.x, Ia.y + Id.y + Is.y, Ia.z + Id.z + Is.z);
-	if (color.x > 1) color.x = 1; if (color.x < 0) color.x = 0;
-	if (color.y > 1) color.y = 1; if (color.y < 0) color.y = 0;
-	if (color.z > 1) color.z = 1; if (color.z < 0) color.z = 0;
 	return color;
 }

@@ -10,7 +10,7 @@ Camera::Camera()
 	top = 1.0f;
 	bottom = -1.0f;
 	zNear = -0.0f;
-	zFar = 2.0f;
+	zFar = 1.0f;
 	fovy = 45.0f;
 	aspectRatio = 1.0;
 

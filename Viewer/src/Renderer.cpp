@@ -37,7 +37,7 @@ Renderer::~Renderer()
 	delete[] z_buffer;
 
 	//Delete the array created
-	for (int i = 0; i < viewport_width+1; i++)  //To delete the inner arrays
+	for (int i = 0; i < viewport_width + 1; i++)  //To delete the inner arrays
 		delete[] bool_array[i];
 	delete[] bool_array;             //To delete the outer array
 }
@@ -105,9 +105,9 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				e = e - 2 * dx;
 			}
 			//if ((paint_triangle || gray_scale || color_with_buffer) && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
-			if ( (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
+			if ((x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
 				bool_array[x][y] = true;
-			if(!paintFlag)
+			if (!paintFlag)
 				PutPixel(x, y, color);
 			x++;
 			e = e + 2 * dy;
@@ -147,9 +147,9 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				e = e - 2 * dy;
 			}
 			//if ((paint_triangle || gray_scale || color_with_buffer) && paintFlag && (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
-			if ( (x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
+			if ((x <= viewport_width) && (y <= viewport_height) && x >= 0 && y >= 0)
 				bool_array[x][y] = true;
-			if(!paintFlag)
+			if (!paintFlag)
 				PutPixel(x, y, color);
 			y++;
 			e = e + 2 * dx;
@@ -163,7 +163,7 @@ void Renderer::CreateBuffers(int w, int h)
 	color_buffer = new float[(3 * w * h)];
 	z_buffer = new float[w * h];
 	ClearColorBuffer(glm::vec3(0.0f, 0.0f, 0.0f));
-	
+
 }
 
 //##############################
@@ -290,7 +290,7 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 		}
 
 	}
-}	
+}
 
 void Renderer::Render(Scene& scene)
 {
@@ -368,6 +368,8 @@ void Renderer::DrawMesh(Scene scene, int j)
 		p2 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * p2;
 		p3 = scene.GetActiveCamera().GetProjectionTransformation() * scene.GetActiveCamera().GetViewTransformation() * scene.GetModel(j).GetTransform() * p3;
 
+
+
 		//go to cartesian coordinates
 		glm::vec3 q1 = HomToCartesian(p1);
 		glm::vec3 q2 = HomToCartesian(p2);
@@ -381,7 +383,6 @@ void Renderer::DrawMesh(Scene scene, int j)
 
 		if (scene.lighting)
 			DrawLight(scene, q1, q2, q3, i);
-
 
 	}
 
@@ -412,63 +413,63 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 
 	if (paint_triangle || gray_scale || color_with_buffer || scene.lighting)
 		paintFlag = true;
-		//initialize to false
-		for (int i = offset_x-1; i < dims[0] + offset_x+1; i++)
-			for (int j = offset_y-1; j < dims[1] + offset_y+1; j++)
-				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
-					bool_array[i][j] = false;
-	
+	//initialize to false
+	for (int i = offset_x - 1; i < dims[0] + offset_x + 1; i++)
+		for (int j = offset_y - 1; j < dims[1] + offset_y + 1; j++)
+			if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
+				bool_array[i][j] = false;
+
 	//draw triangles
 	DrawLine(p1, p2, color);
 	DrawLine(p1, p3, color);
 	DrawLine(p2, p3, color);
 
-		//run through the bool array and if we need to paint the pixel accourding to scanline, change value to true
+	//run through the bool array and if we need to paint the pixel accourding to scanline, change value to true
 
-		for (int i = offset_x; i <= dims[0] + offset_x; i++)
+	for (int i = offset_x; i <= dims[0] + offset_x; i++)
+	{
+		bool beginFlag = false;
+		int begin = 0;
+		int end = 0;
+		for (int j = offset_y; j <= dims[1] + offset_y; j++)
 		{
-			bool beginFlag = false;
-			int begin = 0;
-			int end = 0;
-			for (int j = offset_y; j <= dims[1] + offset_y; j++)
+			if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0 && bool_array[i][j] == true && !beginFlag)//if we reached an egdle
 			{
-				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0 && bool_array[i][j] == true && !beginFlag)//if we reached an egdle
-				{
-					begin = j;
-					end = j;
-					beginFlag = true;
-				}
-				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0 && bool_array[i][j] == true && beginFlag)
-				{
-					end = j;
-				}
+				begin = j;
+				end = j;
+				beginFlag = true;
 			}
-
-			for (int j = begin; j <= end; j++) {
-
-				if ( (i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
-				{
-					bool_array[i][j] = true;
-				}
-				
-				//if ((color_with_buffer || gray_scale) && (i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
-				if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
-				{
-					bool_array[i][j] = false;
-					float z = Find_z(i, j, p1, p2, p3);
-					if (z <= Get_z(i, j))
-					{
-						Set_z(i, j, z);
-						bool_array[i][j] = true;
-					}
-				}
+			if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0 && bool_array[i][j] == true && beginFlag)
+			{
+				end = j;
 			}
-						
-		
 		}
 
-		
-	
+		for (int j = begin; j <= end; j++) {
+
+			if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
+			{
+				bool_array[i][j] = true;
+			}
+
+			//if ((color_with_buffer || gray_scale) && (i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
+			if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
+			{
+				bool_array[i][j] = false;
+				float z = Find_z(i, j, p1, p2, p3);
+				if (z <= Get_z(i, j))
+				{
+					Set_z(i, j, z);
+					bool_array[i][j] = true;
+				}
+			}
+		}
+
+
+	}
+
+
+
 	if (paint_triangle || gray_scale || color_with_buffer || scene.lighting)
 	{
 		paintFlag = false;
@@ -483,8 +484,8 @@ void Renderer::PaintTriangle(int rows, int cols, glm::vec3 color, bool paint_tri
 {
 	zFar += 1;
 	zFar *= min(viewport_width, viewport_height);
-	for (int i = offset_x; i < rows + offset_x+1; i++)
-		for (int j = offset_y; j < cols + offset_y+1; j++)
+	for (int i = offset_x; i < rows + offset_x + 1; i++)
+		for (int j = offset_y; j < cols + offset_y + 1; j++)
 		{
 			//if we want to fill the triangles with colors
 			if (paint_triangle && (i < viewport_width) && i >= 0 && j >= 0 && (j < viewport_height) && bool_array[i][j])
@@ -791,7 +792,7 @@ void Renderer::viewport(glm::vec3& p1, float height)
 
 	//scale by window size
 	p1 = (float)height / 2 * p1;
-	
+
 }
 
 void Renderer::DrawFaceNormal(Scene scene, MeshModel model) {
@@ -934,11 +935,11 @@ float Renderer::Find_z(int _x, int  _y, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3
 
 
 //z buffer getter
-float Renderer::Get_z(int i, int j) 
+float Renderer::Get_z(int i, int j)
 {
 	if (i < 0) return INFINITY; if (i >= viewport_width) return INFINITY;
 	if (j < 0) return INFINITY; if (j >= viewport_height) return INFINITY;
-		return z_buffer[Z_INDEX(viewport_width, i, j)];
+	return z_buffer[Z_INDEX(viewport_width, i, j)];
 }
 
 //z buffer setter
@@ -973,8 +974,8 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 	//compute I
 	light.I = glm::normalize(glm::vec3(LightPosition.x - facePosition.x, LightPosition.y - facePosition.y, LightPosition.z - facePosition.z));
 	//cout << "I = " << light.I.x<<" " << light.I.y <<" " << light.I.z << endl;
-	light.V= glm::normalize(glm::vec3(cameraPosition.x - facePosition.x, cameraPosition.y - facePosition.y, cameraPosition.y - facePosition.z));
-	
+	light.V = glm::normalize(glm::vec3(cameraPosition.x - facePosition.x, cameraPosition.y - facePosition.y, cameraPosition.y - facePosition.z));
+
 	//get face info for normals
 	Face face = model.GetFace(faceNumber);
 
@@ -1010,12 +1011,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition - facePosition);
 	glm::vec3 reflectionDirection = glm::reflect(-light.I, light.N);
 
-	if (scene.reflection_vector)
-	{
-		//reflectionDirection = facePosition +  40.f*reflectionDirection;
-		DrawLine(facePosition + 70.f * reflectionDirection, facePosition, glm::vec3(1, 0, 1));
-		DrawLine(facePosition + 70.f * reflectionDirection, facePosition + 90.f * reflectionDirection, glm::vec3(0, 0, 1));
-	}
+
 
 
 
@@ -1120,10 +1116,11 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 					else if (scene.phong)
 					{
 						glm::vec3 N;
+						//z = z - cameraPosition.z;
 						glm::vec3 position = glm::vec3{ x, y, z };
 
 						N = InterpolatedVec(a1, a2, a3, position, normal1, normal2, normal3);
-						
+
 						light.N = glm::normalize(N);
 						//compute I
 						light.I = glm::normalize(glm::vec3(LightPosition.x - x, LightPosition.y - y, LightPosition.z - z));
@@ -1132,51 +1129,58 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 						//compute R
 						light.R = glm::normalize(glm::reflect(-light.I, light.N));
 
-						 glm::vec3 Id = light.Compute_Id(model.Kd);
-						 glm::vec3 Is = light.Compute_Is(model.Ks);
-						 glm::vec3 Ia = light.Compute_Is(model.Ka);
-						 color = Ia + Id + Is;
+						glm::vec3 Id = light.Compute_Id(model.Kd);
+						glm::vec3 Is = light.Compute_Is(model.Ks);
+						glm::vec3 Ia = light.Compute_Is(model.Ka);
+						color = Ia + Id + Is;
 
-						 if (scene.more_than_1_light)
-						 {
-							 glm::vec3 N;
-							 glm::vec3 position = glm::vec3{ x, y, z };
+						if (scene.more_than_1_light)
+						{
+							glm::vec3 N;
+							glm::vec3 position = glm::vec3{ x, y, z };
 
-							 N = InterpolatedVec(a1, a2, a3, position, normal1, normal2, normal3);
+							N = InterpolatedVec(a1, a2, a3, position, normal1, normal2, normal3);
 
-							 light2.N = glm::normalize(N);
-							 //compute I
-							 light2.I = glm::normalize(glm::vec3(Light2Position.x - x, Light2Position.y - y, Light2Position.z - z));
-							 //compute V
-							 light2.V = glm::normalize(glm::vec3(cameraPosition.x - x, cameraPosition.y - y, cameraPosition.z - z));
-							 //compute R
-							 light2.R = glm::normalize(glm::reflect(-light2.I, light2.N));
+							light2.N = glm::normalize(N);
+							//compute I
+							light2.I = glm::normalize(glm::vec3(Light2Position.x - x, Light2Position.y - y, Light2Position.z - z));
+							//compute V
+							light2.V = glm::normalize(glm::vec3(cameraPosition.x - x, cameraPosition.y - y, cameraPosition.z - z));
+							//compute R
+							light2.R = glm::normalize(glm::reflect(-light2.I, light2.N));
 
-							 glm::vec3 Id = light2.Compute_Id(model.Kd);
-							 glm::vec3 Is = light2.Compute_Is(model.Ks);
-							 glm::vec3 Ia = light2.Compute_Is(model.Ka);
-							 color2 = Ia + Id + Is;
-						 }
+							glm::vec3 Id = light2.Compute_Id(model.Kd);
+							glm::vec3 Is = light2.Compute_Is(model.Ks);
+							glm::vec3 Ia = light2.Compute_Is(model.Ka);
+							color2 = Ia + Id + Is;
+						}
 
-						 color = color + color2;
+						color = color + color2;
 
-						 if (scene.fog)
-						 {
+						if (scene.fog)
+						{
 							// exponential method
-							 float d = z;
-							 float b = 0.0001f;
-							 float f = exp(-d * b);
+							float d = z;
+							float b = 0.05f;
+							float f = exp(-d * b);
 							// formula from lecture
-							 color = (1 - f) * glm::vec3(0.5f, 0.5f, 0.5f) + f * color;
+							color = (1 - f) * glm::vec3(0.5f, 0.5f, 0.5f) + f * color;
 
-						 }
+						}
 
-						PutPixel(x, y, color);				
+						PutPixel(x, y, color);
 					}
 				}
 			}
-				
+
 		}
+	}
+
+	if (scene.reflection_vector)
+	{
+		//reflectionDirection = facePosition +  40.f*reflectionDirection;
+		DrawLine(facePosition + 70.f * reflectionDirection, facePosition, glm::vec3(1, 0, 1));
+		DrawLine(facePosition + 70.f * reflectionDirection, facePosition + 90.f * reflectionDirection, glm::vec3(0, 0, 1));
 	}
 
 	if (scene.more_than_1_light)
@@ -1295,6 +1299,10 @@ glm::vec3 Renderer::InterpolatedVec(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, gl
 
 }
 
+//glm::mat4 gaussian_kernel(int x, int y)
+//{
+//
+//}
 
 
 
