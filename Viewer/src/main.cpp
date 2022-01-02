@@ -511,10 +511,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::Text("LightCount = %d", LightCount);
 	if (ImGui::Button("Add point light") && (LightCount < 3))
 	{
-		Light* hola = new Light();
+
 		LightCount++;
-		scene.AddLight(hola);
-		scene.SetActiveLightIndex(LightCount-1);
+
 				
 	}
 	if (LightCount)
@@ -523,33 +522,34 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	if (LightCount == 1) {
 		ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
 		ImGui::Text("Light RGB");
-		ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
-		ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
-		ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
-		ImGui::SliderFloat3("Light1 Translation", &scene.GetActiveLight().Translation[3].x, -2.0f, 2.0f);
+		ImGui::ColorEdit3("Ambient", (float*)&scene.GetLight(0).AmbientColor);
+		ImGui::ColorEdit3("Diffuse", (float*)&scene.GetLight(0).DiffuseColor);
+		ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(0).SpecularColor);
+		ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -2.0f, 2.0f);
 	}
 
 	if (LightCount == 2) {
 		static int light_num = 1;
 		ImGui::RadioButton("Light 1", &light_num, 1); ImGui::SameLine();
 		ImGui::RadioButton("Light 2", &light_num, 2);
-		
-		scene.SetActiveLightIndex(light_num - 1);
+		scene.more_than_1_light = true;
+
 		if (light_num == 1) {
 			ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
 			ImGui::Text("Light RGB");
-			ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
-			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
-			ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
-			ImGui::SliderFloat3("Light1 Translation", &scene.GetActiveLight().Translation[3].x, -2.0f, 2.0f);
+			ImGui::ColorEdit3("Ambient", (float*)&scene.GetLight(0).AmbientColor);
+			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetLight(0).DiffuseColor);
+			ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(0).SpecularColor);
+			ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -2.0f, 2.0f);
 		}
 		else {
+
 			ImGui::Combo("Choose Light", &LightCount, lights, LightCount);
 			ImGui::Text("Light RGB");
-			ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().AmbientColor);
-			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().DiffuseColor);
-			ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().SpecularColor);
-			ImGui::SliderFloat3("Light2 Translation", &scene.GetActiveLight().Translation[3].x, -2.0f, 2.0f);
+			ImGui::ColorEdit3("Ambient", (float*)&scene.GetLight(1).AmbientColor);
+			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetLight(1).DiffuseColor);
+			ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(1).SpecularColor);
+			ImGui::SliderFloat3("Light2 Translation", &scene.GetLight(1).Translation[3].x, -2.0f, 2.0f);
 		}
 		
 
@@ -568,17 +568,18 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	ImGui::Checkbox("Ambient Shading", &scene.ambient_light); ImGui::SameLine();
-	ImGui::Checkbox("Diffuse Lighting", &scene.diffuse_light); ImGui::SameLine();	
+	ImGui::Checkbox("Diffuse Lighting", &scene.diffuse_light); 	
 	ImGui::Checkbox("Specular Light", &scene.specular_light);
 
 	ImGui::Checkbox("Reclection Vectors", &scene.reflection_vector);
+	ImGui::Checkbox("Fog", &scene.fog);
 
-	static int shading = 1;
+	static int shading = 0;
 	ImGui::RadioButton("Flat Shading", &shading, 1); ImGui::SameLine();
 	ImGui::RadioButton("Phong", &shading, 2);
 
-	if (shading == 1) scene.flat_shading = true; scene.phong = false;
-	if (shading == 2) scene.flat_shading = false; scene.phong = true;
+	if (shading == 1) { scene.flat_shading = true; scene.phong = false; }
+	if (shading == 2) { scene.flat_shading = false; scene.phong = true; }
 	
 
 	ImGui::End();

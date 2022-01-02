@@ -8,7 +8,7 @@ Light::Light()
 {
 
 	AmbientColor = glm::vec3(0.5f, 0.5f, 0.5f);//La
-	DiffuseColor = glm::vec3(1, 1, 1);//Ld
+	DiffuseColor = glm::vec3(0.5f, 0.5f, 0.5f);//Ld
 	SpecularColor = glm::vec3(0.5f, 0.5f, 0.5f);//Ls
 
 	Ia = glm::vec3(0.f, 0.f, 0.f);
@@ -16,7 +16,7 @@ Light::Light()
 	Is = glm::vec3(0.f, 0.f, 0.f);
 	Translation = glm::mat4(1.0f);
 
-	Translation = glm::translate(Translation, { 0,10,-1 });
+	Translation = glm::translate(Translation, { -10,-10,5 });
 
 }
 
@@ -40,6 +40,10 @@ glm::vec3 Light::Compute_Id(glm::vec3 Kd)
 	//Id = glm::normalize(Id);
 	float theta  = glm::dot(-N,I);
 	Id = glm::vec3(theta * Id.x, theta * Id.y, theta * Id.z);
+
+	if (Id.x > 1) Id.x = 1; if (Id.x < 0) Id.x = 0;
+	if (Id.y > 1) Id.y = 1; if (Id.y < 0) Id.y = 0;
+	if (Id.z > 1) Id.z = 1; if (Id.z < 0) Id.z = 0;
 	 return Id;
 }
 

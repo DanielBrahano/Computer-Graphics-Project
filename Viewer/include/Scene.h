@@ -54,6 +54,8 @@ public:
 	bool specular_light;
 	bool flat_shading;
 	bool phong;
+	bool fog;
+	bool more_than_1_light;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 	
 
@@ -61,7 +63,7 @@ public:
 private:
 	vector<shared_ptr<MeshModel>> mesh_models;
 	vector<shared_ptr<Camera>> cameras;
-	vector<Light*> lights;
+	Light* lights[2];
 
 
 	int active_camera_index;

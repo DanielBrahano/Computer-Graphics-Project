@@ -25,6 +25,12 @@ Scene::Scene() :
 	specular_light = false;
 	flat_shading = false;
 	phong = false;
+	fog = false;
+	more_than_1_light = false;
+
+	lights[0] = new Light();
+	lights[1] = new Light();
+
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 }
 
@@ -90,7 +96,7 @@ int Scene::GetActiveModelIndex() const
 
 void Scene::AddLight(Light* light)
 {
-	lights.push_back(light);
+	//lights.push_back(light);
 }
 
 Light& Scene::GetLight(int index)

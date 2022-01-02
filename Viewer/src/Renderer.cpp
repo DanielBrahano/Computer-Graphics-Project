@@ -960,16 +960,14 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 	viewport(LightPosition, min(viewport_height, viewport_width));
 	viewport(cameraPosition, min(viewport_height, viewport_width));
 
-	//cout <<"cameraPosition" << cameraPosition.x << " " << cameraPosition.y << " " << cameraPosition.z << " " << endl;
+	//cout << "Light1 Position = " << LightPosition.x << " " << LightPosition.y << " " << LightPosition.z << endl;
 
 	glm::vec3 facePosition = glm::vec3(0, 0, 0); //face position
-	facePosition += glm::vec3((p1 + p2 + p3) / 3.f);
-	//cout << "average position" << facePosition.x << " " << facePosition.y << " " << facePosition.z << " " << endl;
+	facePosition = glm::vec3((p1 + p2 + p3) / 3.f);
 
 
 
 
-	glm::vec3 Ia = light.Compute_Ia(model.Ka);
 	//normal face
 	light.N = compute_normal(p1, p2, p3);
 	//compute I
@@ -1001,7 +999,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 	glm::vec3 normal3 = HomToCartesian(q3);
 
 	//screen coordinates
-	//viewport(normal1, normal2, normal3, min(viewport_height, viewport_width));
+	viewport(normal1, normal2, normal3, min(viewport_height, viewport_width));
 
 	////normilize
 	/*normal1 = glm::normalize(normal1);
@@ -1036,29 +1034,27 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 	min_y = min(min_y, p3.y);
 
 	glm::vec3 color;
-	glm::vec3 test1;
-	glm::vec3 test2;
 
-	light.Ia = glm::vec3(0, 0, 0);
-	light.Id = glm::vec3(0, 0, 0);
-	light.Is = glm::vec3(0, 0, 0);
+
+	glm::vec3 Ia = glm::vec3(0, 0, 0);
+	glm::vec3 Id = glm::vec3(0, 0, 0);
+	glm::vec3 Is = glm::vec3(0, 0, 0);
 	if (scene.ambient_light)
 	{
-		light.Ia = light.Compute_Ia(model.Ka);
-		color = light.GetLight();
+		Ia = light.Compute_Ia(model.Ka);
 	}
 
 	if (scene.diffuse_light)
 	{
-		light.Id = light.Compute_Id(model.Kd);
-		color = light.GetLight();
+		Id = light.Compute_Id(model.Kd);
 	}
 
 	if (scene.specular_light)
 	{
-		light.Is = light.Compute_Is(model.Ks);
-		color = light.GetLight();
+		Is = light.Compute_Is(model.Ks);
 	}
+
+	color = Ia + Id + Is;
 
 
 
@@ -1066,7 +1062,48 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 	glm::vec3 a2 = p2;
 	glm::vec3 a3 = p3;
 
+	Light light2;
+	glm::vec3 Light2Position;
+	glm::vec3 color2 = glm::vec3(0, 0, 0);
+	glm::vec3 Ia2 = glm::vec3(0, 0, 0);
+	glm::vec3 Id2 = glm::vec3(0, 0, 0);
+	glm::vec3 Is2 = glm::vec3(0, 0, 0);
+	if (scene.more_than_1_light)
+	{
+		light2 = scene.GetLight(1);
+		Light2Position = light2.GetPosition(); // light position
 
+		viewport(Light2Position, min(viewport_height, viewport_width));
+
+		//cout << "Light2 Position = " << Light2Position.x << " " << Light2Position.y << " " << Light2Position.z << endl;
+
+		//normal face
+		light2.N = compute_normal(p1, p2, p3);
+		//compute I
+		light2.I = glm::normalize(glm::vec3(Light2Position.x - facePosition.x, Light2Position.y - facePosition.y, Light2Position.z - facePosition.z));
+		light2.V = glm::normalize(glm::vec3(cameraPosition.x - facePosition.x, cameraPosition.y - facePosition.y, cameraPosition.y - facePosition.z));
+
+		Ia2 = glm::vec3(0, 0, 0);
+		Id2 = glm::vec3(0, 0, 0);
+		Is2 = glm::vec3(0, 0, 0);
+		if (scene.ambient_light)
+		{
+			Ia2 = light2.Compute_Ia(model.Ka);
+		}
+
+		if (scene.diffuse_light)
+		{
+			Id2 = light2.Compute_Id(model.Kd);
+		}
+
+		if (scene.specular_light)
+		{
+			Is2 = light2.Compute_Is(model.Ks);
+		}
+
+
+		color2 = Ia2 + Id2 + Is2;
+	}
 	//undo_viewport(a1, a2, a3, min(viewport_height, viewport_width));
 
 	for (int y = min_y; (y <= max_y && y < viewport_height); y++)
@@ -1078,8 +1115,8 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 				float z = Find_z(x, y, p1, p2, p3);
 				if (z <= Get_z(x, y))
 				{
-					if(scene.flat_shading)
-						PutPixel(x, y, color);
+					if (scene.flat_shading)
+						PutPixel(x, y, color + color2);
 					else if (scene.phong)
 					{
 						glm::vec3 N;
@@ -1097,18 +1134,139 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 
 						 glm::vec3 Id = light.Compute_Id(model.Kd);
 						 glm::vec3 Is = light.Compute_Is(model.Ks);
-						 color = Id + Is;
+						 glm::vec3 Ia = light.Compute_Is(model.Ka);
+						 color = Ia + Id + Is;
 
-						PutPixel(x, y, color);	
+						 if (scene.more_than_1_light)
+						 {
+							 glm::vec3 N;
+							 glm::vec3 position = glm::vec3{ x, y, z };
 
+							 N = InterpolatedVec(a1, a2, a3, position, normal1, normal2, normal3);
 
-				
+							 light2.N = glm::normalize(N);
+							 //compute I
+							 light2.I = glm::normalize(glm::vec3(Light2Position.x - x, Light2Position.y - y, Light2Position.z - z));
+							 //compute V
+							 light2.V = glm::normalize(glm::vec3(cameraPosition.x - x, cameraPosition.y - y, cameraPosition.z - z));
+							 //compute R
+							 light2.R = glm::normalize(glm::reflect(-light2.I, light2.N));
 
+							 glm::vec3 Id = light2.Compute_Id(model.Kd);
+							 glm::vec3 Is = light2.Compute_Is(model.Ks);
+							 glm::vec3 Ia = light2.Compute_Is(model.Ka);
+							 color2 = Ia + Id + Is;
+						 }
+
+						 color = color + color2;
+
+						 if (scene.fog)
+						 {
+							// exponential method
+							 float d = z;
+							 float b = 0.0001f;
+							 float f = exp(-d * b);
+							// formula from lecture
+							 color = (1 - f) * glm::vec3(0.5f, 0.5f, 0.5f) + f * color;
+
+						 }
+
+						PutPixel(x, y, color);				
 					}
 				}
 			}
 				
 		}
+	}
+
+	if (scene.more_than_1_light)
+	{
+		//Light light2 = scene.GetLight(1);
+		//glm::vec3 Light2Position = light2.GetPosition(); // light position
+
+		//viewport(Light2Position, min(viewport_height, viewport_width));
+
+		////cout << "Light2 Position = " << Light2Position.x << " " << Light2Position.y << " " << Light2Position.z << endl;
+
+		////normal face
+		//light2.N = compute_normal(p1, p2, p3);
+		////compute I
+		//light2.I = glm::normalize(glm::vec3(Light2Position.x - facePosition.x, Light2Position.y - facePosition.y, Light2Position.z - facePosition.z));
+		//light2.V = glm::normalize(glm::vec3(cameraPosition.x - facePosition.x, cameraPosition.y - facePosition.y, cameraPosition.y - facePosition.z));
+
+		//glm::vec3 Ia = glm::vec3(0, 0, 0);
+		//glm::vec3 Id = glm::vec3(0, 0, 0);
+		//glm::vec3 Is = glm::vec3(0, 0, 0);
+		//if (scene.ambient_light)
+		//{
+		//	Ia = light2.Compute_Ia(model.Ka);
+		//}
+
+		//if (scene.diffuse_light)
+		//{
+		//	Id = light2.Compute_Id(model.Kd);
+		//}
+
+		//if (scene.specular_light)
+		//{
+		//	Is = light2.Compute_Is(model.Ks);
+		//}
+
+
+		//glm::vec3 color2 = Ia + Id + Is;
+
+		//for (int y = min_y; (y <= max_y && y < viewport_height); y++)
+		//{
+		//	for (int x = min_x; (x <= max_x && x < viewport_width); x++)
+		//	{
+		//		if (bool_array[x][y] == true && (scene.diffuse_light || scene.ambient_light))
+		//		{
+		//			float z = Find_z(x, y, p1, p2, p3);
+		//			if (z <= Get_z(x, y))
+		//			{
+		//				if (scene.flat_shading)
+		//				{
+		//					color2 = color + color2;
+		//					PutPixel(x, y, color2);
+		//				}
+		//				else if (scene.phong)
+		//				{
+		//					glm::vec3 N;
+		//					glm::vec3 position = glm::vec3{ x, y, z };
+
+		//					N = InterpolatedVec(a1, a2, a3, position, normal1, normal2, normal3);
+
+		//					light2.N = glm::normalize(N);
+		//					//compute I
+		//					light2.I = glm::normalize(glm::vec3(Light2Position.x - x, Light2Position.y - y, Light2Position.z - z));
+		//					//compute V
+		//					light2.V = glm::normalize(glm::vec3(cameraPosition.x - x, cameraPosition.y - y, cameraPosition.z - z));
+		//					//compute R
+		//					light2.R = glm::normalize(glm::reflect(-light2.I, light2.N));
+
+		//					glm::vec3 Id = light2.Compute_Id(model.Kd);
+		//					glm::vec3 Is = light2.Compute_Is(model.Ks);
+		//					glm::vec3 Ia = light2.Compute_Is(model.Ka);
+		//					color2 = Ia + Id + Is;
+
+		//					if (scene.fog)
+		//					{
+		//						// exponential method
+		//						float d = z;
+		//						float b = 0.0001f;
+		//						float f = exp(-d * b);
+		//						// formula from lecture
+		//						color2 = (1 - f) * glm::vec3(0.5f, 0.5f, 0.5f) + f * color2;
+
+		//					}
+		//					color2 = color + color2;
+		//					PutPixel(x, y, color2);
+		//				}
+		//			}
+		//		}
+
+		//	}
+		//}
 	}
 
 
