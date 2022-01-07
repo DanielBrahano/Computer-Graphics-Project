@@ -525,7 +525,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::ColorEdit3("Ambient", (float*)&scene.GetLight(0).AmbientColor);
 		ImGui::ColorEdit3("Diffuse", (float*)&scene.GetLight(0).DiffuseColor);
 		ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(0).SpecularColor);
-		ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -2.0f, 2.0f);
+		ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -5.0f, 5.0f);
 	}
 
 	if (LightCount == 2) {
@@ -540,7 +540,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			ImGui::ColorEdit3("Ambient", (float*)&scene.GetLight(0).AmbientColor);
 			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetLight(0).DiffuseColor);
 			ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(0).SpecularColor);
-			ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -2.0f, 2.0f);
+			ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -4.0f, 4.0f);
 		}
 		else {
 
@@ -549,7 +549,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			ImGui::ColorEdit3("Ambient", (float*)&scene.GetLight(1).AmbientColor);
 			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetLight(1).DiffuseColor);
 			ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(1).SpecularColor);
-			ImGui::SliderFloat3("Light2 Translation", &scene.GetLight(1).Translation[3].x, -2.0f, 2.0f);
+			ImGui::SliderFloat3("Light2 Translation", &scene.GetLight(1).Translation[3].x, -4.0f, 4.0f);
 		}
 		
 
