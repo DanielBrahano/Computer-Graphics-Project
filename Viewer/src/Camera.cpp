@@ -9,12 +9,12 @@ Camera::Camera()
 	left = -1;
 	top = 1.0f;
 	bottom = -1.0f;
-	zNear = -0.0f;
+	zNear = -1.0f;
 	zFar = 1.0f;
 	fovy = 45.0f;
 	aspectRatio = 1.0;
 
-	eye = glm::vec3(0.0f, 0.0f, 0.0f);
+	eye = glm::vec3(0.0f, 0.0f, 1.0f);
 	at = glm::vec3(0.0f, 0.0f, -1.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
 
