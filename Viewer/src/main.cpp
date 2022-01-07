@@ -321,7 +321,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		//make sliders for the transformations
 		ImGui::SliderFloat3("Translation", &local_translation.x, -1.5f, 1.5f);
 		ImGui::SliderFloat3("Rotation", &local_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("Scale", &local_scale, 0.2f, 1.5f);
+		ImGui::SliderFloat("Scale", &local_scale, 0.2f, 3.5f);
 
 		ImGui::Text("        ");
 		ImGui::Text("       World Transformations  ");
@@ -417,7 +417,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	//before we open the imgui window, let's resize it
-	ImGui::SetNextWindowSize(ImVec2(350, 550));
+	ImGui::SetNextWindowSize(ImVec2(350, 470));
 
 	Camera& camera = scene.GetActiveCamera();
 	ImGui::Begin("Camera/Projection  Control");
@@ -503,7 +503,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 
 	//before we open the imgui window, let's resize it
-	ImGui::SetNextWindowSize(ImVec2(390, 430));
+	ImGui::SetNextWindowSize(ImVec2(390, 450));
 
 	ImGui::Begin("Lights");
 	static int LightCount = 0;
@@ -540,7 +540,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			ImGui::ColorEdit3("Ambient", (float*)&scene.GetLight(0).AmbientColor);
 			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetLight(0).DiffuseColor);
 			ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(0).SpecularColor);
-			ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -4.0f, 4.0f);
+			ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -5.0f, 5.0f);
 		}
 		else {
 
@@ -549,7 +549,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			ImGui::ColorEdit3("Ambient", (float*)&scene.GetLight(1).AmbientColor);
 			ImGui::ColorEdit3("Diffuse", (float*)&scene.GetLight(1).DiffuseColor);
 			ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(1).SpecularColor);
-			ImGui::SliderFloat3("Light2 Translation", &scene.GetLight(1).Translation[3].x, -4.0f, 4.0f);
+			ImGui::SliderFloat3("Light2 Translation", &scene.GetLight(1).Translation[3].x, -5.0f, 5.0f);
 		}
 		
 
@@ -571,7 +571,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::Checkbox("Diffuse Lighting", &scene.diffuse_light); 	
 	ImGui::Checkbox("Specular Light", &scene.specular_light);
 
-	ImGui::Checkbox("Reclection Vectors", &scene.reflection_vector);
+	ImGui::Checkbox("Reflection Vectors", &scene.reflection_vector);
 	ImGui::Checkbox("Fog", &scene.fog);
 	ImGui::Checkbox("Blur", &scene.blur);
 

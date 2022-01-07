@@ -8,7 +8,7 @@ Light::Light()
 {
 
 	AmbientColor = glm::vec3(0.5f, 0.5f, 0.5f);//La
-	DiffuseColor = glm::vec3(1, 1, 1);//Ld
+	DiffuseColor = glm::vec3(0.5f, 0.5f, 0.5f);//Ld
 	SpecularColor = glm::vec3(0.5f, 0.5f, 0.5f);//Ls
 
 	Ia = glm::vec3(0.f, 0.f, 0.f);
@@ -16,7 +16,7 @@ Light::Light()
 	Is = glm::vec3(0.f, 0.f, 0.f);
 	Translation = glm::mat4(1.0f);
 
-	Translation = glm::translate(Translation, { -4,5,1 });
+	Translation = glm::translate(Translation, { 1,4,2 });
 
 }
 

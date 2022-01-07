@@ -1177,14 +1177,16 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 							_far += 1;
 							_far *= min(viewport_height, viewport_width);
 
+							//viewport
 							float _near = camera.zNear;
 							_near += 1;
 							_near *= min(viewport_height, viewport_width);
-							
+
+
+							//linear for equation
 							float f = (_far - abs(z)) / (_far - _near);
-							// formula from lecture
-							//color = (1 - f) * glm::vec3(0.8353f, 0.7804f, 0.9098f) + f * color;
-							color = glm::mix(glm::vec3(0.8353f, 0.7804f, 0.9098f), color, f);
+						
+							color = glm::mix(glm::vec3(0.83f, 0.8f, 0.9f), color, f);
 
 						}
 
@@ -1203,95 +1205,6 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 		DrawLine(facePosition + 70.f * reflectionDirection, facePosition + 90.f * reflectionDirection, glm::vec3(0, 0, 1));
 	}
 
-	if (scene.more_than_1_light)
-	{
-		//Light light2 = scene.GetLight(1);
-		//glm::vec3 Light2Position = light2.GetPosition(); // light position
-
-		//viewport(Light2Position, min(viewport_height, viewport_width));
-
-		////cout << "Light2 Position = " << Light2Position.x << " " << Light2Position.y << " " << Light2Position.z << endl;
-
-		////normal face
-		//light2.N = compute_normal(p1, p2, p3);
-		////compute I
-		//light2.I = glm::normalize(glm::vec3(Light2Position.x - facePosition.x, Light2Position.y - facePosition.y, Light2Position.z - facePosition.z));
-		//light2.V = glm::normalize(glm::vec3(cameraPosition.x - facePosition.x, cameraPosition.y - facePosition.y, cameraPosition.y - facePosition.z));
-
-		//glm::vec3 Ia = glm::vec3(0, 0, 0);
-		//glm::vec3 Id = glm::vec3(0, 0, 0);
-		//glm::vec3 Is = glm::vec3(0, 0, 0);
-		//if (scene.ambient_light)
-		//{
-		//	Ia = light2.Compute_Ia(model.Ka);
-		//}
-
-		//if (scene.diffuse_light)
-		//{
-		//	Id = light2.Compute_Id(model.Kd);
-		//}
-
-		//if (scene.specular_light)
-		//{
-		//	Is = light2.Compute_Is(model.Ks);
-		//}
-
-
-		//glm::vec3 color2 = Ia + Id + Is;
-
-		//for (int y = min_y; (y <= max_y && y < viewport_height); y++)
-		//{
-		//	for (int x = min_x; (x <= max_x && x < viewport_width); x++)
-		//	{
-		//		if (bool_array[x][y] == true && (scene.diffuse_light || scene.ambient_light))
-		//		{
-		//			float z = Find_z(x, y, p1, p2, p3);
-		//			if (z <= Get_z(x, y))
-		//			{
-		//				if (scene.flat_shading)
-		//				{
-		//					color2 = color + color2;
-		//					PutPixel(x, y, color2);
-		//				}
-		//				else if (scene.phong)
-		//				{
-		//					glm::vec3 N;
-		//					glm::vec3 position = glm::vec3{ x, y, z };
-
-		//					N = InterpolatedVec(a1, a2, a3, position, normal1, normal2, normal3);
-
-		//					light2.N = glm::normalize(N);
-		//					//compute I
-		//					light2.I = glm::normalize(glm::vec3(Light2Position.x - x, Light2Position.y - y, Light2Position.z - z));
-		//					//compute V
-		//					light2.V = glm::normalize(glm::vec3(cameraPosition.x - x, cameraPosition.y - y, cameraPosition.z - z));
-		//					//compute R
-		//					light2.R = glm::normalize(glm::reflect(-light2.I, light2.N));
-
-		//					glm::vec3 Id = light2.Compute_Id(model.Kd);
-		//					glm::vec3 Is = light2.Compute_Is(model.Ks);
-		//					glm::vec3 Ia = light2.Compute_Is(model.Ka);
-		//					color2 = Ia + Id + Is;
-
-		//					if (scene.fog)
-		//					{
-		//						// exponential method
-		//						float d = z;
-		//						float b = 0.0001f;
-		//						float f = exp(-d * b);
-		//						// formula from lecture
-		//						color2 = (1 - f) * glm::vec3(0.5f, 0.5f, 0.5f) + f * color2;
-
-		//					}
-		//					color2 = color + color2;
-		//					PutPixel(x, y, color2);
-		//				}
-		//			}
-		//		}
-
-		//	}
-		//}
-	}
 
 
 }

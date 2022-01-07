@@ -19,7 +19,7 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	 DrawModelAxes = false;
 
 	 Ka = glm::vec3(0.0f, 0, 0);
-	 Kd = glm::vec3(0, 0, 1);
+	 Kd = glm::vec3(1, 0, 0);
 	 Ks = glm::vec3(1.0f, 1, 1);
 }
 
