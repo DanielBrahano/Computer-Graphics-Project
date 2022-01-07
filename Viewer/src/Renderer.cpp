@@ -1058,7 +1058,12 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 
 	color = Ia + Id + Is;
 
-
+	if (scene.reflection_vector)
+	{
+		//reflectionDirection = facePosition +  40.f*reflectionDirection;
+		DrawLine(facePosition + 70.f * reflectionDirection, facePosition, glm::vec3(1, 0, 1));
+		DrawLine(facePosition + 70.f * reflectionDirection, facePosition + 90.f * reflectionDirection, glm::vec3(0, 0, 1));
+	}
 
 	glm::vec3 a1 = p1;
 	glm::vec3 a2 = p2;
@@ -1140,7 +1145,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 						light.R = glm::normalize(glm::reflect(-light.I, light.N));
 
 						glm::vec3 Id = light.Compute_Id(model.Kd);
-						glm::vec3 Is = light.Compute_Is(model.Ks);
+						//glm::vec3 Is = light.Compute_Is(model.Ks);
 						glm::vec3 Ia = light.Compute_Ia(model.Ka);
 						color = Ia + Id + Is;
 
@@ -1198,12 +1203,12 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 		}
 	}
 
-	if (scene.reflection_vector)
-	{
-		//reflectionDirection = facePosition +  40.f*reflectionDirection;
-		DrawLine(facePosition + 70.f * reflectionDirection, facePosition, glm::vec3(1, 0, 1));
-		DrawLine(facePosition + 70.f * reflectionDirection, facePosition + 90.f * reflectionDirection, glm::vec3(0, 0, 1));
-	}
+	//if (scene.reflection_vector)
+	//{
+	//	//reflectionDirection = facePosition +  40.f*reflectionDirection;
+	//	DrawLine(facePosition + 70.f * reflectionDirection, facePosition, glm::vec3(1, 0, 1));
+	//	DrawLine(facePosition + 70.f * reflectionDirection, facePosition + 90.f * reflectionDirection, glm::vec3(0, 0, 1));
+	//}
 
 
 

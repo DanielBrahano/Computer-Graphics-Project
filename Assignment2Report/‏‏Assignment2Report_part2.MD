@@ -75,6 +75,20 @@ In the picture below the light comes from the top right corner and the blue end 
 
 ![task 3 reflection from top right corner](https://user-images.githubusercontent.com/92395711/147889893-3c1666a2-a6e6-478b-b539-eeee4f967f6c.png)
 
+For sanity check let's see what happens when we move things aound.
+
+Pawn reflection vectors from bottom lighting
+
+![pawn reflection vectors from bottom light](https://user-images.githubusercontent.com/92395711/148607054-e5cbdfc7-dfad-4d96-91a0-ae92e49fa9ed.png)
+
+Pawn reflection vectors from top lighting
+
+![pawn reflection vectors from top light](https://user-images.githubusercontent.com/92395711/148607057-c19c2936-7d68-4bb5-95c2-a21fb24fd1ec.png)
+
+Pawn translated left reflection vectors from top lighting
+
+![reflection pawn translate left top light](https://user-images.githubusercontent.com/92395711/148607061-cf1c5be4-7a39-45c3-a266-e81eae15c7e5.png)
+
 
 ## Task 5
 
