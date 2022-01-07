@@ -456,7 +456,13 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 			if ((i < viewport_width) && (j < viewport_height) && i >= 0 && j >= 0)
 			{
 				bool_array[i][j] = false;
+
 				float z = Find_z(i, j, p1, p2, p3);
+				float cameraDistance = scene.GetCamera(0).eye.z;
+				//cameraDistance += 1;
+				//cameraDistance *= min(viewport_height, viewport_width);
+				//z = z - cameraDistance;
+
 				if (z <= Get_z(i, j))
 				{
 					Set_z(i, j, z);
@@ -1106,9 +1112,13 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 	{
 		for (int x = min_x; (x <= max_x && x < viewport_width); x++)
 		{
-			if (bool_array[x][y] == true && (scene.diffuse_light || scene.ambient_light))
+			if (bool_array[x][y] == true && (scene.diffuse_light || scene.ambient_light || scene.specular_light))
 			{
 				float z = Find_z(x, y, p1, p2, p3);
+				float cameraDistance = scene.GetCamera(0).eye.z;
+				//cameraDistance += 1;
+				//cameraDistance *= min(viewport_height, viewport_width);
+				//z = z - cameraDistance;
 				if (z <= Get_z(x, y))
 				{
 					if (scene.flat_shading)
@@ -1131,7 +1141,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 
 						glm::vec3 Id = light.Compute_Id(model.Kd);
 						glm::vec3 Is = light.Compute_Is(model.Ks);
-						glm::vec3 Ia = light.Compute_Is(model.Ka);
+						glm::vec3 Ia = light.Compute_Ia(model.Ka);
 						color = Ia + Id + Is;
 
 						if (scene.more_than_1_light)
@@ -1151,7 +1161,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 
 							glm::vec3 Id = light2.Compute_Id(model.Kd);
 							glm::vec3 Is = light2.Compute_Is(model.Ks);
-							glm::vec3 Ia = light2.Compute_Is(model.Ka);
+							glm::vec3 Ia = light2.Compute_Ia(model.Ka);
 							color2 = Ia + Id + Is;
 						}
 

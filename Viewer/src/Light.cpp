@@ -49,7 +49,7 @@ glm::vec3 Light::Compute_Id(glm::vec3 Kd)
 
 glm::vec3 Light::Compute_Is(glm::vec3 Ks)
 {
-	float spec = pow(std::max(dot(I, R), 0.0f), 72);
+	float spec = pow(std::max(dot(I, R), 0.0f), 10);
 
  	//Is = Ls (r * v)^(alpha)*Ks
 	Is = glm::vec3(SpecularColor.x * spec * Ks.x, SpecularColor.y * spec * Ks.y, SpecularColor.z * spec * Ks.z);
