@@ -1172,9 +1172,19 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 							// exponential method
 							float d = z;
 							float b = 0.05f;
-							float f = exp(-d * b);
+							//float f = exp(-d * b);
+							float _far = camera.zFar;
+							_far += 1;
+							_far *= min(viewport_height, viewport_width);
+
+							float _near = camera.zNear;
+							_near += 1;
+							_near *= min(viewport_height, viewport_width);
+							
+							float f = (_far - abs(z)) / (_far - _near);
 							// formula from lecture
-							color = (1 - f) * glm::vec3(0.5f, 0.5f, 0.5f) + f * color;
+							//color = (1 - f) * glm::vec3(0.8353f, 0.7804f, 0.9098f) + f * color;
+							color = glm::mix(glm::vec3(0.8353f, 0.7804f, 0.9098f), color, f);
 
 						}
 
