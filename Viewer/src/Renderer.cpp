@@ -424,6 +424,8 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 	DrawLine(p1, p3, color);
 	DrawLine(p2, p3, color);
 
+
+
 	//run through the bool array and if we need to paint the pixel accourding to scanline, change value to true
 
 	for (int i = offset_x; i <= dims[0] + offset_x; i++)
@@ -458,10 +460,7 @@ void Renderer::DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 
 				bool_array[i][j] = false;
 
 				float z = Find_z(i, j, p1, p2, p3);
-				float cameraDistance = scene.GetCamera(0).eye.z;
-				//cameraDistance += 1;
-				//cameraDistance *= min(viewport_height, viewport_width);
-				//z = z - cameraDistance;
+
 
 				if (z <= Get_z(i, j))
 				{
@@ -1018,11 +1017,6 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 	glm::vec3 reflectionDirection = glm::reflect(-light.I, light.N);
 
 
-
-
-
-
-
 	//find the extreme vertices in model, start with face vertex 1 and find with a  loop
 
 	float max_x = max(p1.x, p2.x);
@@ -1145,7 +1139,7 @@ void Renderer::DrawLight(Scene scene, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, 
 						light.R = glm::normalize(glm::reflect(-light.I, light.N));
 
 						glm::vec3 Id = light.Compute_Id(model.Kd);
-						//glm::vec3 Is = light.Compute_Is(model.Ks);
+						glm::vec3 Is = light.Compute_Is(model.Ks);
 						glm::vec3 Ia = light.Compute_Ia(model.Ka);
 						color = Ia + Id + Is;
 

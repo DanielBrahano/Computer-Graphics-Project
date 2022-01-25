@@ -14,7 +14,7 @@ Camera::Camera()
 	fovy = 45.0f;
 	aspectRatio = 1.0;
 
-	eye = glm::vec3(0.0f, 0.0f, 1.0f);
+	eye = glm::vec3(0.0f, 0.0f, 0.0f);
 	at = glm::vec3(0.0f, 0.0f, -1.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
 
