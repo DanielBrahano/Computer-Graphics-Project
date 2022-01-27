@@ -66,9 +66,12 @@ int main(int argc, char** argv)
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
 
+
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 
+	renderer.LoadShaders();
+	renderer.LoadTextures();
 
 	Camera camera;
 	scene.AddCamera(std::make_shared<Camera>(camera));
@@ -76,11 +79,16 @@ int main(int argc, char** argv)
 
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
+	int width = 1920, height = 1080;
 	while (!glfwWindowShouldClose(window))
 	{
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+
 		glfwPollEvents();
 		StartFrame();
 		DrawImguiMenus(io, scene);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		RenderFrame(window, scene, renderer, io);
 	}
 
@@ -311,7 +319,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		static glm::vec3 world_previous_rotation(0.0f, 0.0f, 0.0f);
 		static float world_previous_scale = 1.0f;
 
-		
+
 
 
 		ImGui::Text("        ");
@@ -336,50 +344,50 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		//switch on which transformations we are about to do. 1 for OBJECT 0 for WORLD
 
 			//handle translation and scale
-			if ((local_previous_scale != local_scale) || (local_previous_translation != local_translation) || (local_previous_rotation != local_rotation)) {
-				scene.GetModel(0).ObjectTranslateModel(local_translation.x - local_previous_translation.x, local_translation.y - local_previous_translation.y, local_translation.z - local_previous_translation.z);
-				local_previous_scale = local_scale;
-				scene.GetModel(0).objectScale[0][0] = scene.GetModel(0).objectScale[1][1] = scene.GetModel(0).objectScale[2][2] = local_scale;
-			}
-
-			//handle rotations in all directions
-			if (local_rotation.x != local_previous_rotation.x) {
-				scene.GetModel(0).ObjectRotateModel(local_rotation.x - local_previous_rotation.x, { 1.0f,0.0f,0.0f });
-			}														  
-			if (local_rotation.y != local_previous_rotation.y) {	  
-				scene.GetModel(0).ObjectRotateModel(local_rotation.y - local_previous_rotation.y, { 0.0f,1.0f,0.0f });
-			}														   
-			if (local_rotation.z != local_previous_rotation.z) {	   
-				scene.GetModel(0).ObjectRotateModel(local_rotation.z - local_previous_rotation.z, { 0.0f,0.0f,1.0f });
-			}
-
-			//save the last changes
+		if ((local_previous_scale != local_scale) || (local_previous_translation != local_translation) || (local_previous_rotation != local_rotation)) {
+			scene.GetModel(0).ObjectTranslateModel(local_translation.x - local_previous_translation.x, local_translation.y - local_previous_translation.y, local_translation.z - local_previous_translation.z);
 			local_previous_scale = local_scale;
-			local_previous_translation = local_translation;
-			local_previous_rotation = local_rotation;
+			scene.GetModel(0).objectScale[0][0] = scene.GetModel(0).objectScale[1][1] = scene.GetModel(0).objectScale[2][2] = local_scale;
+		}
 
-			//handle translation and scale
-			if ((world_previous_scale != world_scale) || (world_previous_translation != world_translation) || (world_previous_rotation != world_rotation)) {
-				scene.GetModel(0).WorldTranslateModel(5 * world_translation.x - 5 * world_previous_translation.x, 5 * world_translation.y - 5 * world_previous_translation.y, 5 * world_translation.z - 5 * world_previous_translation.z);
-				world_previous_scale = world_scale;
-				scene.GetModel(0).worldScale[0][0] = scene.GetModel(0).worldScale[1][1] = scene.GetModel(0).worldScale[2][2] = world_scale;
-			}
+		//handle rotations in all directions
+		if (local_rotation.x != local_previous_rotation.x) {
+			scene.GetModel(0).ObjectRotateModel(local_rotation.x - local_previous_rotation.x, { 1.0f,0.0f,0.0f });
+		}
+		if (local_rotation.y != local_previous_rotation.y) {
+			scene.GetModel(0).ObjectRotateModel(local_rotation.y - local_previous_rotation.y, { 0.0f,1.0f,0.0f });
+		}
+		if (local_rotation.z != local_previous_rotation.z) {
+			scene.GetModel(0).ObjectRotateModel(local_rotation.z - local_previous_rotation.z, { 0.0f,0.0f,1.0f });
+		}
 
-			//handle rotations in all directions
-			if (world_rotation.x != world_previous_rotation.x) {
-				scene.GetModel(0).WorldRotateModel(world_rotation.x - world_previous_rotation.x, { 1.0f,0.0f,0.0f });
-			}
-			if (world_rotation.y != world_previous_rotation.y) {
-				scene.GetModel(0).WorldRotateModel(world_rotation.y - world_previous_rotation.y, { 0.0f,1.0f,0.0f });
-			}
-			if (world_rotation.z != world_previous_rotation.z) {
-				scene.GetModel(0).WorldRotateModel(world_rotation.z - world_previous_rotation.z, { 0.0f,0.0f,1.0f });
-			}
+		//save the last changes
+		local_previous_scale = local_scale;
+		local_previous_translation = local_translation;
+		local_previous_rotation = local_rotation;
 
-			//save the last changes
+		//handle translation and scale
+		if ((world_previous_scale != world_scale) || (world_previous_translation != world_translation) || (world_previous_rotation != world_rotation)) {
+			scene.GetModel(0).WorldTranslateModel(5 * world_translation.x - 5 * world_previous_translation.x, 5 * world_translation.y - 5 * world_previous_translation.y, 5 * world_translation.z - 5 * world_previous_translation.z);
 			world_previous_scale = world_scale;
-			world_previous_translation = world_translation;
-			world_previous_rotation = world_rotation;
+			scene.GetModel(0).worldScale[0][0] = scene.GetModel(0).worldScale[1][1] = scene.GetModel(0).worldScale[2][2] = world_scale;
+		}
+
+		//handle rotations in all directions
+		if (world_rotation.x != world_previous_rotation.x) {
+			scene.GetModel(0).WorldRotateModel(world_rotation.x - world_previous_rotation.x, { 1.0f,0.0f,0.0f });
+		}
+		if (world_rotation.y != world_previous_rotation.y) {
+			scene.GetModel(0).WorldRotateModel(world_rotation.y - world_previous_rotation.y, { 0.0f,1.0f,0.0f });
+		}
+		if (world_rotation.z != world_previous_rotation.z) {
+			scene.GetModel(0).WorldRotateModel(world_rotation.z - world_previous_rotation.z, { 0.0f,0.0f,1.0f });
+		}
+
+		//save the last changes
+		world_previous_scale = world_scale;
+		world_previous_translation = world_translation;
+		world_previous_rotation = world_rotation;
 
 		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
@@ -425,8 +433,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	static int projection = 1;
 	ImGui::RadioButton("Orthographic", &projection, 1); ImGui::SameLine();
 	ImGui::RadioButton("Perspective", &projection, 2);
-	
-	
+
+
 
 	/* UP, DOWN , TOP , BOTTOM sliders*/
 	ImGui::SliderInt("down", &camera.bottom, -5, 5);
@@ -446,7 +454,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	if ((projection == 2) && (scene.GetModelCount()))
 	{
-		
+
 		ImGui::InputFloat("fovy", &camera.fovy, 0.01f, 1.0f, "%.2f");
 		float aspectRatio = (camera.right - camera.left) / (camera.top - camera.bottom);
 		scene.GetActiveCamera().SetPerspectiveProjection(glm::radians(camera.fovy), camera.aspectRatio, camera.zNear, camera.zFar);
@@ -466,7 +474,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::Checkbox("World axes  ", &model.DrawWorldAxes);	ImGui::SameLine();
 		ImGui::Checkbox("Model axes", &model.DrawModelAxes);
 	}
-		
+
 	ImGui::Checkbox("Paint Triangles", &scene.paint_triangles);
 	ImGui::Checkbox("Gray Scale", &scene.gray_scale); ImGui::SameLine();
 	ImGui::Checkbox("Color With Buffer", &scene.color_with_buffer);
@@ -475,7 +483,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	if (scene.gray_scale) { scene.paint_triangles; scene.color_with_buffer = false; }
 	if (scene.color_with_buffer) { scene.gray_scale = false; scene.paint_triangles = false; }
 
-	
+
 
 	ImGui::Text("           ");
 	ImGui::Text("           LookAt Control");
@@ -514,7 +522,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 		LightCount++;
 
-				
+
 	}
 	if (LightCount)
 		scene.lighting = true;
@@ -551,12 +559,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(1).SpecularColor);
 			ImGui::SliderFloat3("Light2 Translation", &scene.GetLight(1).Translation[3].x, -5.0f, 5.0f);
 		}
-		
+
 
 	}
 
 
-	
+
 
 
 	if (scene.GetModelCount())
@@ -568,7 +576,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	ImGui::Checkbox("Ambient Shading", &scene.ambient_light); ImGui::SameLine();
-	ImGui::Checkbox("Diffuse Lighting", &scene.diffuse_light); 	
+	ImGui::Checkbox("Diffuse Lighting", &scene.diffuse_light);
 	ImGui::Checkbox("Specular Light", &scene.specular_light);
 
 	ImGui::Checkbox("Reflection Vectors", &scene.reflection_vector);
@@ -581,7 +589,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	if (shading == 1) { scene.flat_shading = true; scene.phong = false; }
 	if (shading == 2) { scene.flat_shading = false; scene.phong = true; }
-	
+
 
 	ImGui::End();
 }
