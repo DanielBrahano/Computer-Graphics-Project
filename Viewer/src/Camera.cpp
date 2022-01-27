@@ -9,8 +9,8 @@ Camera::Camera()
 	left = -1;
 	top = 1.0f;
 	bottom = -1.0f;
-	zNear = -1.0f;
-	zFar = 1.0f;
+	zNear = 1.0f;
+	zFar = -1.0f;
 	fovy = 45.0f;
 	aspectRatio = 1.0;
 
@@ -28,7 +28,7 @@ Camera::Camera()
 
 Camera::~Camera()
 {
-	
+
 }
 
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
@@ -37,15 +37,15 @@ void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const gl
 }
 
 void Camera::SetOrthographicProjection(float left, float right, float bottom, float top, float zNear, float zFar)
-{	
+{
 	proj = glm::ortho(left, right, bottom, top, zNear, zFar);
 }
 
 void Camera::SetPerspectiveProjection(const float fovy, const float aspectRatio, const float zNear, const float zFar)
 {
-	proj= glm::perspective(fovy, aspectRatio, zNear, zFar);
+	proj = glm::perspective(fovy, aspectRatio, zNear, zFar);
 }
-glm::mat4x4 Camera:: GetProjectionTransformation()
+glm::mat4x4 Camera::GetProjectionTransformation()
 {
 	return proj;
 }
@@ -54,7 +54,6 @@ glm::mat4x4 Camera::GetViewTransformation()
 {
 	return viewTransformation;
 }
-
 
 
 

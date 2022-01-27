@@ -4,8 +4,8 @@
 
 Face::Face(std::istream& issLine)
 {
-	vertex_indices  = { 0,0,0 };
-	normal_indices  = { 0,0,0 };
+	vertex_indices = { 0,0,0 };
+	normal_indices = { 0,0,0 };
 	texture_indices = { 0,0,0 };
 
 	char c;
@@ -16,7 +16,7 @@ Face::Face(std::istream& issLine)
 		{
 			continue;
 		}
-		
+
 		issLine >> c >> std::ws;
 		if (issLine.peek() == '/')
 		{
@@ -29,7 +29,7 @@ Face::Face(std::istream& issLine)
 		{
 			continue;
 		}
-		
+
 		issLine >> c >> normal_indices.at(i);
 	}
 }

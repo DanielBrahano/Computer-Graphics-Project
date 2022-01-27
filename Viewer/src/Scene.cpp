@@ -13,8 +13,8 @@ Scene::Scene() :
 	paint_triangles(false),
 	gray_scale(false),
 	color_with_buffer(false)
-	
-	
+
+
 {
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 

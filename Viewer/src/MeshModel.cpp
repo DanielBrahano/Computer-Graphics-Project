@@ -8,80 +8,84 @@
 #include <random>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
 MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec2> textureCoords, const std::string& modelName) :
 	faces(faces),
 	vertices(vertices),
-	normals(normals)
+	normals(normals),
+	textureCoords(textureCoords),
+	model_name(modelName)
 {
-	 objectTransform = glm::mat4(1.0f);
-	 worldTransform = glm::mat4(1.0f);
-	 objectTranslate = glm::mat4(1.0f);
-	 objectRotate = glm::mat4(1.0f);
-	 objectScale = glm::mat4(1.0f);
-	 worldTranslate = glm::mat4(1.0f);
-	 worldRotate = glm::mat4(1.0f);
-	 worldScale = glm::mat4(1.0f);
-	
-	 DrawWorldAxes = false;
-	 DrawModelAxes = false;
+	objectTransform = glm::mat4(1.0f);
+	worldTransform = glm::mat4(1.0f);
+	objectTranslate = glm::mat4(1.0f);
+	objectRotate = glm::mat4(1.0f);
+	objectScale = glm::mat4(1.0f);
+	worldTranslate = glm::mat4(1.0f);
+	worldRotate = glm::mat4(1.0f);
+	worldScale = glm::mat4(1.0f);
 
-	 Ka = glm::vec3(0.0f, 0, 0);
-	 Kd = glm::vec3(1, 0, 0);
-	 Ks = glm::vec3(1.0f, 1, 1);
+	DrawWorldAxes = false;
+	DrawModelAxes = false;
 
-	 //additional implementation from the reference code
-	 std::random_device rd;
-	 std::mt19937 mt(rd());
-	 std::uniform_real_distribution<double> dist(0, 1);
-	 color = glm::vec3(dist(mt), dist(mt), dist(mt));
+	Ka = glm::vec3(0.0f, 0, 0);
+	Kd = glm::vec3(1, 0, 0);
+	Ks = glm::vec3(1.0f, 1, 1);
 
-	 modelVertices.reserve(3 * faces.size());
-	 for (int i = 0; i < faces.size(); i++)
-	 {
-		 Face currentFace = faces.at(i);
-		 for (int j = 0; j < 3; j++)
-		 {
-			 int vertexIndex = currentFace.GetVertexIndex(j) - 1;
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<double> dist(0, 1);
+	color = glm::vec3(dist(mt), dist(mt), dist(mt));
 
-			 Vertex vertex;
-			 vertex.position = vertices[vertexIndex];
-			 vertex.normal = normals[vertexIndex];
+	modelVertices.reserve(3 * faces.size());
+	for (int i = 0; i < faces.size(); i++)
+	{
+		Face currentFace = faces.at(i);
+		for (int j = 0; j < 3; j++)
+		{
+			int vertexIndex = currentFace.GetVertexIndex(j) - 1;
 
-			 if (textureCoords.size() > 0)
-			 {
-				 int textureCoordsIndex = currentFace.GetTextureIndex(j) - 1;
-				 vertex.textureCoords = textureCoords[textureCoordsIndex];
-			 }
+			Vertex vertex;
+			vertex.position = vertices[vertexIndex];
+			vertex.normal = normals[vertexIndex];
 
-			 modelVertices.push_back(vertex);
-		 }
-	 }
+			if (textureCoords.size() > 0)
+			{
+				int textureCoordsIndex = currentFace.GetTextureIndex(j) - 1;
+				vertex.textureCoords = textureCoords[textureCoordsIndex];
+			}
 
-	 glGenVertexArrays(1, &vao);
-	 glGenBuffers(1, &vbo);
+			modelVertices.push_back(vertex);
+		}
+	}
 
-	 glBindVertexArray(vao);
-	 glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	 glBufferData(GL_ARRAY_BUFFER, modelVertices.size() * sizeof(Vertex), &modelVertices[0], GL_STATIC_DRAW);
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
 
-	 // Vertex Positions
-	 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-	 glEnableVertexAttribArray(0);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, modelVertices.size() * sizeof(Vertex), &modelVertices[0], GL_STATIC_DRAW);
 
-	 // Normals attribute
-	 glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
-	 glEnableVertexAttribArray(1);
+	// Vertex Positions
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
 
-	 // Vertex Texture Coords
-	 glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(6 * sizeof(GLfloat)));
-	 glEnableVertexAttribArray(2);
+	// Normals attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
 
-	 // unbind to make sure other code does not change it somewhere else
-	 glBindVertexArray(0);
+	// Vertex Texture Coords
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
+	// unbind to make sure other code does not change it somewhere else
+	glBindVertexArray(0);
 }
 
 MeshModel::~MeshModel()
 {
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
 }
 
 const Face& MeshModel::GetFace(int index) const
@@ -174,8 +178,8 @@ void MeshModel::ScaleTranslateBunny()
 	objectTransform = glm::mat4(1.0f);
 
 	WorldTranslateModel(600, 400, 300);
-	WorldScaleModel(200, 200,200 );
-	
+	WorldScaleModel(200, 200, 200);
+
 }
 void MeshModel::WorldTranslateModel(float x, float y, float z)
 {
@@ -190,7 +194,7 @@ void MeshModel::WorldScaleModel(float x, float y, float z)
 	//update world transform matrix
 	worldTransform = worldTranslate * worldRotate * worldScale;
 }
-void MeshModel::WorldRotateModel(float angle,  glm::vec3 axis)
+void MeshModel::WorldRotateModel(float angle, glm::vec3 axis)
 {
 	worldRotate = glm::rotate(worldRotate, glm::radians(angle), axis);
 	//update world transform matrix
@@ -236,4 +240,13 @@ glm::vec3 MeshModel::GetPosition()
 	return position;
 }
 
+GLuint MeshModel::GetVAO() const
+{
+	return vao;
+}
+
+const std::vector<Vertex>& MeshModel::GetModelVertices()
+{
+	return modelVertices;
+}
 

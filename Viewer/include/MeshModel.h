@@ -1,9 +1,10 @@
 #pragma once
-#include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include <string>
+#include <memory>
+#include "MeshModel.h"
 #include "Face.h"
-#include <glm/gtc/matrix_transform.hpp>//include for mat operations
 
 struct Vertex
 {
@@ -15,7 +16,7 @@ struct Vertex
 class MeshModel
 {
 public:
-	MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec2> textureCoords, const std::string& modelName);
+	MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec2> textureCoords, const std::string& modelName);
 	virtual ~MeshModel();
 	const Face& GetFace(int index) const;
 	int GetFacesCount() const;
@@ -50,6 +51,9 @@ public:
 
 	glm::vec3 MeshModel::GetPosition();
 
+	GLuint GetVAO() const;
+	const std::vector<Vertex>& GetModelVertices();
+
 	//each model contains its own transformations
 	glm::mat4 objectTransform;
 	glm::mat4 worldTransform;
@@ -68,16 +72,18 @@ public:
 	glm::vec3 Ks;
 
 	glm::vec3 color;
-	std::vector<Vertex> modelVertices;
 
 	GLuint vbo;
 	GLuint vao;
+
+	std::vector<Vertex> modelVertices;
 
 private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 	std::string model_name;
+	std::vector<glm::vec2> textureCoords;
 
 
 

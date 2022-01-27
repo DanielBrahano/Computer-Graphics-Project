@@ -35,26 +35,26 @@ glm::vec3 Light::Compute_Ia(glm::vec3 Ka)
 
 glm::vec3 Light::Compute_Id(glm::vec3 Kd)
 {
-	
+
 	Id = glm::vec3(Kd.x * DiffuseColor.x, Kd.y * DiffuseColor.y, Kd.z * DiffuseColor.z); //Id = Kd*(I*n)Ld
 	//Id = glm::normalize(Id);
-	float theta  = glm::dot(N,I);
+	float theta = glm::dot(N, I);
 	Id = glm::vec3(theta * Id.x, theta * Id.y, theta * Id.z);
 
 	if (Id.x > 1) Id.x = 1; if (Id.x < 0) Id.x = 0;
 	if (Id.y > 1) Id.y = 1; if (Id.y < 0) Id.y = 0;
 	if (Id.z > 1) Id.z = 1; if (Id.z < 0) Id.z = 0;
-	 return Id;
+	return Id;
 }
 
 glm::vec3 Light::Compute_Is(glm::vec3 Ks)
 {
 	float spec = pow(std::max(dot(V, R), 0.0f), 10);
 
- 	//Is = Ls (r * v)^(alpha)*Ks
+	//Is = Ls (r * v)^(alpha)*Ks
 	Is = glm::vec3(SpecularColor.x * spec * Ks.x, SpecularColor.y * spec * Ks.y, SpecularColor.z * spec * Ks.z);
 	return Is;
-	
+
 }
 
 glm::vec3 Light::GetPosition()
@@ -64,8 +64,8 @@ glm::vec3 Light::GetPosition()
 	return position;
 }
 
-glm::vec3 Light::GetLight()	
+glm::vec3 Light::GetLight()
 {
-	glm::vec3 color=glm::vec3(Ia.x + Id.x + Is.x, Ia.y + Id.y + Is.y, Ia.z + Id.z + Is.z);
+	glm::vec3 color = glm::vec3(Ia.x + Id.x + Is.x, Ia.y + Id.y + Is.y, Ia.z + Id.z + Is.z);
 	return color;
 }
