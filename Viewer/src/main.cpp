@@ -62,6 +62,9 @@ int main(int argc, char** argv)
 	if (!window)
 		return 1;
 
+	glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+	glEnable(GL_DEPTH_TEST);
+
 	int frameBufferWidth, frameBufferHeight;
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
