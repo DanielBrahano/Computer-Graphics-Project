@@ -161,7 +161,6 @@ void Renderer::CreateBuffers(int w, int h)
 {
 	CreateOpenglBuffer(); //Do not remove this line.
 	color_buffer = new float[(3 * w * h)];
-	z_buffer = new float[w * h];
 	ClearColorBuffer(glm::vec3(0.0f, 0.0f, 0.0f));
 
 }
@@ -286,7 +285,6 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 		for (int j = 0; j < viewport_height; j++)
 		{
 			PutPixel(i, j, color);
-			z_buffer[Z_INDEX(viewport_width, i, j)] = INFINITY;
 		}
 
 	}
@@ -309,6 +307,25 @@ void Renderer::Render(Scene& scene)
 	colorShader.setUniform("projection", camera.GetProjectionTransformation());
 	colorShader.setUniform("material.textureMap", 0);
 
+	if (scene.lighting)
+	{
+		Light light = scene.GetLight(0);
+
+		colorShader.setUniform("AmbientLight", light.AmbientColor);
+		colorShader.setUniform("DiffuseLight", light.DiffuseColor);
+		colorShader.setUniform("SpecularLight",light.SpecularColor);
+		colorShader.setUniform("material.ambient", model.Ka);
+		colorShader.setUniform("material.diffuse", model.Kd);
+		colorShader.setUniform("material.specular", model.Ks);
+		colorShader.setUniform("Alpha", 2);
+		colorShader.setUniform("LightPosition", light.GetPosition());
+		colorShader.setUniform("CameraPosition", camera.eye);
+
+		cout << "Light Position: " << endl;
+		cout << light.GetPosition().x << " " << light.GetPosition().y << " " << light.GetPosition().z << endl;
+
+	}
+
 	// Set 'texture1' as the active texture at slot #0
 	texture1.bind(0);
 
@@ -322,12 +339,12 @@ void Renderer::Render(Scene& scene)
 	texture1.unbind(0);
 
 	colorShader.setUniform("color", glm::vec3(0, 0, 0));
-
-	// Drag our model's faces (triangles) in line mode (wireframe)
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glBindVertexArray(model.GetVAO());
-	glDrawArrays(GL_TRIANGLES, 0, model.GetModelVertices().size());
-	glBindVertexArray(0);
+	//
+	//// Drag our model's faces (triangles) in line mode (wireframe)
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glBindVertexArray(model.GetVAO());
+	//glDrawArrays(GL_TRIANGLES, 0, model.GetModelVertices().size());
+	//glBindVertexArray(0);
 }
 
 
