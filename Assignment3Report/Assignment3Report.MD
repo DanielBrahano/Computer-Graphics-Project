@@ -85,7 +85,7 @@ void main()
 	if (scene.GetModelCount() == 0)
 		return;
 
-	MeshModel& model = scene.GetGetActive();
+	MeshModel& model = scene.GetActiveModel();
 	Camera& camera = scene.GetActiveCamera();
 
 	// Activate the 'colorShader' program (vertex and fragment shaders)
@@ -117,7 +117,7 @@ void main()
 	glDrawArrays(GL_TRIANGLES, 0, model.GetModelVertices().size());
 	glBindVertexArray(0);
 ```
-At this point I was able to draw the msh using the vertex and fragment shaders.
+At this point I was able to draw the model using the vertex and fragment shaders.
 
 ## Task 6 
 
