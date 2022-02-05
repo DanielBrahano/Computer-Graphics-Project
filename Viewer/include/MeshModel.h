@@ -78,6 +78,7 @@ public:
 
 	std::vector<Vertex> modelVertices;
 
+
 private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;

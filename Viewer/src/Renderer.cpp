@@ -298,6 +298,10 @@ void Renderer::Render(Scene& scene)
 	MeshModel& model = scene.GetModel(0);
 	Camera& camera = scene.GetActiveCamera();
 
+	glm::vec4 temp;
+		temp = model.GetTransform() * glm::vec4(model.modelVertices[0].position,1);
+	cout << "model position: " << temp.x << " " << temp.y << " " << temp.z << " " << endl;
+
 	// Activate the 'colorShader' program (vertex and fragment shaders)
 	colorShader.use();
 
@@ -317,7 +321,7 @@ void Renderer::Render(Scene& scene)
 		colorShader.setUniform("material.ambient", model.Ka);
 		colorShader.setUniform("material.diffuse", model.Kd);
 		colorShader.setUniform("material.specular", model.Ks);
-		colorShader.setUniform("Alpha", 2);
+		colorShader.setUniform("Alpha", 10);
 		colorShader.setUniform("LightPosition", light.GetPosition());
 		colorShader.setUniform("CameraPosition", camera.eye);
 	}

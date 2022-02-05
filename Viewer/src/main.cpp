@@ -332,15 +332,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		//make sliders for the transformations
 		ImGui::SliderFloat3("Translation", &local_translation.x, -1.5f, 1.5f);
 		ImGui::SliderFloat3("Rotation", &local_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("Scale", &local_scale, 0.2f, 3.5f);
+		ImGui::SliderFloat("Scale", &local_scale, 0.01f, 1.0f);
 
 		ImGui::Text("        ");
 		ImGui::Text("       World Transformations  ");
 		ImGui::Text("      X           Y           Z  ");
 		//make sliders for the transformations
 		ImGui::SliderFloat3("_Translation", &world_translation.x, -1.5f, 1.5f);
+		//ImGui::InputFloat3("_Translation", &world_translation.x);
 		ImGui::SliderFloat3("_Rotation", &world_rotation.x, -180.0f, 180.0f);
-		ImGui::SliderFloat("_Scale", &world_scale, 0.2f, 3.5f);
+		ImGui::SliderFloat("_Scale", &world_scale, 0.2f, 1.0f);
+		//ImGui::InputFloat("_Scale", &world_scale);
 
 		/*I am handling transformations by saving each in a vector and comparing to the last on and apply transformation only if something has changed*/
 

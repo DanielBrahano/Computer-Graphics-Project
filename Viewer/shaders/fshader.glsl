@@ -41,13 +41,18 @@ void main()
 	vec3 LightDirection = normalize ( LightPosition - fragPos);
 	vec3 CameraDirection = normalize ( CameraPosition - fragPos);
 	vec3 norm = normalize(fragNormal);
-	vec3 reflectDirection = normalize(reflect(-LightDirection, norm));
-
+	vec3 reflectDirection = reflect(LightDirection, norm);
+	float spec = pow(max(dot(CameraDirection, reflectDirection), 0.0f), 10);
 
 	vec3 FinalAmbient = (AmbientLight * material.ambient);
 	//vec3 FinalDiffuse=(max(dot(-norm, LightDirection), 0.0f) * normalize(material.diffuse * DiffuseLight));
-	vec3 FinalDiffuse= (material.diffuse * DiffuseLight)* dot(norm, LightDirection);
-	vec3 FinalSpecular = (pow(max(dot(reflectDirection, CameraDirection),0.0f), alpha) * normalize(material.specular * SpecularLight));
+	vec3 FinalDiffuse= (material.diffuse * DiffuseLight) * max(dot(norm, LightDirection),0.0f);
+	vec3 FinalSpecular;
+	if (dot(norm, LightDirection)>=0){
+		FinalSpecular = vec3( SpecularLight.x * spec * material.specular.x,  SpecularLight.y * spec * material.specular.y,  SpecularLight.z * spec * material.specular.z);
+		}
+		else 
+		FinalSpecular = vec3(0,0,0);
 
-	frag_color = vec4( FinalDiffuse, 1);
+	frag_color = vec4(   FinalDiffuse+FinalSpecular, 1);
 }
