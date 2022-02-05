@@ -44,15 +44,20 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 		for (int j = 0; j < 3; j++)
 		{
 			int vertexIndex = currentFace.GetVertexIndex(j) - 1;
+			int normalIndex = currentFace.GetNormalIndex(j) - 1;
 
 			Vertex vertex;
 			vertex.position = vertices[vertexIndex];
-			vertex.normal = normals[vertexIndex];
+			
 
 			if (textureCoords.size() > 0)
 			{
 				int textureCoordsIndex = currentFace.GetTextureIndex(j) - 1;
 				vertex.textureCoords = textureCoords[textureCoordsIndex];
+			}
+
+			if (normals.size() > 0) {
+				vertex.normal = normals[normalIndex];
 			}
 
 			modelVertices.push_back(vertex);

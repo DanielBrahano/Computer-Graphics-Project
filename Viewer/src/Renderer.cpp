@@ -320,10 +320,6 @@ void Renderer::Render(Scene& scene)
 		colorShader.setUniform("Alpha", 2);
 		colorShader.setUniform("LightPosition", light.GetPosition());
 		colorShader.setUniform("CameraPosition", camera.eye);
-
-		cout << "Light Position: " << endl;
-		cout << light.GetPosition().x << " " << light.GetPosition().y << " " << light.GetPosition().z << endl;
-
 	}
 
 	// Set 'texture1' as the active texture at slot #0

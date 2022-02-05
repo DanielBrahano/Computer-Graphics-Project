@@ -45,8 +45,9 @@ void main()
 
 
 	vec3 FinalAmbient = (AmbientLight * material.ambient);
-	vec3 FinalDiffuse=(max(dot(-norm, LightDirection), 0.0f) * normalize(material.diffuse * DiffuseLight));
+	//vec3 FinalDiffuse=(max(dot(-norm, LightDirection), 0.0f) * normalize(material.diffuse * DiffuseLight));
+	vec3 FinalDiffuse= (material.diffuse * DiffuseLight)* dot(norm, LightDirection);
 	vec3 FinalSpecular = (pow(max(dot(reflectDirection, CameraDirection),0.0f), alpha) * normalize(material.specular * SpecularLight));
 
-	frag_color = vec4(FinalDiffuse, 1);
+	frag_color = vec4( FinalDiffuse, 1);
 }
