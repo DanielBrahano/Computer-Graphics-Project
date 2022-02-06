@@ -53,6 +53,7 @@ public:
 
 	GLuint GetVAO() const;
 	const std::vector<Vertex>& GetModelVertices();
+	void MeshModel::SetPlane();
 
 	//each model contains its own transformations
 	glm::mat4 objectTransform;

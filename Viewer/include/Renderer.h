@@ -32,6 +32,8 @@ public:
 	void LoadTextures();
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	void texture_load(const std::string& path, Scene& scene);
+
 
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);

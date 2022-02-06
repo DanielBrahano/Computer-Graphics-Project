@@ -54,6 +54,6 @@ void main()
 		else 
 		FinalSpecular = vec3(0,0,0);
 
-	frag_color = vec4(   FinalAmbient+FinalDiffuse+FinalSpecular, 1);
-	//frag_color = vec4(textureColor,1);
+	//frag_color = vec4(   FinalAmbient+FinalDiffuse+FinalSpecular, 1);
+	frag_color = vec4(textureColor,1);
 }

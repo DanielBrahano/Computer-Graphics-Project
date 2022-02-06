@@ -255,3 +255,18 @@ const std::vector<Vertex>& MeshModel::GetModelVertices()
 	return modelVertices;
 }
 
+
+void MeshModel::SetPlane()
+{
+	for (int i = 0; i < modelVertices.size(); i++)
+	{
+		modelVertices.at(i).textureCoords.x = modelVertices.at(i).position.x;
+		modelVertices.at(i).textureCoords.y = modelVertices.at(i).position.z;
+	}
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_VERTEX_ARRAY, vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, modelVertices.size() * sizeof(Vertex), &modelVertices[0]);
+	glBindVertexArray(0);
+}
+

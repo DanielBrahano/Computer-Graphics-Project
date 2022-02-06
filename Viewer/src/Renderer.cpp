@@ -384,9 +384,9 @@ void Renderer::LoadShaders()
 
 void Renderer::LoadTextures()
 {
-	if (!texture1.loadTexture("C://Compute-Graphics//Data//xx.jpg", true))
+	if (!texture1.loadTexture("C:\\Compute-Graphics\\Data\\black&white.png", true))
 	{
-		texture1.loadTexture("C:\\Compute-Graphics\\Data\\xx.jpg", true);
+		texture1.loadTexture("C:\\Compute-Graphics\\Data\\black&white.png", true);
 	}
 }
 
