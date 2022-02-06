@@ -321,7 +321,7 @@ void Renderer::Render(Scene& scene)
 		colorShader.setUniform("material.ambient", model.Ka);
 		colorShader.setUniform("material.diffuse", model.Kd);
 		colorShader.setUniform("material.specular", model.Ks);
-		colorShader.setUniform("Alpha", 10);
+		colorShader.setUniform("Alpha", light.alpha);
 		colorShader.setUniform("LightPosition", light.GetPosition());
 		colorShader.setUniform("CameraPosition", camera.eye);
 	}
@@ -384,10 +384,10 @@ void Renderer::LoadShaders()
 
 void Renderer::LoadTextures()
 {
-	//if (!texture1.loadTexture("bin\\Debug\\crate.jpg", true))
-	//{
-	//	texture1.loadTexture("bin\\Release\\crate.jpg", true);
-	//}
+	if (!texture1.loadTexture("C://Compute-Graphics//Data//xx.jpg", true))
+	{
+		texture1.loadTexture("C:\\Compute-Graphics\\Data\\xx.jpg", true);
+	}
 }
 
 

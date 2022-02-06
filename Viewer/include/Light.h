@@ -25,6 +25,8 @@ public:
 	glm::vec3 V;
 	glm::vec3 R;
 
+	int alpha;
+
 	void Translate(float x, float y, float z);
 
 

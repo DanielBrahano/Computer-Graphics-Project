@@ -18,6 +18,8 @@ Light::Light()
 
 	Translation = glm::translate(Translation, { 0,0,0 });
 
+	alpha = 1;
+
 }
 
 void Light::Translate(float x, float y, float z)

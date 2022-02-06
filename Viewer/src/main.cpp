@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 
-	renderer.LoadShaders();
+	//renderer.LoadShaders();
 	renderer.LoadTextures();
 
 	Camera camera;
@@ -445,8 +445,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::SliderInt("down", &camera.bottom, -5, 5);
 	ImGui::SliderInt("up", &camera.top, -5, 5);
 
-	ImGui::SliderInt("left", &camera.left, -5.0f, 5.0f);
-	ImGui::SliderInt("right", &camera.right, -5.0f, 5.0f);
+	//ImGui::SliderInt("left", &camera.left, -5.0f, 5.0f);
+	//ImGui::SliderInt("right", &camera.right, -5.0f, 5.0f);
+	ImGui::InputFloat("left", &camera.left);
+	ImGui::InputFloat("right", &camera.right);
 
 
 	ImGui::SliderFloat("near", &camera.zNear, -1.00f, 1.0f);
@@ -540,6 +542,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::ColorEdit3("Specular", (float*)&scene.GetLight(0).SpecularColor);
 		ImGui::SliderFloat3("Light1 Translation", &scene.GetLight(0).Translation[3].x, -5.0f, 5.0f);
 	}
+
+	ImGui::SliderInt("Alpha", &scene.GetLight(0).alpha, 0, 60);
 
 	if (LightCount == 2) {
 		static int light_num = 1;

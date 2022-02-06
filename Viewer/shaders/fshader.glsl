@@ -22,7 +22,7 @@ uniform vec3 DiffuseLight;
 uniform vec3 SpecularLight;
 uniform vec3 LightPosition;
 uniform vec3 CameraPosition;
-uniform int alpha;
+uniform int Alpha;
 
 // Inputs from vertex shader (after interpolation was applied)
 in vec3 fragPos;
@@ -42,7 +42,7 @@ void main()
 	vec3 CameraDirection = normalize ( CameraPosition - fragPos);
 	vec3 norm = normalize(fragNormal);
 	vec3 reflectDirection = reflect(LightDirection, norm);
-	float spec = pow(max(dot(CameraDirection, reflectDirection), 0.0f), 10);
+	float spec = pow(max(dot(CameraDirection, reflectDirection), 0.0f), Alpha);
 
 	vec3 FinalAmbient = (AmbientLight * material.ambient);
 	//vec3 FinalDiffuse=(max(dot(-norm, LightDirection), 0.0f) * normalize(material.diffuse * DiffuseLight));
@@ -54,5 +54,6 @@ void main()
 		else 
 		FinalSpecular = vec3(0,0,0);
 
-	frag_color = vec4(   FinalDiffuse+FinalSpecular, 1);
+	frag_color = vec4(   FinalAmbient+FinalDiffuse+FinalSpecular, 1);
+	//frag_color = vec4(textureColor,1);
 }
