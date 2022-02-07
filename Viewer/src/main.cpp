@@ -611,6 +611,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	if (tex_mapping == 2) {  }
 	if (tex_mapping == 3) {  }
 
+	ImGui::Text("Lastly, Choose:");
+
+	static int tex_effect = 0;
+	ImGui::RadioButton("Normal mapping", &tex_effect, 1); ImGui::SameLine();
+	ImGui::RadioButton("Toon shading", &tex_effect, 2); ImGui::SameLine();
+	ImGui::RadioButton("Environment", &tex_effect, 3);
+
+	ImGui::Text("Lastly, Choose:");
+
+	if (tex_effect == 1) { scene.normal_map = true; scene.toon_shading = false; }
+	if (tex_effect == 2) { scene.normal_map = false; scene.toon_shading = true; }
+	if (tex_effect == 3) {}
+
 
 	ImGui::End();
 }

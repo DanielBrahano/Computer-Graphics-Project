@@ -23,6 +23,7 @@ uniform vec3 SpecularLight;
 uniform vec3 LightPosition;
 uniform vec3 CameraPosition;
 uniform int Alpha;
+uniform bool ToonShading;
 
 // Inputs from vertex shader (after interpolation was applied)
 in vec3 fragPos;
@@ -31,6 +32,8 @@ in vec2 fragTexCoords;
 in vec3 orig_fragPos;
 // The final color of the fragment (pixel)
 out vec4 frag_color;
+
+const float levels = 4.0f;
 
 void main()
 {
@@ -53,7 +56,15 @@ void main()
 		}
 		else 
 		FinalSpecular = vec3(0,0,0);
+	
+	vec3 FinalColor = vec3(FinalAmbient + FinalDiffuse + FinalSpecular);
 
-	//frag_color = vec4(   FinalAmbient+FinalDiffuse+FinalSpecular, 1);
-	frag_color = vec4(textureColor,1);
+	if(ToonShading)
+	{
+		vec3 level = vec3(floor(FinalColor.x * levels),floor(FinalColor.y * levels),floor(FinalColor.z * levels));
+		FinalColor = level/levels;
+	}
+	frag_color = vec4(FinalColor, 1);
+
+	//frag_color = vec4(textureColor,1);
 }

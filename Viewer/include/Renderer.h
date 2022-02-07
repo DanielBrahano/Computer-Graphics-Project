@@ -27,12 +27,12 @@ public:
 	ShaderProgram lightShader;
 	ShaderProgram colorShader;
 	Texture2D texture1;
+	Texture2D texture_normalmap;
 
 	void LoadShaders();
 	void LoadTextures();
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void texture_load(const std::string& path, Scene& scene);
 
 
 private:

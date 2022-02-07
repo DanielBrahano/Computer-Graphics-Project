@@ -310,6 +310,7 @@ void Renderer::Render(Scene& scene)
 	colorShader.setUniform("view", camera.GetViewTransformation());
 	colorShader.setUniform("projection", camera.GetProjectionTransformation());
 	colorShader.setUniform("material.textureMap", 0);
+	colorShader.setUniform("ToonShading", scene.toon_shading);
 
 	if (scene.lighting)
 	{
@@ -364,15 +365,6 @@ int Renderer::GetViewportHeight() const
 {
 	return viewport_height;
 }
-
-
-
-
-
-
-
-
-
 
 
 

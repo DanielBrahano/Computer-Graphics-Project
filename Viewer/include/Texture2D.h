@@ -20,5 +20,6 @@ private:
 	//Texture2D& operator = (const Texture2D& rhs) {}
 
 	GLuint mTexture;
+	GLuint mTexture_normalmap;
 };
 #endif

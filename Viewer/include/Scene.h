@@ -59,6 +59,8 @@ public:
 	bool blur;
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 
+	bool normal_map;
+	bool toon_shading;
 
 
 private:

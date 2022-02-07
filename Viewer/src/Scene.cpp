@@ -32,6 +32,9 @@ Scene::Scene() :
 	lights[0] = new Light();
 	lights[1] = new Light();
 
+	normal_map = false;
+	toon_shading = false;
+
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 }
 
