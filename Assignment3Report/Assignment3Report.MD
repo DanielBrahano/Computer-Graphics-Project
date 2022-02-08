@@ -203,6 +203,24 @@ Finally I was able to load big images thanks to the assignment.
 
 ## Task 7
 
+For sanity check I took a black and white board and applied it to a model.
+In the coord mapping I "ignored" the z coordinate so from the front everything look perfectly normal but when looking from the sides we can see that the texture "stretches"
+
+bunny
+
+![image](https://user-images.githubusercontent.com/92395711/153052728-422157db-c61c-4b15-8de0-c101a4dfa5df.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153052805-2f7c301b-10bb-4511-af89-7d0e5b3af610.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153052851-99dc58cf-fbd8-4df3-b933-379d9b8a5314.png)
+
+ball
+
+![image](https://user-images.githubusercontent.com/92395711/153054551-5d5f47f0-b094-4c6b-aac6-4ae211723daf.png)
+
+nice house
+
+
 
 
 ## Task 8
