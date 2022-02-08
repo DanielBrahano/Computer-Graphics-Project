@@ -16,8 +16,11 @@ the function creates variables to represent the screen and texture coordinates a
 
 ## Task 2
 
+MeshModel class is updated
 
 ## Task 3 
+
+For this takes and the next two I used the reference code as a skeletone. Of course the code did not fit perfectly, adjastments as to be made. on top of that I implemented the rest of what required in the assignment.
 ```
 #version 330 core
 
@@ -175,21 +178,31 @@ void main()
 	glBindVertexArray(model.GetVAO());
 	glDrawArrays(GL_TRIANGLES, 0, model.GetModelVertices().size());
 	glBindVertexArray(0);
+	
+```
+	
 
 
 ## Task 6 
+
+### Phong shading
+
+Finally I was able to load big images thanks to the assignment.
+
+
+![bethoven](https://user-images.githubusercontent.com/92395711/153049149-52f1d78b-314a-4052-b488-64805b18ef2e.png)
+
+![feline](https://user-images.githubusercontent.com/92395711/153049154-bd9e927c-260a-43e8-a92d-ec70f4d2dd25.png)
+
+![cherebushka](https://user-images.githubusercontent.com/92395711/153049167-15c50e88-9806-485e-8ab4-634d7803b813.png)
+
+![armadillo](https://user-images.githubusercontent.com/92395711/153049175-671da3d2-648b-4eb1-a4ca-b861308908b4.png)
+
+![XYZdragon](https://user-images.githubusercontent.com/92395711/153049187-94a91d83-934d-4353-8e14-7cdcd0e3d07b.png)
+
 
 ## Task 7
 
 
 
 ## Task 8
-
-
-
-
-
-
-
-
-
