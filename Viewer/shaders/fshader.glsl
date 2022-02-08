@@ -24,6 +24,7 @@ uniform vec3 LightPosition;
 uniform vec3 CameraPosition;
 uniform int Alpha;
 uniform bool ToonShading;
+uniform float levels;
 
 // Inputs from vertex shader (after interpolation was applied)
 in vec3 fragPos;
@@ -33,7 +34,6 @@ in vec3 orig_fragPos;
 // The final color of the fragment (pixel)
 out vec4 frag_color;
 
-const float levels = 4.0f;
 
 void main()
 {
@@ -66,5 +66,5 @@ void main()
 	}
 	frag_color = vec4(FinalColor, 1);
 
-	//frag_color = vec4(textureColor,1);
+	frag_color = vec4(textureColor,1);
 }

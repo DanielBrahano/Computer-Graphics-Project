@@ -34,6 +34,7 @@ Scene::Scene() :
 
 	normal_map = false;
 	toon_shading = false;
+	levels = 3.0f;
 
 	//--------------move to light class-------------------move to light class----------------------move to light class---------------------move to light class---------------------
 }
