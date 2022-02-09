@@ -203,7 +203,6 @@ Finally I was able to load big images thanks to the assignment.
 
 ## Task 7
 
-For sanity check I took a black and white board and applied it to a model.
 In the coord mapping I "ignored" the z coordinate so from the front everything look perfectly normal but when looking from the sides we can see that the texture "stretches"
 
 bunny
