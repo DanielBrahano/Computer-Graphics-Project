@@ -218,9 +218,65 @@ ball
 
 ![image](https://user-images.githubusercontent.com/92395711/153054551-5d5f47f0-b094-4c6b-aac6-4ae211723daf.png)
 
-nice house
+I found online a nice mesh of dice
+
+![image](https://user-images.githubusercontent.com/92395711/153072377-3e39ffd4-b973-41c1-b7f3-4dc57925efb3.png)
+
+
 
 
 
 
 ## Task 8
+
+I chose to implement toon shading.
+
+Regular bunny
+
+![image](https://user-images.githubusercontent.com/92395711/153170108-fbbe1896-36a4-4f80-a69c-7782759e1945.png)
+
+gradually increasing colors
+
+![image](https://user-images.githubusercontent.com/92395711/153170360-17378279-73d4-4c31-b6ee-f5ce5f46320b.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153170502-94c40bef-31a3-4653-b25f-7de567f6074a.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153170550-3d222b57-25b0-46bd-a7cf-634e0a9b4f3b.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153170617-c17e3d1e-9f45-47fe-b9bd-71c7e56a8363.png)
+
+Regular armadillo
+
+![image](https://user-images.githubusercontent.com/92395711/153171299-0eacabd0-5f42-442e-afb8-205457744c18.png)
+
+gradually increasing colors
+
+![image](https://user-images.githubusercontent.com/92395711/153171430-07ba8ffd-45a9-416d-b05b-79301ca822a5.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153171497-4e415eda-5a9c-4a26-aa8d-2f78b245a0e5.png)
+
+
+![image](https://user-images.githubusercontent.com/92395711/153171552-f9cee453-b17a-408e-acd5-1aeaab57670b.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153171603-c44c03a4-8a53-4fa1-9364-5fae9fe79600.png)
+
+And another one
+
+![image](https://user-images.githubusercontent.com/92395711/153172022-f29b0c49-401c-473c-afca-b52b85949149.png)
+
+gradually increasing colors
+
+![image](https://user-images.githubusercontent.com/92395711/153172181-4d113adb-8b32-4520-a9ce-1fb95a8e893a.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153172251-c1d792eb-c44b-490e-8713-e695170687fb.png)
+
+![image](https://user-images.githubusercontent.com/92395711/153172297-7e0960c7-ccc2-4049-ac44-ee5237f148dd.png)
+
+
+![image](https://user-images.githubusercontent.com/92395711/153172352-22f4d152-dc6f-4870-afdf-7da923e843b9.png)
+
+
+
+
+
+
