@@ -218,10 +218,6 @@ ball
 
 ![image](https://user-images.githubusercontent.com/92395711/153054551-5d5f47f0-b094-4c6b-aac6-4ae211723daf.png)
 
-I found online a nice mesh of dice
-
-![image](https://user-images.githubusercontent.com/92395711/153072377-3e39ffd4-b973-41c1-b7f3-4dc57925efb3.png)
-
 
 
 
