@@ -30,12 +30,10 @@ layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 texCoords;
 
-// The model/view/projection matrices
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-// These outputs will be available in the fragment shader as inputs
 out vec3 orig_fragPos;
 out vec3 fragPos;
 out vec3 fragNormal;
@@ -43,14 +41,11 @@ out vec2 fragTexCoords;
 
 void main()
 {
-	// Apply the model transformation to the 'position' and 'normal' properties of the vertex,
-	// so the interpolated values of these properties will be available for usi n the fragment shader
+
 	orig_fragPos = vec3(vec4(pos, 1.0f));
 	fragPos = vec3(model * vec4(pos, 1.0f));
 	fragNormal = mat3(model) * normal;
 
-	// Pass the vertex texture coordinates property as it is. Its interpolated value
-	// will be avilable for us in the fragment shader
 	fragTexCoords = texCoords;
 
 	// This is an internal OpenGL variable, we must set a value to this variable
@@ -110,8 +105,8 @@ void main()
 	float spec = pow(max(dot(CameraDirection, reflectDirection), 0.0f), Alpha);
 
 	vec3 FinalAmbient = (AmbientLight * material.ambient);
-	//vec3 FinalDiffuse=(max(dot(-norm, LightDirection), 0.0f) * normalize(material.diffuse * DiffuseLight));
-	vec3 FinalDiffuse= (material.diffuse * DiffuseLight) * max(dot(norm, LightDirection),0.0f);
+	//vec3 FinalDiffuse = (max(dot(-norm, LightDirection), 0.0f) * normalize(material.diffuse * DiffuseLight));
+	vec3 FinalDiffus e= (material.diffuse * DiffuseLight) * max(dot(norm, LightDirection),0.0f);
 	vec3 FinalSpecular;
 	if (dot(norm, LightDirection)>=0){
 		FinalSpecular = vec3( SpecularLight.x * spec * material.specular.x,  SpecularLight.y * spec * material.specular.y,  SpecularLight.z * spec * material.specular.z);
@@ -187,7 +182,7 @@ void main()
 
 ### Phong shading
 
-Finally I was able to load big images thanks to the assignment.
+Finally I was able to load big images thanks to the new shaders.
 
 
 ![bethoven](https://user-images.githubusercontent.com/92395711/153049149-52f1d78b-314a-4052-b488-64805b18ef2e.png)

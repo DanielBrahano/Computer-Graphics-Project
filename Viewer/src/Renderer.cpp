@@ -312,6 +312,7 @@ void Renderer::Render(Scene& scene)
 	colorShader.setUniform("material.textureMap", 0);
 	colorShader.setUniform("ToonShading", scene.toon_shading);
 	colorShader.setUniform("levels", scene.levels);
+	colorShader.setUniform("UseTexture", scene.use_texture);
 
 	if (scene.lighting)
 	{
@@ -377,9 +378,9 @@ void Renderer::LoadShaders()
 
 void Renderer::LoadTextures()
 {
-	if (!texture1.loadTexture("C:\\Compute-Graphics\\Data\\cottage_textures\\cottage_diffuse.png", true))
+	if (!texture1.loadTexture("C:\\Compute-Graphics\\Data\\crate.jpg", true))
 	{
-		texture1.loadTexture("C:\\Compute-Graphics\\Data\\cottage_textures\\cottage_diffuse.png", true);
+		texture1.loadTexture("C:\\Compute-Graphics\\Data\\crate.jpg", true);
 	}
 }
 
