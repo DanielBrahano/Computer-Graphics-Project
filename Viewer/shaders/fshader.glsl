@@ -25,6 +25,7 @@ uniform vec3 CameraPosition;
 uniform int Alpha;
 uniform bool ToonShading;
 uniform float levels;
+uniform bool UseTexture;
 
 // Inputs from vertex shader (after interpolation was applied)
 in vec3 fragPos;
@@ -40,6 +41,14 @@ void main()
 	
 	// Sample the texture-map at the UV coordinates given by 'fragTexCoords'
 	vec3 textureColor = vec3(texture(material.textureMap, fragTexCoords));
+
+	if (UseTexture)
+	{
+	
+		// material.ambient = textureColor;
+		//material.diffuse = textureColor;
+		//material.specular = textureColor;
+	}
 
 	vec3 LightDirection = normalize ( LightPosition - fragPos);
 	vec3 CameraDirection = normalize ( CameraPosition - fragPos);
@@ -66,5 +75,5 @@ void main()
 	}
 	frag_color = vec4(FinalColor, 1);
 
-	frag_color = vec4(textureColor,1);
+	//frag_color = vec4(textureColor,1);
 }

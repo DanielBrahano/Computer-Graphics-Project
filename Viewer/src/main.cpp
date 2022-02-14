@@ -622,6 +622,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	//if (tex_effect == 2) { scene.normal_map = false; scene.toon_shading = true; }
 	//if (tex_effect == 3) {}
 
+	ImGui::Checkbox("Texture", &scene.use_texture);
+
 	ImGui::Checkbox("Toon Shading", &scene.toon_shading);
 	ImGui::SliderFloat("colors of shades?", &scene.levels, 0, 20);
 

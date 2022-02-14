@@ -62,6 +62,7 @@ public:
 	bool normal_map;
 	bool toon_shading;
 	float levels;
+	bool use_texture;
 
 
 private:

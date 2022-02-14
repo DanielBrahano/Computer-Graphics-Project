@@ -121,7 +121,7 @@ void main()
 		vec3 level = vec3(floor(FinalColor.x * levels),floor(FinalColor.y * levels),floor(FinalColor.z * levels));
 		FinalColor = level/levels;
 	}
-	frag_color = vec4(FinalColor, 1);
+	frag_color = vec4(1 ,1 ,1 ,1 );
 
 	//frag_color = vec4(textureColor,1);
 }
@@ -219,7 +219,8 @@ ball
 
 ## Task 8
 
-I chose to implement toon shading.
+I chose to implement toon shading. 
+With imgui interface the user can choose how many shades he wants to see. In the fragment shader we use the number the user chose and range of colors for each levels. With a quick calculation we can know which range the color that needs to be out belongs to and then choose the appropriate color.
 
 Regular bunny
 

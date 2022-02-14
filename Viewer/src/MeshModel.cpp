@@ -261,7 +261,7 @@ void MeshModel::SetPlane()
 	for (int i = 0; i < modelVertices.size(); i++)
 	{
 		modelVertices.at(i).textureCoords.x = modelVertices.at(i).position.x;
-		modelVertices.at(i).textureCoords.y = modelVertices.at(i).position.z;
+		modelVertices.at(i).textureCoords.y = modelVertices.at(i).position.y;
 	}
 
 	glBindVertexArray(vao);
